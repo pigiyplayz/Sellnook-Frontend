@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SellNook – Buy & Sell Locally</title>
+  <title>SellNook – Local Selling, Done Right</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -12,88 +12,45 @@
       <div class="sn-logo">SellNook</div>
       <nav class="sn-nav">
         <a href="#how-it-works">How it works</a>
-        <a href="#features">Features</a>
         <a href="coming-soon.html" class="sn-nav-cta">Coming soon</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="sn-hero">
-      <div class="sn-container sn-hero-inner">
-        <div class="sn-hero-text">
-          <h1>Sell locally. Safely. Simply.</h1>
-          <p>
-            SellNook makes it easy to list your items, find local buyers, and
-            complete safe, hassle‑free transactions in your neighborhood.
-          </p>
+    <section class="sn-hero sn-hero-centered">
+      <div class="sn-container sn-hero-centered-inner">
+        <h1>Sell locally. Keep it simple.</h1>
+        <p class="sn-hero-sub">
+          A clean, trusted way to sell the stuff you don’t need to people right around you.
+        </p>
 
-          <form id="waitlistForm" class="sn-hero-actions">
-            <input type="email" id="email" placeholder="Enter your email" required />
-            <button class="sn-btn sn-btn-primary">Join waitlist</button>
-          </form>
+        <form id="waitlistForm" class="sn-hero-form">
+          <input type="email" id="email" placeholder="Enter your email" required />
+          <button class="sn-btn sn-btn-primary">Join the waitlist</button>
+        </form>
 
-          <p class="sn-hero-note">Launching soon in select cities.</p>
-        </div>
-
-        <div class="sn-hero-card">
-          <div class="sn-hero-card-header">Featured listing</div>
-          <div class="sn-hero-card-body">
-            <div class="sn-hero-card-image"></div>
-            <div class="sn-hero-card-info">
-              <h2>Gaming Chair</h2>
-              <p class="sn-price">$120 · 2 miles away</p>
-              <p class="sn-meta">Verified seller · Safe meetup spot</p>
-            </div>
-          </div>
-        </div>
+        <p class="sn-hero-note">
+          No spam. Just a heads‑up when we launch.
+        </p>
       </div>
     </section>
 
-    <section id="features" class="sn-section">
-      <div class="sn-container">
-        <h2>Why SellNook?</h2>
+    <section id="how-it-works" class="sn-section">
+      <div class="sn-container sn-centered">
+        <h2>How SellNook will work</h2>
         <div class="sn-grid-3">
           <div class="sn-card">
-            <h3>Local & trusted</h3>
-            <p>Connect with real people nearby, not random accounts from across the internet.</p>
+            <h3>Create your nook</h3>
+            <p>Set up a simple profile so buyers know who they’re meeting.</p>
           </div>
           <div class="sn-card">
-            <h3>Safe by design</h3>
-            <p>Built‑in safety tips, suggested meetup spots, and tools to report suspicious activity.</p>
+            <h3>List what you don’t need</h3>
+            <p>Snap a photo, add a price, and publish in seconds.</p>
           </div>
           <div class="sn-card">
-            <h3>Simple listings</h3>
-            <p>Snap a photo, set a price, and publish in seconds from your phone or laptop.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="how-it-works" class="sn-section sn-section-alt">
-      <div class="sn-container">
-        <h2>How SellNook works</h2>
-        <div class="sn-steps">
-          <div class="sn-step">
-            <span class="sn-step-number">1</span>
-            <div>
-              <h3>Create your nook</h3>
-              <p>Set up your profile so buyers and sellers know who they’re dealing with.</p>
-            </div>
-          </div>
-          <div class="sn-step">
-            <span class="sn-step-number">2</span>
-            <div>
-              <h3>List your items</h3>
-              <p>Add photos, descriptions, and prices for the things you want to sell.</p>
-            </div>
-          </div>
-          <div class="sn-step">
-            <span class="sn-step-number">3</span>
-            <div>
-              <h3>Meet & complete</h3>
-              <p>Coordinate a safe meetup, complete the sale, and clear space in your home.</p>
-            </div>
+            <h3>Meet up, cash in</h3>
+            <p>Coordinate a safe meetup and turn clutter into cash.</p>
           </div>
         </div>
       </div>
@@ -107,20 +64,27 @@
   </footer>
 
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     document.getElementById("waitlistForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value;
 
-      await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
-      });
+      try {
+        const res = await fetch("/api/waitlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
 
-      alert("You're on the waitlist!");
-      e.target.reset();
+        if (!res.ok) throw new Error("Request failed");
+
+        alert("You’re on the waitlist. Thanks for being early!");
+        e.target.reset();
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong. Please try again.");
+      }
     });
   </script>
 </body>
