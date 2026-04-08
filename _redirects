@@ -1,0 +1,6 @@
+# Render automatically serves existing .html files without needing rules.
+# This single catch-all routes any unknown path to shop.html,
+# which reads window.location.pathname to get the shop identifier.
+/js/* /js/:splat 200
+/css/* /css/:splat 200
+/* /shop.html 200
