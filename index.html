@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO -->
+  <meta name="description" content="Sellnook is a marketplace for independent sellers launching July 21, 2026. Join the waitlist and be first to shop and sell.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sellnook.com/coming-soon.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sellnook">
+  <meta property="og:title" content="Sellnook — A Marketplace for Independent Sellers">
+  <meta property="og:description" content="Sellnook is a marketplace for independent sellers launching July 21, 2026. Join the waitlist and be first to shop and sell.">
+  <meta property="og:url" content="https://sellnook.com/coming-soon.html">
+  <meta property="og:image" content="https://sellnook.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sellnook">
+  <meta name="twitter:title" content="Sellnook — A Marketplace for Independent Sellers">
+  <meta name="twitter:description" content="Sellnook is a marketplace for independent sellers launching July 21, 2026. Join the waitlist and be first to shop and sell.">
+  <meta name="twitter:image" content="https://sellnook.com/og-image.png">
+<title>Sellnook — Coming Soon</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #fafaf9;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 480px;
+    animation: up 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Nav row */
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 64px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: #1a1a1a;
+  }
+  .logo span { color: #e8734a; }
+
+  .nav-btns { display: flex; gap: 8px; align-items: center; }
+
+  .btn-nav {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-nav-outline {
+    background: transparent;
+    border: 1px solid #e0e0dc;
+    color: #555;
+  }
+  .btn-nav-outline:hover { border-color: #1a1a1a; color: #1a1a1a; }
+
+  .btn-nav-solid {
+    background: #1a1a1a;
+    border: 1px solid #1a1a1a;
+    color: #fff;
+  }
+  .btn-nav-solid:hover { background: #333; }
+
+  /* Dev badge */
+  .dev-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: #1a1a1a;
+    color: #e8734a;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 50px;
+    margin-bottom: 16px;
+  }
+  .dev-badge.show { display: inline-flex; }
+
+  /* Logged in nav */
+  .user-nav {
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .user-nav.show { display: flex; }
+
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .user-name { font-size: 0.78rem; font-weight: 500; color: #555; }
+
+  .btn-signout {
+    font-size: 0.75rem;
+    color: #bbb;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+  }
+  .btn-signout:hover { color: #1a1a1a; }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.6rem, 8vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+  }
+
+  .sub {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: #888;
+    line-height: 1.6;
+    margin-bottom: 52px;
+    max-width: 360px;
+  }
+
+  /* Phase label */
+  .phase-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+  }
+  .phase-coming { background: #f0f0ee; color: #aaa; }
+  .phase-early  { background: #fff4ee; color: #e8734a; }
+  .phase-live   { background: #e8f5ee; color: #2d9e6b; }
+
+  .countdown {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 52px;
+  }
+
+  .time-block { text-align: left; }
+
+  .time-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: block;
+    letter-spacing: -1px;
+    line-height: 1;
+    transition: opacity 0.1s;
+  }
+
+  .time-num.flip { opacity: 0.3; }
+
+  .time-label {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 5px;
+    display: block;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e8e8e5;
+    margin-bottom: 36px;
+  }
+
+  .form-label {
+    font-size: 0.82rem;
+    color: #888;
+    font-weight: 400;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .form-row { display: flex; gap: 8px; }
+
+  input[type="email"] {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #e0e0dc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: #1a1a1a;
+    outline: none;
+    transition: border 0.15s;
+  }
+  input[type="email"]::placeholder { color: #ccc; }
+  input[type="email"]:focus { border-color: #1a1a1a; }
+  input[type="email"].error { border-color: #e8734a; }
+
+  .btn {
+    background: #1a1a1a;
+    color: #fafaf9;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: #333; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { background: #ccc; cursor: not-allowed; }
+
+  .success {
+    display: none;
+    font-size: 0.875rem;
+    color: #1a1a1a;
+    font-weight: 400;
+    margin-top: 14px;
+    align-items: center;
+    gap: 8px;
+  }
+  .success.show { display: flex; }
+  .success::before {
+    content: '';
+    display: inline-block;
+    width: 18px; height: 18px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-size: 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+  }
+
+  /* Early access / dashboard CTA box */
+  .access-box {
+    display: none;
+    background: #fff;
+    border: 1px solid #e8e8e5;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 8px;
+  }
+  .access-box.show { display: block; }
+  .access-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .access-box p { font-size: 0.82rem; color: #888; line-height: 1.6; margin-bottom:16px; }
+  .btn-dashboard {
+    display: inline-block;
+    padding: 11px 22px;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-dashboard:hover { background: #333; }
+  .btn-dashboard.orange { background: #e8734a; }
+  .btn-dashboard.orange:hover { background: #f07d55; }
+
+  .footer {
+    margin-top: 64px;
+    font-size: 0.72rem;
+    color: #ccc;
+  }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 24px 20px; }
+    .nav-row { margin-bottom: 28px; }
+    .btn-nav { padding: 7px 12px; font-size: 0.75rem; }
+    h1 { font-size: 2rem; }
+    .sub { font-size: 0.875rem; }
+    .countdown { gap: 16px; }
+    .time-num { font-size: 2.2rem; }
+    .form-row { flex-direction: column; }
+    .form-row .btn { width: 100%; }
+    .footer { font-size: 0.68rem; line-height: 1.8; }
+    .access-box { padding: 18px; }
+    .btn-dashboard { width: 100%; text-align: center; }
+    .user-nav { gap: 8px; }
+    .btn-signout { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Nav row -->
+  <div class="nav-row">
+    <span class="logo">sell<span>nook</span></span>
+    <div class="nav-btns" id="auth-btns">
+      <a href="login.html" class="btn-nav btn-nav-outline">Log in</a>
+      <a href="signup.html" class="btn-nav btn-nav-solid">Sign up</a>
+    </div>
+    <div class="user-nav" id="user-nav">
+      <div class="user-avatar" id="cs-avatar">?</div>
+      <span class="user-name" id="cs-name"></span>
+      <button class="btn-signout" onclick="doSignOut()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- Dev badge -->
+  <div class="dev-badge" id="dev-badge">⚡ Developer Mode</div>
+
+  <!-- Phase label -->
+  <div class="phase-label phase-coming" id="phase-label">🔒 Coming Soon</div>
+
+  <h1 id="main-heading">We're almost<br>ready.</h1>
+  <p class="sub" id="main-sub">A marketplace for independent sellers. Buy and sell physical goods — simply.</p>
+
+  <div class="countdown">
+    <div class="time-block">
+      <span class="time-num" id="days">000</span>
+      <span class="time-label">Days</span>
+    </div>
+    <div class="time-block">
+      <span class="time-num" id="hours">00</span>
+      <span class="time-label">Hrs</span>
+    </div>
+    <div class="time-block">
+      <span class="time-num" id="minutes">00</span>
+      <span class="time-label">Min</span>
+    </div>
+    <div class="time-block">
+      <span class="time-num" id="seconds">00</span>
+      <span class="time-label">Sec</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Waitlist form (hidden when logged in or launched) -->
+  <div id="waitlist-section">
+    <span class="form-label">Get notified when we launch.</span>
+    <div class="form-row">
+      <input type="email" id="email" placeholder="you@email.com">
+      <button class="btn" onclick="signup()">Notify me</button>
+    </div>
+    <div class="success" id="success">You're on the list — talk soon.</div>
+  </div>
+
+  <!-- Access box (shown based on phase + login state) -->
+  <div class="access-box" id="access-box">
+    <h3 id="access-title">You're in early!</h3>
+    <p id="access-desc">Your account is ready. The full marketplace opens on July 21 — explore your dashboard in the meantime.</p>
+    <a href="dashboard.html" class="btn-dashboard orange" id="access-btn">Go to Dashboard →</a>
+  </div>
+
+  <p class="footer">© 2026 Sellnook · No spam, ever. · <a href="buyer-handbook.html" style="color:#bbb;text-decoration:none;">Buyer Handbook</a> · <a href="seller-handbook.html" style="color:#bbb;text-decoration:none;">Seller Handbook</a> · <a href="terms.html" style="color:#bbb;text-decoration:none;">Terms</a> · <a href="privacy.html" style="color:#bbb;text-decoration:none;">Privacy</a></p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+      apiKey:            "AIzaSyCmhcl9MM-JmXq5ps82oVQu_9v5E5QVXn8",
+      authDomain:        "sellnook-1.firebaseapp.com",
+      projectId:         "sellnook-1",
+      storageBucket:     "sellnook-1.firebasestorage.app",
+      messagingSenderId: "567018222611",
+      appId:             "1:567018222611:web:eca7ff654a6729d984fbe6"
+  };
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  const API  = "https://sellnook-backend.onrender.com";
+import { collection, addDoc, serverTimestamp }
+                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { onAuthStateChanged, signOut }
+                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  // Countdown — always counts to July 21 2026 5pm
+  const target = new Date('2026-07-21T17:00:00');
+  let prev = {};
+  function pad(n, len = 2) { return String(n).padStart(len, '0'); }
+
+  function tick() {
+    const diff = Math.max(0, target - new Date());
+    const vals = {
+      days:    pad(Math.floor(diff / 86400000), 3),
+      hours:   pad(Math.floor((diff % 86400000) / 3600000)),
+      minutes: pad(Math.floor((diff % 3600000) / 60000)),
+      seconds: pad(Math.floor((diff % 60000) / 1000))
+    };
+    ['days','hours','minutes','seconds'].forEach(id => {
+      const el = document.getElementById(id);
+      if (vals[id] !== prev[id]) {
+        el.classList.add('flip');
+        setTimeout(() => { el.textContent = vals[id]; el.classList.remove('flip'); }, 80);
+      }
+    });
+    prev = { ...vals };
+
+    // Auto update heading when launch time hits
+    if (new Date() >= target) {
+      document.getElementById('phase-label').className   = 'phase-label phase-live';
+      document.getElementById('phase-label').textContent = '🟢 We\'re Live!';
+      document.getElementById('main-heading').innerHTML  = 'We\'re live.<br>Let\'s go.';
+      document.getElementById('main-sub').textContent    = 'Sellnook is officially open. Start buying and selling now.';
+    }
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  // Auth state — ask server for access level
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      let access = { access: 'coming_soon', isDev: false, isPro: false, isLaunched: false, earlyAccess: false };
+      try {
+        const token = await user.getIdToken();
+        const res   = await fetch(`${API}/api/auth/access`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+        });
+        access = await res.json();
+      } catch (e) {
+        console.error('Access check failed:', e);
+      }
+
+      const isDev      = access.isDev;
+      const isLaunched = access.isLaunched;
+      const isEarly    = access.earlyAccess;
+      const phaseLabel = document.getElementById('phase-label');
+      const accessBox  = document.getElementById('access-box');
+      const waitlist   = document.getElementById('waitlist-section');
+
+      // Show user nav
+      document.getElementById('auth-btns').style.display = 'none';
+      document.getElementById('user-nav').classList.add('show');
+
+      const name = user.displayName || user.email.split('@')[0];
+      document.getElementById('cs-name').textContent = name;
+      const avatarEl = document.getElementById('cs-avatar');
+      if (user.photoURL) {
+        avatarEl.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+      } else {
+        avatarEl.textContent = name.charAt(0).toUpperCase();
+      }
+
+      // Dev badge — set by server, not client
+      if (isDev) document.getElementById('dev-badge').classList.add('show');
+
+      waitlist.style.display = 'none';
+      accessBox.classList.add('show');
+
+      if (isDev || isLaunched) {
+        document.getElementById('access-title').textContent = isDev ? '⚡ Developer Access' : '🎉 We\'re Live!';
+        document.getElementById('access-desc').textContent  = isDev
+          ? 'You have full developer access to all features before launch.'
+          : 'Sellnook is officially open. Head to your dashboard to start buying and selling.';
+        document.getElementById('access-btn').textContent   = 'Open Dashboard →';
+        document.getElementById('access-btn').className     = 'btn-dashboard orange';
+        phaseLabel.className   = 'phase-label ' + (isDev ? 'phase-early' : 'phase-live');
+        phaseLabel.textContent = isDev ? '⚡ Developer Mode' : '🟢 Live';
+      } else if (isEarly) {
+        document.getElementById('access-title').textContent = '🚀 Early Access is Open!';
+        document.getElementById('access-desc').textContent  = 'You\'re in early! Explore your dashboard and get set up before launch on July 21.';
+        document.getElementById('access-btn').textContent   = 'Go to Dashboard →';
+        document.getElementById('access-btn').className     = 'btn-dashboard orange';
+        phaseLabel.className   = 'phase-label phase-early';
+        phaseLabel.textContent = '🔓 Early Access';
+      } else {
+        document.getElementById('access-title').textContent = 'You\'re on the list!';
+        document.getElementById('access-desc').textContent  = 'Your account is ready. Early access opens July 7 — the full launch is July 21 at 5pm.';
+        document.getElementById('access-btn').textContent   = 'View Dashboard →';
+        document.getElementById('access-btn').className     = 'btn-dashboard';
+      }
+
+    } else {
+      document.getElementById('phase-label').className   = 'phase-label phase-coming';
+      document.getElementById('phase-label').textContent = '🔒 Coming Soon';
+    }
+  });
+
+  // Sign out
+  window.doSignOut = async function() {
+    await signOut(auth);
+    location.reload();
+  };
+
+  // Waitlist signup
+  window.signup = async function() {
+    const input = document.getElementById('email');
+    const btn   = document.querySelector('.btn');
+    const email = input.value.trim().toLowerCase();
+
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!valid) {
+      input.classList.add('error');
+      input.focus();
+      setTimeout(() => input.classList.remove('error'), 1500);
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = '...';
+
+    try {
+      // Save to Firestore directly — no duplicate check needed
+      // (Firestore rules allow create but not read)
+      await addDoc(collection(db, 'waitlist'), {
+        email,
+        signedUpAt: serverTimestamp(),
+        source: 'coming-soon'
+      });
+
+      // Send welcome email via Resend through backend
+      try {
+        await fetch(`${API}/api/email/waitlist`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email })
+        });
+      } catch (e) {
+        console.error('Email error:', e);
+        // Don't block signup if email fails
+      }
+
+      document.querySelector('.form-row').style.display = 'none';
+      document.getElementById('success').classList.add('show');
+
+    } catch (err) {
+      console.error('Signup error:', err);
+      btn.disabled    = false;
+      btn.textContent = 'Notify me';
+      input.classList.add('error');
+      setTimeout(() => input.classList.remove('error'), 1500);
+    }
+  };
+</script>
+</body>
+</html>
+
+
+
