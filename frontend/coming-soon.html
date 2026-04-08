@@ -6,11 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="sn-coming-soon">
+<body class="sn-coming-soon-body">
   <div class="sn-coming-container">
-    <h1>SellNook is coming soon</h1>
-    <p>We’re building something amazing for local buyers and sellers.</p>
-    <a href="index.html" class="sn-btn sn-btn-primary">Back to homepage</a>
+    <h1>SellNook is coming this summer</h1>
+    <p>We’re launching on the first day of summer at 5:00 PM.</p>
+
+    <h2>Countdown to launch</h2>
+    <div id="countdown" class="sn-countdown">Loading…</div>
+
+    <a href="index.html" class="sn-btn sn-btn-primary sn-coming-btn">
+      Back to homepage
+    </a>
   </div>
+
+  <script>
+    const launchDate = new Date("June 20, 2026 17:00:00 EDT").getTime();
+
+    setInterval(() => {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      if (distance <= 0) {
+        document.getElementById("countdown").textContent = "We’re live!";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").textContent =
+        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+  </script>
 </body>
 </html>
