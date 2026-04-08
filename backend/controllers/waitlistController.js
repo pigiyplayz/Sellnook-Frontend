@@ -1,20 +1,10 @@
 const { Resend } = require("resend");
-const admin = require("firebase-admin");
+const fetch = require("node-fetch");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Initialize Firebase Admin once
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n")
-    })
-  });
-}
-
-const db = admin.firestore();
+const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID;
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
 
 exports.addToWaitlist = async (req, res) => {
   const { email } = req.body;
@@ -24,16 +14,25 @@ exports.addToWaitlist = async (req, res) => {
   }
 
   try {
-    // Save to Firebase Firestore
-    await db.collection("waitlist").add({
-      email,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+    // Save email to Firestore via REST API
+    await fetch(
+      `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/waitlist?key=${FIREBASE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fields: {
+            email: { stringValue: email },
+            createdAt: { timestampValue: new Date().toISOString() }
+          }
+        })
+      }
+    );
 
-    // Email to you
+    // Email to YOU
     await resend.emails.send({
       from: "SellNook <no-reply@sellnook.com>",
-      to: "your-email@example.com", // change this
+      to: "your-email@example.com",
       subject: "🎉 New SellNook Waitlist Signup",
       html: `
         <h2>🎉 New Waitlist Signup</h2>
@@ -43,7 +42,7 @@ exports.addToWaitlist = async (req, res) => {
       `
     });
 
-    // Email to user
+    // Email to USER
     await resend.emails.send({
       from: "SellNook <no-reply@sellnook.com>",
       to: email,
