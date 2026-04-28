@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sellnook – Coming Soon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --sn-bg: #0f172a;
+      --sn-card: #020617;
+      --sn-accent: #38bdf8;
+      --sn-accent-soft: rgba(56, 189, 248, 0.12);
+      --sn-text: #e5e7eb;
+      --sn-muted: #9ca3af;
+      --sn-radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+      color: var(--sn-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .sn-shell {
+      width: 100%;
+      max-width: 720px;
+      background: linear-gradient(135deg, rgba(148, 163, 184, 0.12), rgba(15, 23, 42, 0.9));
+      border-radius: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 28px 22px 26px;
+      box-shadow:
+        0 24px 60px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(18px);
+    }
+
+    @media (min-width: 640px) {
+      .sn-shell {
+        padding: 32px 32px 30px;
+      }
+    }
+
+    .sn-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .sn-logo {
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      color: #f9fafb;
+    }
+
+    .sn-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 0.75rem;
+      color: var(--sn-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .sn-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+    }
+
+    .sn-main {
+      text-align: left;
+    }
+
+    .sn-kicker {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--sn-accent);
+      margin-bottom: 10px;
+    }
+
+    .sn-title {
+      font-size: 2.1rem;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      color: #f9fafb;
+    }
+
+    @media (min-width: 640px) {
+      .sn-title {
+        font-size: 2.5rem;
+      }
+    }
+
+    .sn-sub {
+      font-size: 0.98rem;
+      color: var(--sn-muted);
+      max-width: 460px;
+      margin-bottom: 18px;
+    }
+
+    .sn-highlight {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .sn-countdown-card {
+      margin-top: 18px;
+      margin-bottom: 18px;
+      padding: 14px 14px 16px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, var(--sn-accent-soft), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    @media (min-width: 640px) {
+      .sn-countdown-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .sn-countdown-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--sn-accent);
+    }
+
+    .sn-countdown-date {
+      font-size: 0.9rem;
+      color: var(--sn-muted);
+    }
+
+    .sn-countdown {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: #f9fafb;
+      text-align: left;
+    }
+
+    .sn-countdown span {
+      color: var(--sn-accent);
+    }
+
+    .sn-rows {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .sn-rows {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sn-card {
+      background: var(--sn-card);
+      border-radius: var(--sn-radius);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      padding: 14px 14px 14px;
+    }
+
+    .sn-card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #e5e7eb;
+    }
+
+    .sn-card-tagline {
+      font-size: 0.85rem;
+      color: var(--sn-muted);
+      margin-bottom: 10px;
+    }
+
+    .sn-bullets {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      font-size: 0.86rem;
+      color: #d1d5db;
+    }
+
+    .sn-bullets li::before {
+      content: "•";
+      color: var(--sn-accent);
+      margin-right: 6px;
+    }
+
+    .sn-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .sn-tag {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--sn-muted);
+    }
+
+    .sn-footer {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--sn-muted);
+    }
+
+    .sn-footer-strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .sn-link {
+      color: var(--sn-accent);
+      text-decoration: none;
+    }
+
+    .sn-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="sn-shell">
+    <div class="sn-header-row">
+      <div class="sn-logo">SELLNOOK</div>
+      <div class="sn-pill">
+        <span class="sn-pill-dot"></span>
+        Shipping‑only marketplace
+      </div>
+    </div>
+
+    <main class="sn-main">
+      <div class="sn-kicker">Coming soon</div>
+      <h1 class="sn-title">A cleaner way to buy and sell stuff.</h1>
+      <p class="sn-sub">
+        Sellnook is a <span class="sn-highlight">shipping‑only local marketplace</span> built to feel safer than meetups and
+        simpler than eBay. Buyers get signal, not noise. Sellers get tools that actually help them grow.
+      </p>
+
+      <div class="sn-countdown-card">
+        <div>
+          <div class="sn-countdown-label">Full launch</div>
+          <div class="sn-countdown-date">July 21, 2026 · 5:00 PM</div>
+        </div>
+        <div id="countdown" class="sn-countdown">Loading…</div>
+      </div>
+
+      <div class="sn-rows">
+        <section class="sn-card">
+          <h2 class="sn-card-title">For buyers</h2>
+          <p class="sn-card-tagline">Skip the sketchy meetups. Browse like it’s a real store.</p>
+          <ul class="sn-bullets">
+            <li>Only shippable items — no parking lot hand‑offs.</li>
+            <li>Cleaner search so you actually find what you want.</li>
+            <li>Shops you can follow, not random one‑off posts.</li>
+          </ul>
+          <div class="sn-tag-row">
+            <span class="sn-tag">Safer than meetups</span>
+            <span class="sn-tag">Built for real buyers</span>
+          </div>
+        </section>
+
+        <section class="sn-card">
+          <h2 class="sn-card-title">For sellers</h2>
+          <p class="sn-card-tagline">Turn your corner of the internet into a real shop.</p>
+          <ul class="sn-bullets">
+            <li>List once, ship anywhere — no DMs to coordinate.</li>
+            <li>Early access for sellers opens <strong>July 7</strong>.</li>
+            <li>Pro tools when you’re ready, fair fees from day one.</li>
+          </ul>
+          <div class="sn-tag-row">
+            <span class="sn-tag">Beat eBay’s clutter</span>
+            <span class="sn-tag">Keep more of your sales</span>
+          </div>
+        </section>
+      </div>
+
+      <footer class="sn-footer">
+        <div>
+          <span class="sn-footer-strong">Phase 1:</span> Sellers list starting July 7, 2026.
+        </div>
+        <div>
+          <span class="sn-footer-strong">Phase 2:</span> Buyers can browse and buy on July 21 at 5 PM.
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const launchDate = new Date("July 21, 2026 17:00:00 EDT").getTime();
+
+    const countdownEl = document.getElementById("countdown");
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = launchDate - now;
+
+      if (distance <= 0) {
+        countdownEl.textContent = "We’re live. Let’s sell something. 🚀";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownEl.innerHTML =
+        `<span>${days}</span>d <span>${hours}</span>h <span>${minutes}</span>m <span>${seconds}</span>s`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>

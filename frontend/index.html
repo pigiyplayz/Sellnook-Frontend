@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SellNook – Local Selling, Done Right</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="sn-header">
+    <div class="sn-container sn-header-inner">
+      <div class="sn-logo">SellNook</div>
+      <nav class="sn-nav">
+        <a href="#how-it-works">How it works</a>
+        <a href="coming-soon.html" class="sn-nav-cta">Coming soon</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="sn-hero sn-hero-centered">
+      <div class="sn-container sn-hero-centered-inner">
+        <h1>Sell locally. Keep it simple.</h1>
+        <p class="sn-hero-sub">
+          A clean, trusted way to sell the stuff you don’t need to people right around you.
+        </p>
+
+        <form id="waitlistForm" class="sn-hero-form">
+          <input type="email" id="email" placeholder="Enter your email" required />
+          <button class="sn-btn sn-btn-primary">Join the waitlist</button>
+        </form>
+
+        <p class="sn-hero-note">
+          No spam. Just a heads‑up when we launch.
+        </p>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="sn-section">
+      <div class="sn-container sn-centered">
+        <h2>How SellNook will work</h2>
+        <div class="sn-grid-3">
+          <div class="sn-card">
+            <h3>Create your nook</h3>
+            <p>Set up a simple profile so buyers know who they’re meeting.</p>
+          </div>
+          <div class="sn-card">
+            <h3>List what you don’t need</h3>
+            <p>Snap a photo, add a price, and publish in seconds.</p>
+          </div>
+          <div class="sn-card">
+            <h3>Meet up, cash in</h3>
+            <p>Coordinate a safe meetup and turn clutter into cash.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="sn-footer">
+    <div class="sn-container sn-footer-inner">
+      <span>© <span id="year"></span> SellNook. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    document.getElementById("waitlistForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+
+      try {
+        const res = await fetch("/api/waitlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+
+        if (!res.ok) throw new Error("Request failed");
+
+        alert("You’re on the waitlist. Thanks for being early!");
+        e.target.reset();
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

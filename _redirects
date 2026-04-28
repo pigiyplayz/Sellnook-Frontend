@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Netlify Redirects for Sellnook Custom URLs
 
 # 1. Assets and specific files (prevent catching these)
@@ -14,3 +15,11 @@
 # 4. Legacy Shop URL catch-all (sellnook.com/shopname)
 # This routes any unknown path to shop.html
 /*  /shop.html  200
+=======
+# Render automatically serves existing .html files without needing rules.
+# This single catch-all routes any unknown path to shop.html,
+# which reads window.location.pathname to get the shop identifier.
+/js/* /js/:splat 200
+/css/* /css/:splat 200
+/* /shop.html 200
+>>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
