@@ -1,0 +1,16 @@
+# Netlify Redirects for Sellnook Custom URLs
+
+# 1. Assets and specific files (prevent catching these)
+/js/*    /js/:splat    200
+/css/*   /css/:splat   200
+/assets/* /assets/:splat 200
+
+# 2. Custom Item URLs: sellnook.com/item/itemname/shopname
+/item/:item/:shop  /product.html?item=:item&shop=:shop  200
+
+# 3. Custom Shop URLs: sellnook.com/shop/example
+/shop/:slug  /shop.html?shop=:slug  200
+
+# 4. Legacy Shop URL catch-all (sellnook.com/shopname)
+# This routes any unknown path to shop.html
+/*  /shop.html  200

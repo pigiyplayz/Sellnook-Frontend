@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO -->
+  <meta name="description" content="Everything you need to know about buying on Sellnook — payments, shipping, returns and buyer protection.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sellnook.com/buyer-handbook">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sellnook">
+  <meta property="og:title" content="Buyer Handbook — Sellnook">
+  <meta property="og:description" content="Everything you need to know about buying on Sellnook — payments, shipping, returns and buyer protection.">
+  <meta property="og:url" content="https://sellnook.com/buyer-handbook">
+  <meta property="og:image" content="https://sellnook.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sellnook">
+  <meta name="twitter:title" content="Buyer Handbook — Sellnook">
+  <meta name="twitter:description" content="Everything you need to know about buying on Sellnook — payments, shipping, returns and buyer protection.">
+  <meta name="twitter:image" content="https://sellnook.com/og-image.png">
+<title>Sellnook — Buyer Handbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family:'Inter',sans-serif;
+    background:#fafaf9;
+    color:#1a1a1a;
+    min-height:100vh;
+  }
+
+  @keyframes up {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── Nav ─────────────────────────────────────────────── */
+  nav {
+    border-bottom:1px solid #e8e8e5;
+    padding:0 40px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#fafaf9;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-right { display:flex; align-items:center; gap:12px; }
+  .btn-nav { padding:8px 16px; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; text-decoration:none; transition:all 0.15s; border:none; }
+  .btn-outline { background:transparent; border:1px solid #e0e0dc; color:#555; }
+  .btn-outline:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .btn-solid { background:#1a1a1a; color:#fff; }
+  .btn-solid:hover { background:#333; }
+
+  /* ── Layout ──────────────────────────────────────────── */
+  .page {
+    max-width:1100px;
+    margin:0 auto;
+    padding:64px 40px 100px;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:60px;
+    align-items:start;
+    animation:up 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  .sidebar {
+    position:sticky;
+    top:80px;
+  }
+
+  .sidebar-label {
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#bbb;
+    margin-bottom:12px;
+  }
+
+  .sidebar-nav { list-style:none; display:flex; flex-direction:column; gap:2px; }
+
+  .sidebar-nav a {
+    display:block;
+    padding:8px 12px;
+    border-radius:7px;
+    font-size:0.82rem;
+    color:#888;
+    text-decoration:none;
+    transition:all 0.15s;
+    font-weight:400;
+  }
+
+  .sidebar-nav a:hover { background:#f0f0ee; color:#1a1a1a; }
+  .sidebar-nav a.active { background:#1a1a1a; color:#fff; font-weight:500; }
+
+  /* ── Content ─────────────────────────────────────────── */
+  .content { min-width:0; }
+
+  .page-eyebrow {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#fff4ee;
+    color:#e8734a;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    padding:5px 12px;
+    border-radius:50px;
+    margin-bottom:20px;
+  }
+
+  .page-title {
+    font-family:'Syne',sans-serif;
+    font-size:clamp(2rem,5vw,3rem);
+    font-weight:700;
+    letter-spacing:-1.5px;
+    margin-bottom:16px;
+    line-height:1.05;
+  }
+
+  .page-sub {
+    font-size:1rem;
+    color:#888;
+    font-weight:300;
+    line-height:1.7;
+    max-width:560px;
+    margin-bottom:56px;
+  }
+
+  /* ── Sections ────────────────────────────────────────── */
+  .section { margin-bottom:64px; scroll-margin-top:90px; }
+
+  .section-header {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:24px;
+    padding-bottom:16px;
+    border-bottom:1px solid #e8e8e5;
+  }
+
+  .section-icon {
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    background:#f0f0ee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2rem;
+    flex-shrink:0;
+  }
+
+  .section-title {
+    font-family:'Syne',sans-serif;
+    font-size:1.3rem;
+    font-weight:700;
+    letter-spacing:-0.3px;
+  }
+
+  .section p {
+    font-size:0.9rem;
+    color:#555;
+    line-height:1.8;
+    margin-bottom:16px;
+  }
+
+  .section p:last-child { margin-bottom:0; }
+
+  /* ── Steps ───────────────────────────────────────────── */
+  .steps { display:flex; flex-direction:column; gap:0; margin:24px 0; }
+
+  .step {
+    display:flex;
+    gap:20px;
+    position:relative;
+  }
+
+  .step:not(:last-child)::before {
+    content:'';
+    position:absolute;
+    left:15px;
+    top:36px;
+    bottom:-4px;
+    width:1px;
+    background:#e8e8e5;
+  }
+
+  .step-num {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#1a1a1a;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Syne',sans-serif;
+    font-size:0.78rem;
+    font-weight:700;
+    flex-shrink:0;
+    margin-top:2px;
+    position:relative;
+    z-index:1;
+  }
+
+  .step-body { padding-bottom:28px; }
+  .step-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:6px; }
+  .step-desc { font-size:0.875rem; color:#666; line-height:1.7; }
+
+  /* ── Protection cards ────────────────────────────────── */
+  .protection-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin:24px 0;
+  }
+
+  .protection-card {
+    background:#fff;
+    border:1px solid #e8e8e5;
+    border-radius:12px;
+    padding:20px;
+  }
+
+  .protection-card-icon { font-size:1.5rem; margin-bottom:10px; display:block; }
+  .protection-card-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; margin-bottom:6px; }
+  .protection-card-desc { font-size:0.78rem; color:#888; line-height:1.6; }
+
+  /* ── Highlight box ───────────────────────────────────── */
+  .highlight-box {
+    background:#fff;
+    border:1px solid #e8e8e5;
+    border-left:3px solid #e8734a;
+    border-radius:0 10px 10px 0;
+    padding:16px 20px;
+    margin:20px 0;
+    font-size:0.875rem;
+    color:#555;
+    line-height:1.7;
+  }
+
+  .highlight-box strong { color:#1a1a1a; font-weight:600; }
+
+  /* ── Info rows ───────────────────────────────────────── */
+  .info-rows { margin:20px 0; }
+
+  .info-row {
+    display:flex;
+    gap:16px;
+    padding:14px 0;
+    border-bottom:1px solid #f0f0ee;
+    font-size:0.875rem;
+  }
+
+  .info-row:last-child { border-bottom:none; }
+  .info-row-icon { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
+  .info-row-content { flex:1; }
+  .info-row-title { font-weight:600; color:#1a1a1a; margin-bottom:3px; }
+  .info-row-desc { color:#888; line-height:1.6; font-size:0.82rem; }
+
+  /* ── FAQ ─────────────────────────────────────────────── */
+  .faq { margin:20px 0; }
+
+  .faq-item {
+    border-bottom:1px solid #f0f0ee;
+  }
+
+  .faq-item:last-child { border-bottom:none; }
+
+  .faq-question {
+    width:100%;
+    background:none;
+    border:none;
+    padding:16px 0;
+    text-align:left;
+    font-family:'Syne',sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    color:#1a1a1a;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+
+  .faq-question:hover { color:#e8734a; }
+
+  .faq-chevron {
+    font-size:0.7rem;
+    color:#bbb;
+    transition:transform 0.2s;
+    flex-shrink:0;
+  }
+
+  .faq-item.open .faq-chevron { transform:rotate(180deg); }
+
+  .faq-answer {
+    display:none;
+    font-size:0.875rem;
+    color:#666;
+    line-height:1.8;
+    padding-bottom:16px;
+  }
+
+  .faq-item.open .faq-answer { display:block; }
+
+  /* ── CTA ─────────────────────────────────────────────── */
+  .cta-box {
+    background:#1a1a1a;
+    border-radius:16px;
+    padding:40px;
+    text-align:center;
+    margin-top:20px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .cta-box::before {
+    content:'';
+    position:absolute;
+    top:-60px; right:-60px;
+    width:200px; height:200px;
+    background:radial-gradient(circle, rgba(232,115,74,0.25), transparent 70%);
+    pointer-events:none;
+  }
+
+  .cta-box h2 {
+    font-family:'Syne',sans-serif;
+    font-size:1.6rem;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:-0.5px;
+    margin-bottom:10px;
+  }
+
+  .cta-box p { font-size:0.9rem; color:rgba(255,255,255,0.5); margin-bottom:28px; line-height:1.6; }
+
+  .btn-cta {
+    display:inline-block;
+    padding:13px 28px;
+    background:#e8734a;
+    color:#fff;
+    border-radius:8px;
+    font-family:'Syne',sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    text-decoration:none;
+    transition:background 0.15s;
+  }
+
+  .btn-cta:hover { background:#f07d55; }
+
+  /* ── Report form ─────────────────────────────────────── */
+  .report-form {
+    background:#fff;
+    border:1px solid #e8e8e5;
+    border-radius:12px;
+    padding:24px;
+    margin-top:20px;
+  }
+
+  .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  label { font-size:0.75rem; font-weight:500; color:#555; }
+  input, select, textarea {
+    background:#fafaf9;
+    border:1px solid #e0e0dc;
+    border-radius:8px;
+    padding:11px 14px;
+    font-family:'Inter',sans-serif;
+    font-size:0.875rem;
+    color:#1a1a1a;
+    outline:none;
+    transition:border 0.15s;
+    width:100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color:#1a1a1a; background:#fff; }
+  input::placeholder, textarea::placeholder { color:#ccc; }
+  textarea { resize:vertical; min-height:100px; }
+
+  .btn-submit {
+    padding:11px 24px;
+    background:#1a1a1a;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-family:'Syne',sans-serif;
+    font-size:0.875rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+  .btn-submit:hover { background:#333; }
+
+  .submit-success {
+    display:none;
+    font-size:0.82rem;
+    color:#2d9e6b;
+    margin-top:10px;
+    align-items:center;
+    gap:8px;
+  }
+  .submit-success.show { display:flex; }
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width:768px) {
+    nav { padding:0 20px; }
+    .page { grid-template-columns:1fr; padding:40px 20px 80px; gap:0; }
+    .sidebar { display:none; }
+    .protection-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-right">
+    <a href="coming-soon" class="btn-nav btn-outline">← Back</a>
+    <a href="signup" class="btn-nav btn-solid">Get started</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-label">On this page</div>
+    <ul class="sidebar-nav">
+      <li><a href="#how-it-works" class="active">How it works</a></li>
+      <li><a href="#protection">Buyer protection</a></li>
+      <li><a href="#shipping">Shipping & tracking</a></li>
+      <li><a href="#reviews">Leaving reviews</a></li>
+      <li><a href="#report">Reporting a seller</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#cta">Get started</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="page-eyebrow">📖 Buyer Handbook</div>
+    <h1 class="page-title">Everything you need<br>to shop with confidence.</h1>
+    <p class="page-sub">Sellnook is a marketplace for real people selling real things. This handbook covers everything from placing your first order to getting your money back if something goes wrong.</p>
+
+    <!-- HOW IT WORKS -->
+    <div class="section" id="how-it-works">
+      <div class="section-header">
+        <div class="section-icon">🛍️</div>
+        <div class="section-title">How it works</div>
+      </div>
+      <p>Buying on Sellnook is simple. Independent sellers list their physical goods, you browse and buy, and the seller ships directly to you. Every transaction is protected by Sellnook's buyer guarantee.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Create your account</div>
+            <div class="step-desc">Sign up with Google or your email address. Add your shipping address and a payment method before placing your first order.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Browse & find what you love</div>
+            <div class="step-desc">Search by keyword, browse by category, or discover featured sellers. Every listing shows photos, a full description, seller rating, and shipping costs upfront.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Place your order securely</div>
+            <div class="step-desc">Pay with your credit/debit card, bank account, or PayPal. All payments are processed securely through Stripe — Sellnook never stores your card details.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Seller ships your item</div>
+            <div class="step-desc">The seller has a set processing window to ship your order. You'll receive an email with tracking information as soon as your item is on its way.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Receive & review</div>
+            <div class="step-desc">Once your order arrives, you can leave a review for the seller. If anything is wrong, our buyer protection has you covered.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUYER PROTECTION -->
+    <div class="section" id="protection">
+      <div class="section-header">
+        <div class="section-icon">🔒</div>
+        <div class="section-title">Buyer protection</div>
+      </div>
+      <p>Every purchase on Sellnook is covered by our buyer guarantee. If something goes wrong, we'll make it right.</p>
+
+      <div class="protection-grid">
+        <div class="protection-card">
+          <span class="protection-card-icon">📦</span>
+          <div class="protection-card-title">Item not received</div>
+          <div class="protection-card-desc">If your order never arrives and tracking shows no movement for 7 days, you're eligible for a full refund.</div>
+        </div>
+        <div class="protection-card">
+          <span class="protection-card-icon">❌</span>
+          <div class="protection-card-title">Not as described</div>
+          <div class="protection-card-desc">If the item you receive is significantly different from the listing, you can open a dispute for a refund or replacement.</div>
+        </div>
+        <div class="protection-card">
+          <span class="protection-card-icon">💔</span>
+          <div class="protection-card-title">Arrived damaged</div>
+          <div class="protection-card-desc">Items damaged in transit are covered. Take photos when it arrives and open a case within 48 hours of delivery.</div>
+        </div>
+        <div class="protection-card">
+          <span class="protection-card-icon">🚫</span>
+          <div class="protection-card-title">Unauthorized charge</div>
+          <div class="protection-card-desc">If you see a charge you didn't make, contact us immediately. We'll investigate and refund any unauthorized transactions.</div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>30-day protection window.</strong> You have 30 days from the expected delivery date to open a dispute. After that window closes, the payment is released to the seller permanently.
+      </div>
+
+      <p>To open a dispute, go to your order in the dashboard, click <strong>Report a problem</strong>, and follow the steps. Most cases are resolved within 3 business days.</p>
+    </div>
+
+    <!-- SHIPPING -->
+    <div class="section" id="shipping">
+      <div class="section-header">
+        <div class="section-icon">🚚</div>
+        <div class="section-title">Shipping & tracking</div>
+      </div>
+      <p>Sellers ship directly to you using their carrier of choice. Shipping costs and estimated delivery times are shown on every listing before you buy.</p>
+
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-row-icon">📬</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Processing time</div>
+            <div class="info-row-desc">Each seller sets their own processing time — usually 1 to 5 business days. This is the time between your order and when they ship it. Processing time is shown on every listing.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">📍</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Tracking your order</div>
+            <div class="info-row-desc">Once the seller ships, you'll get an email with a tracking number. You can also find it in your order history on the dashboard. Tracking updates in real time.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">🌎</div>
+          <div class="info-row-content">
+            <div class="info-row-title">International shipping</div>
+            <div class="info-row-desc">Some sellers ship internationally. Check the listing for available shipping destinations. International orders may be subject to customs fees — these are the buyer's responsibility.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">💰</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Shipping costs</div>
+            <div class="info-row-desc">Shipping is calculated at checkout based on your ZIP code and the item's weight and size. Some sellers offer free shipping — this is shown clearly on the listing.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">⏰</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Late or missing orders</div>
+            <div class="info-row-desc">If your order is more than 3 days past the estimated delivery date, contact the seller first. If there's no response within 48 hours, open a case with Sellnook support.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="section" id="reviews">
+      <div class="section-header">
+        <div class="section-icon">⭐</div>
+        <div class="section-title">Leaving reviews</div>
+      </div>
+      <p>Reviews help other buyers make informed decisions and help good sellers grow. After your order is marked as delivered, you'll have 60 days to leave a review.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Go to your order history</div>
+            <div class="step-desc">Find the completed order in your dashboard under Orders → Completed.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Rate your experience</div>
+            <div class="step-desc">Give a star rating from 1 to 5 and write a short review about the item quality, packaging, and how the seller communicated.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Submit</div>
+            <div class="step-desc">Your review goes live on the seller's profile within 24 hours. You can edit it once within 7 days of posting.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Keep reviews honest and fair.</strong> Reviews that contain hate speech, personal information, or unrelated complaints may be removed. Focus on your experience with the item and the transaction.
+      </div>
+    </div>
+
+    <!-- REPORT A SELLER -->
+    <div class="section" id="report">
+      <div class="section-header">
+        <div class="section-icon">🚩</div>
+        <div class="section-title">Reporting a seller</div>
+      </div>
+      <p>If a seller is behaving dishonestly, listing prohibited items, or violating Sellnook's policies, please report them. All reports are reviewed by our team within 24 hours.</p>
+
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-row-icon">🔍</div>
+          <div class="info-row-content">
+            <div class="info-row-title">What to report</div>
+            <div class="info-row-desc">Counterfeit or fake items, misleading listings, harassment, prohibited goods, or suspected fraud.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">🕵️</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Your report is anonymous</div>
+            <div class="info-row-desc">The seller is never told who filed the report. Your identity stays completely private throughout the investigation.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">⚡</div>
+          <div class="info-row-content">
+            <div class="info-row-title">What happens next</div>
+            <div class="info-row-desc">Our team reviews the report, may contact the seller for clarification, and takes action ranging from a warning to permanent removal depending on severity.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-form">
+        <div class="form-group">
+          <label>Seller name or shop URL</label>
+          <input type="text" placeholder="e.g. JanesCeramics or sellnook.com/janesc">
+        </div>
+        <div class="form-group">
+          <label>Reason for report</label>
+          <select>
+            <option value="">Select a reason</option>
+            <option>Counterfeit or fake items</option>
+            <option>Item significantly not as described</option>
+            <option>Harassment or threatening behaviour</option>
+            <option>Prohibited or illegal items</option>
+            <option>Suspected fraud or scam</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Additional details</label>
+          <textarea placeholder="Describe what happened in as much detail as possible. Include order numbers if relevant."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Your email (so we can follow up)</label>
+          <input type="email" placeholder="you@email.com">
+        </div>
+        <button class="btn-submit" onclick="submitReport()">Submit report</button>
+        <div class="submit-success" id="report-success">
+          <span>✓</span> Report submitted — we'll review it within 24 hours.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section" id="faq">
+      <div class="section-header">
+        <div class="section-icon">💬</div>
+        <div class="section-title">Frequently asked questions</div>
+      </div>
+
+      <div class="faq">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Can I cancel an order after placing it?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">You can cancel an order within 24 hours of placing it as long as the seller hasn't shipped yet. Go to your order in the dashboard and click Cancel Order. After 24 hours or once shipped, cancellations are at the seller's discretion.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How do refunds work?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Refunds are issued to your original payment method. They typically take 3–5 business days to appear depending on your bank or card issuer. Refunds are processed automatically once a dispute is resolved in your favor.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What payment methods are accepted?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Sellnook accepts all major credit and debit cards (Visa, Mastercard, Amex, Discover), PayPal, and bank account (ACH) payments. All card payments are processed securely through Stripe.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Is my payment information safe?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Yes. Sellnook never stores your card details. All payment processing is handled by Stripe, which is PCI DSS Level 1 certified — the highest level of payment security certification available.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Can I buy from multiple sellers in one order?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Each seller's items are processed as a separate order since they ship independently. You'll be charged separately per seller but can add items from multiple sellers to your cart and check out all at once.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What items are not allowed on Sellnook?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Prohibited items include weapons, drugs, counterfeit goods, hazardous materials, live animals, and any items that violate local laws. Sellers found listing prohibited items are permanently removed. See our full prohibited items list in the Seller Handbook.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How do I contact a seller before buying?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Every listing has a Message Seller button. You can ask questions about the item, request additional photos, or discuss custom orders before committing to a purchase.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What if I never receive my order?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">If tracking shows your order hasn't moved in 7 days or the estimated delivery has passed with no update, open a case through your order dashboard. If the case is resolved in your favor you'll receive a full refund including shipping.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="section" id="cta">
+      <div class="cta-box">
+        <h2>Ready to start shopping?</h2>
+        <p>Create your free account and be the first to shop when Sellnook launches on July 21, 2026.</p>
+        <a href="signup" class="btn-cta">Create free account →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // FAQ toggle
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    item.classList.toggle('open');
+  }
+
+  // Report form
+  function submitReport() {
+    const inputs = document.querySelectorAll('.report-form input, .report-form select, .report-form textarea');
+    let valid = true;
+    inputs.forEach(i => { if (!i.value.trim()) valid = false; });
+    if (!valid) { alert('Please fill in all fields before submitting.'); return; }
+    document.getElementById('report-success').classList.add('show');
+    inputs.forEach(i => i.value = '');
+  }
+
+  // Active sidebar link on scroll
+  const sections = document.querySelectorAll('.section');
+  const links    = document.querySelectorAll('.sidebar-nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  });
+
+  // Smooth scroll for sidebar links
+  links.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>

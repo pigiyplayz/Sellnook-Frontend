@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO -->
+  <meta name="description" content="Shop unique items from independent sellers on Sellnook. Find handmade goods, fashion, books, electronics, and more.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sellnook.com/browse">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sellnook">
+  <meta property="og:title" content="Browse Listings — Sellnook">
+  <meta property="og:description" content="Shop unique items from independent sellers on Sellnook. Find handmade goods, fashion, books, electronics, and more.">
+  <meta property="og:url" content="https://sellnook.com/browse">
+  <meta property="og:image" content="https://sellnook.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sellnook">
+  <meta name="twitter:title" content="Browse Listings — Sellnook">
+  <meta name="twitter:description" content="Shop unique items from independent sellers on Sellnook. Find handmade goods, fashion, books, electronics, and more.">
+  <meta name="twitter:image" content="https://sellnook.com/og-image.png">
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<title>Sellnook — Browse</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+  @keyframes up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* Locked */
+  .locked { position:fixed; inset:0; background:#fafaf9; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; z-index:998; }
+  .locked.show { display:flex; }
+  .locked h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; margin-bottom:10px; }
+  .locked p { font-size:0.9rem; color:#888; line-height:1.7; max-width:360px; margin-bottom:28px; }
+  .locked-date { display:inline-block; background:#fff4ee; color:#e8734a; font-size:0.8rem; font-weight:600; padding:6px 16px; border-radius:50px; margin-bottom:20px; }
+  .btn-back { padding:11px 24px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+
+  /* Nav */
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-search { flex:1; max-width:380px; margin:0 24px; position:relative; }
+  .nav-search input { width:100%; background:#f0f0ee; border:1px solid transparent; border-radius:50px; padding:9px 18px 9px 38px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#1a1a1a; outline:none; transition:all 0.15s; }
+  .nav-search input:focus { background:#fff; border-color:#e0e0dc; }
+  .nav-search input::placeholder { color:#aaa; }
+  .nav-search svg { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#aaa; }
+  .nav-right { display:flex; align-items:center; gap:12px; }
+  .nav-link { font-size:0.82rem; color:#888; text-decoration:none; font-weight:500; }
+  .nav-link:hover { color:#1a1a1a; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:#1a1a1a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700; overflow:hidden; flex-shrink:0; }
+  .avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+
+  /* Page */
+  .page { max-width:1100px; margin:0 auto; padding:40px 40px 80px; animation:up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Page header */
+  .page-header { margin-bottom:32px; }
+  .page-header h1 { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; letter-spacing:-0.8px; margin-bottom:6px; }
+  .page-header p { font-size:0.875rem; color:#888; font-weight:300; }
+
+  /* Filters bar */
+  .filters-bar { display:flex; align-items:center; gap:10px; margin-bottom:28px; flex-wrap:wrap; }
+  .filter-select { background:#fff; border:1px solid #e0e0dc; border-radius:8px; padding:9px 14px; font-family:'Inter',sans-serif; font-size:0.82rem; color:#555; outline:none; cursor:pointer; transition:border 0.15s; }
+  .filter-select:focus { border-color:#1a1a1a; }
+  .filter-count { font-size:0.78rem; color:#aaa; margin-left:auto; }
+
+  /* Category pills */
+  .categories { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+  .cat-pill { padding:7px 16px; border-radius:50px; border:1px solid #e0e0dc; background:#fff; font-family:'Inter',sans-serif; font-size:0.78rem; font-weight:500; color:#555; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .cat-pill:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .cat-pill.active { background:#1a1a1a; border-color:#1a1a1a; color:#fff; }
+
+  /* Grid */
+  .listings-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:18px; }
+
+  /* Product card */
+  .product-card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; overflow:hidden; cursor:pointer; transition:all 0.2s; text-decoration:none; display:block; }
+  .product-card:hover { border-color:#1a1a1a; transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+  .product-image { width:100%; aspect-ratio:1; background:#fafaf9; display:flex; align-items:center; justify-content:center; font-size:0.75rem; color:#ccc; border-bottom:1px solid #e8e8e5; overflow:hidden; position:relative; }
+  .product-image img { width:100%; height:100%; object-fit:cover; }
+  .product-badge { position:absolute; top:10px; left:10px; background:#1a1a1a; color:#fff; font-size:0.62rem; font-weight:700; padding:3px 8px; border-radius:50px; letter-spacing:0.5px; }
+  .product-body { padding:14px; }
+  .product-seller { font-size:0.72rem; color:#aaa; margin-bottom:5px; }
+  .product-title { font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:700; color:#1a1a1a; margin-bottom:10px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .product-footer { display:flex; align-items:center; justify-content:space-between; }
+  .product-price { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; color:#1a1a1a; }
+  .product-rating { font-size:0.72rem; color:#aaa; }
+
+  /* Empty state */
+  .empty-state { text-align:center; padding:80px 20px; color:#bbb; grid-column:1/-1; }
+  .empty-state-icon { font-size:3rem; margin-bottom:16px; }
+  .empty-state h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; color:#888; margin-bottom:8px; }
+  .empty-state p { font-size:0.875rem; line-height:1.6; }
+
+  /* Skeleton loader */
+  .skeleton-card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; overflow:hidden; }
+  .skeleton-img { width:100%; aspect-ratio:1; background:linear-gradient(90deg,#f0f0ee 25%,#e8e8e5 50%,#f0f0ee 75%); background-size:200% 100%; animation:shimmer 1.2s infinite; }
+  .skeleton-body { padding:14px; }
+  .skeleton-line { height:10px; background:linear-gradient(90deg,#f0f0ee 25%,#e8e8e5 50%,#f0f0ee 75%); background-size:200% 100%; animation:shimmer 1.2s infinite; border-radius:5px; margin-bottom:8px; }
+  .skeleton-line.short { width:60%; }
+  @keyframes shimmer { to { background-position:-200% 0; } }
+
+  @media (max-width:600px) {
+    nav { padding:0 16px; }
+    .nav-search { display:none; }
+    .page { padding:20px 16px 60px; }
+    .listings-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
+    .product-body { padding:10px; }
+    .product-title { font-size:0.78rem; }
+    .product-price { font-size:0.9rem; }
+    .categories { gap:6px; }
+    .cat-pill { padding:6px 12px; font-size:0.72rem; }
+    .filters-bar { flex-wrap:wrap; gap:8px; }
+    .filter-count { width:100%; }
+    /* Mobile search bar below nav */
+    .mobile-search { display:block; padding:10px 16px; border-bottom:1px solid #e8e8e5; }
+    .mobile-search input { width:100%; background:#f0f0ee; border:none; border-radius:50px; padding:9px 16px; font-family:'Inter',sans-serif; font-size:0.875rem; outline:none; }
+  }
+  @media (min-width:601px) { .mobile-search { display:none; } }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+
+<!-- Locked -->
+<div class="locked" id="locked">
+  <div style="font-size:2.5rem;margin-bottom:16px;">🔒</div>
+  <div class="locked-date">Opens July 21, 2026 at 5pm</div>
+  <h2>The marketplace isn't open yet.</h2>
+  <p>Browsing and buying opens at full launch on <strong>July 21, 2026 at 5pm</strong>. Create an account to be notified.</p>
+  <a href="coming-soon" class="btn-back">Back to coming soon</a>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search listings..." oninput="filterListings()">
+  </div>
+  <div class="nav-right">
+    <a href="dashboard" class="nav-link">Dashboard</a>
+    <a href="cart" class="nav-link" id="cart-link">🛒 Cart</a>
+    <div class="avatar" id="nav-avatar">?</div>
+  </div>
+</nav>
+
+<!-- Mobile search bar -->
+<div class="mobile-search">
+  <input type="text" placeholder="Search listings..." oninput="filterListings()" id="mobile-search-input">
+</div>
+
+<div class="page" id="page-content" style="display:none;">
+  <div class="page-header">
+    <h1>Browse listings</h1>
+    <p id="page-sub">Loading...</p>
+  </div>
+
+  <!-- Categories -->
+  <div class="categories" id="categories">
+    <button class="cat-pill active" onclick="setCategory(this, '')">All</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Art & Crafts')">🎨 Art & Crafts</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Fashion')">👗 Fashion</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Books')">📚 Books</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Home & Garden')">🪴 Home & Garden</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Electronics')">💻 Electronics</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Toys & Games')">🧸 Toys & Games</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Jewelry')">💎 Jewelry</button>
+    <button class="cat-pill" onclick="setCategory(this, 'Music')">🎸 Music</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <select class="filter-select" id="sort-select" onchange="filterListings()">
+      <option value="newest">Newest first</option>
+      <option value="price-asc">Price: Low to High</option>
+      <option value="price-desc">Price: High to Low</option>
+      <option value="promoted">Promoted first</option>
+    </select>
+    <select class="filter-select" id="condition-select" onchange="filterListings()">
+      <option value="">Any condition</option>
+      <option value="New">New</option>
+      <option value="Like New">Like New</option>
+      <option value="Good">Good</option>
+      <option value="Fair">Fair</option>
+    </select>
+    <select class="filter-select" id="price-select" onchange="filterListings()">
+      <option value="">Any price</option>
+      <option value="0-25">Under $25</option>
+      <option value="25-50">$25–$50</option>
+      <option value="50-100">$50–$100</option>
+      <option value="100-999999">$100+</option>
+    </select>
+    <span class="filter-count" id="filter-count"></span>
+  </div>
+
+  <!-- AI Recommendations strip (shown after search) -->
+  <div id="ai-rec-strip" style="display:none;background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+      <span style="font-size:1rem;">✨</span>
+      <span style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;">AI Recommendations</span>
+      <span style="font-size:0.72rem;color:#aaa;margin-left:4px;">Powered by Gemini</span>
+      <button onclick="document.getElementById('ai-rec-strip').style.display='none'" style="margin-left:auto;background:none;border:none;color:#ccc;cursor:pointer;font-size:0.9rem;">✕</button>
+    </div>
+    <div id="ai-rec-text" style="font-size:0.82rem;color:#555;line-height:1.6;"></div>
+  </div>
+
+  <!-- Promoted section (shown when promoted listings exist) -->
+  <div id="promoted-section" style="display:none;margin-bottom:28px;">
+    <div style="font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:#e8734a;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">⭐ Promoted</div>
+    <div class="listings-grid" id="promoted-grid"></div>
+    <div style="height:1px;background:#e8e8e5;margin:28px 0;"></div>
+  </div>
+
+  <!-- Grid -->
+  <div class="listings-grid" id="listings-grid">
+    ${Array(8).fill(`
+      <div class="skeleton-card">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      </div>
+    `).join('')}
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+  import "/js/notifications.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, query, where, orderBy, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const timeout = setTimeout(() => window.location.href = 'login', 20000);
+
+  let allListings    = [];
+  let activeCategory = '';
+  let currentUser    = null;
+  let aiSearchTimer  = null;
+
+  onAuthStateChanged(auth, async user => {
+    // Hide loader
+    const loader = document.getElementById('loading');
+    if (loader) {
+      loader.classList.add('hide');
+      setTimeout(() => loader.remove(), 400);
+    }
+
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+    currentUser = user;
+
+    // Update cart badge
+    updateCartBadge(user.uid);
+
+    // Dev account bypasses backend check
+    const DEV_EMAIL = 'austinmalick9@gmail.com';
+    let access = { isDev: user.email === DEV_EMAIL, isLaunched: false };
+
+    if (!access.isDev) {
+      try {
+        const token = await user.getIdToken();
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(`${API}/api/auth/access`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        access = await res.json();
+      } catch (e) {
+        document.getElementById('loading').classList.add('hide');
+        document.getElementById('locked').classList.add('show');
+        document.querySelector('#locked h2').textContent = 'Backend is waking up...';
+        document.querySelector('#locked p').textContent  = 'The server is starting up. Wait 30 seconds and refresh.';
+        return;
+      }
+    }
+
+    const canBrowse = access.isDev || access.isLaunched;
+    if (!canBrowse) {
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('locked').classList.add('show');
+      return;
+    }
+
+    // Nav avatar
+    const avatarEl = document.getElementById('nav-avatar');
+    if (user.photoURL) avatarEl.innerHTML = `<img src="${user.photoURL}" alt="">`;
+    else avatarEl.textContent = (user.displayName || user.email)[0].toUpperCase();
+
+    if (access.isDev) {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:#1a1a1a;color:#e8734a;padding:8px 40px;font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;';
+      banner.textContent = '⚡ Developer Mode — Showing all listings including pre-launch';
+      document.querySelector('nav').after(banner);
+    }
+
+    await loadListings(access.isDev);
+
+    document.getElementById('page-content').style.display = 'block';
+    document.getElementById('loading').classList.add('hide');
+    setTimeout(() => document.getElementById('loading')?.remove(), 400);
+  });
+
+  // ── Cart badge ─────────────────────────────────────────
+  function updateCartBadge(uid) {
+    const cart  = JSON.parse(localStorage.getItem(`sellnook_cart_${uid}`) || '[]');
+    const count = cart.reduce((sum, c) => sum + c.quantity, 0);
+    const link  = document.getElementById('cart-link');
+    if (link) link.textContent = count > 0 ? `🛒 Cart (${count})` : '🛒 Cart';
+  }
+
+  // ── Load listings ──────────────────────────────────────
+  async function loadListings(isDev = false) {
+    try {
+      const q    = query(collection(db, 'listings'), where('status', '==', 'active'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      const now  = new Date().toISOString();
+
+      allListings = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(l => isDev || !l.visibleAt || l.visibleAt <= now);
+
+      document.getElementById('page-sub').textContent =
+        `${allListings.length} listing${allListings.length !== 1 ? 's' : ''} available`;
+
+      // Show promoted section
+      const promoted = allListings.filter(l => l.promoted);
+      if (promoted.length) {
+        document.getElementById('promoted-section').style.display = 'block';
+        renderGrid(promoted, 'promoted-grid');
+      }
+
+      renderListings(allListings);
+
+    } catch (e) {
+      console.error('Load listings error:', e);
+      document.getElementById('listings-grid').innerHTML =
+        '<div class="empty-state"><div class="empty-state-icon">⚠️</div><h3>Couldn\'t load listings</h3><p>Please refresh.</p></div>';
+    }
+  }
+
+  function renderListings(listings) {
+    renderGrid(listings, 'listings-grid');
+    document.getElementById('filter-count').textContent =
+      `${listings.length} result${listings.length !== 1 ? 's' : ''}`;
+  }
+
+  function renderGrid(listings, gridId) {
+    const grid = document.getElementById(gridId);
+    if (!listings.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><h3>No listings found</h3><p>Try adjusting your search or filters.</p></div>';
+      return;
+    }
+    grid.innerHTML = listings.map(l => {
+      const price      = parseFloat(l.price || 0).toFixed(2);
+      const imgHtml    = l.images?.[0]
+        ? `<img src="${l.images[0]}" alt="${l.title}" loading="lazy">`
+        : `<span style="font-size:0.75rem;color:#ccc;">No photo</span>`;
+      const badge      = l.condition ? `<div class="product-badge">${l.condition}</div>` : '';
+      const promoTag   = l.promoted ? `<div style="position:absolute;top:8px;left:8px;background:#e8734a;color:#fff;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:0.5px;">⭐ PROMOTED</div>` : '';
+      const productUrl = (l.shopIdentifier && l.itemIdentifier)
+        ? `product?shop=${l.shopIdentifier}&item=${l.itemIdentifier}`
+        : `product?id=${l.id}`;
+
+      return `
+        <a href="${productUrl}" class="product-card" style="position:relative;">
+          <div class="product-image">${imgHtml}${badge}${promoTag}</div>
+          <div class="product-body">
+            <div class="product-seller">${l.shopName || l.sellerName || 'Seller'}</div>
+            <div class="product-title">${l.title}</div>
+            <div class="product-footer">
+              <div class="product-price">$${price}</div>
+              <div class="product-rating">${l.sellerRating ? l.sellerRating + '★' : 'New'}</div>
+            </div>
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  // ── Filter & search ────────────────────────────────────
+  window.filterListings = function() {
+    const desktopSearch = document.getElementById('search-input').value.toLowerCase().trim();
+    const mobileSearch  = document.getElementById('mobile-search-input')?.value.toLowerCase().trim() || '';
+    const search        = desktopSearch || mobileSearch;
+    const sort          = document.getElementById('sort-select').value;
+    const condition     = document.getElementById('condition-select').value;
+    const priceRange    = document.getElementById('price-select').value;
+
+    let filtered = allListings.filter(l => {
+      const matchSearch    = !search || l.title.toLowerCase().includes(search) || (l.description || '').toLowerCase().includes(search) || (l.category || '').toLowerCase().includes(search);
+      const matchCategory  = !activeCategory || l.category === activeCategory;
+      const matchCondition = !condition || l.condition === condition;
+      let   matchPrice     = true;
+      if (priceRange) {
+        const [min, max] = priceRange.split('-').map(Number);
+        matchPrice = l.price >= min && l.price <= max;
+      }
+      return matchSearch && matchCategory && matchCondition && matchPrice;
+    });
+
+    if (sort === 'price-asc')  filtered.sort((a,b) => a.price - b.price);
+    if (sort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+    if (sort === 'promoted')   filtered.sort((a,b) => (b.promoted ? 1 : 0) - (a.promoted ? 1 : 0));
+
+    renderListings(filtered);
+
+    // Trigger AI recommendations after 800ms of no typing
+    if (search.length >= 3) {
+      clearTimeout(aiSearchTimer);
+      aiSearchTimer = setTimeout(() => getAIRecommendations(search, filtered), 800);
+    } else {
+      document.getElementById('ai-rec-strip').style.display = 'none';
+    }
+  };
+
+  window.setCategory = function(el, cat) {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    activeCategory = cat;
+    filterListings();
+  };
+
+  // ── Gemini AI recommendations ──────────────────────────
+  async function getAIRecommendations(searchQuery, results) {
+    const strip   = document.getElementById('ai-rec-strip');
+    const textEl  = document.getElementById('ai-rec-text');
+    strip.style.display = 'block';
+    textEl.textContent  = 'Finding recommendations...';
+
+    try {
+      const listingSummary = results.slice(0, 15).map(l =>
+        `"${l.title}" — $${l.price} (${l.category}, ${l.condition})`
+      ).join('\n');
+
+      const res  = await fetch(`${API}/api/admin/chat`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          message: `A buyer searched for "${searchQuery}" on Sellnook marketplace. Here are the results found:\n\n${listingSummary}\n\nIn 2-3 sentences, give helpful shopping advice: which listings look most relevant, what to look for, and any tips. Be concise and friendly.`,
+          history: [],
+          platformData: {}
+        })
+      });
+
+      const data = await res.json();
+      if (data.reply) {
+        textEl.textContent = data.reply;
+        strip.style.display = 'block';
+      } else {
+        strip.style.display = 'none';
+      }
+    } catch (e) {
+      strip.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>
+
+
+

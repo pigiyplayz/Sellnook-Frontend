@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sellnook — Complete Your Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; padding:48px 24px 80px; }
+
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  .wrap { max-width:520px; margin:0 auto; animation:up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+
+  .logo { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; color:#1a1a1a; text-decoration:none; display:block; margin-bottom:48px; }
+  .logo span { color:#e8734a; }
+
+  /* Step indicator */
+  .steps { display:flex; align-items:center; gap:0; margin-bottom:40px; }
+  .step-item { display:flex; align-items:center; gap:8px; flex:1; }
+  .step-num { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; font-family:'Syne',sans-serif; flex-shrink:0; transition:all 0.2s; }
+  .step-num.active { background:#1a1a1a; color:#fff; }
+  .step-num.done { background:#2d9e6b; color:#fff; }
+  .step-num.inactive { background:#f0f0ee; color:#bbb; }
+  .step-label { font-size:0.78rem; font-weight:500; color:#888; }
+  .step-label.active { color:#1a1a1a; }
+  .step-connector { height:1px; background:#e8e8e5; flex:1; margin:0 8px; }
+
+  h1 { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; letter-spacing:-0.8px; margin-bottom:8px; }
+  .sub { font-size:0.875rem; color:#888; font-weight:300; line-height:1.6; margin-bottom:32px; }
+
+  /* Cards */
+  .card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:28px; margin-bottom:16px; }
+  .card-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+  .card-title span { font-size:1.1rem; }
+
+  /* Form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:1/-1; }
+  label { font-size:0.75rem; font-weight:500; color:#555; }
+  input, select { background:#fafaf9; border:1px solid #e0e0dc; border-radius:8px; padding:11px 14px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#1a1a1a; outline:none; transition:border 0.15s; width:100%; }
+  input:focus, select:focus { border-color:#1a1a1a; background:#fff; }
+  input.error { border-color:#e8734a; }
+  input::placeholder { color:#ccc; }
+
+  /* Payment method tabs */
+  .payment-tabs { display:flex; gap:8px; margin-bottom:20px; }
+  .pay-tab { flex:1; padding:10px; border:1px solid #e0e0dc; border-radius:8px; background:#fff; font-family:'Inter',sans-serif; font-size:0.82rem; font-weight:500; color:#888; cursor:pointer; transition:all 0.15s; text-align:center; }
+  .pay-tab:hover { border-color:#ccc; color:#1a1a1a; }
+  .pay-tab.active { border-color:#1a1a1a; color:#1a1a1a; background:#fafaf9; font-weight:600; }
+
+  .pay-panel { display:none; }
+  .pay-panel.active { display:block; }
+
+  /* Card number styling */
+  .card-input-wrap { position:relative; }
+  .card-input-wrap input { padding-right:48px; }
+  .card-icons { position:absolute; right:12px; top:50%; transform:translateY(-50%); display:flex; gap:4px; }
+  .card-icon { font-size:1rem; }
+
+  /* Placeholder notice */
+  .placeholder-notice { background:#f0f8ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 14px; font-size:0.78rem; color:#1e40af; line-height:1.5; margin-bottom:16px; display:flex; gap:10px; }
+  .placeholder-notice span { flex-shrink:0; }
+
+  /* Paypal */
+  .btn-paypal-link { width:100%; padding:13px; background:#009cde; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .btn-paypal-link:hover { background:#00b4ff; }
+
+  /* Buttons */
+  .btn-row { display:flex; gap:10px; margin-top:8px; }
+  .btn-primary { flex:1; padding:13px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+  .btn-primary:hover { background:#333; }
+  .btn-primary:disabled { background:#ccc; cursor:not-allowed; }
+  .btn-skip { padding:13px 20px; background:transparent; border:1px solid #e0e0dc; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#888; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .btn-skip:hover { border-color:#ccc; color:#1a1a1a; }
+
+  .error-msg { font-size:0.8rem; color:#e8734a; margin-top:8px; display:none; }
+  .error-msg.show { display:block; }
+
+  .saved-notice { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px 14px; font-size:0.82rem; color:#166534; display:none; align-items:center; gap:8px; margin-top:8px; }
+  .saved-notice.show { display:flex; }
+
+  @media (max-width:480px) {
+    .form-grid { grid-template-columns:1fr; }
+    .payment-tabs { flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+<div class="wrap">
+  <a href="dashboard" class="logo">sell<span>nook</span></a>
+
+  <!-- Step indicator -->
+  <div class="steps">
+    <div class="step-item">
+      <div class="step-num" id="step-num-1">1</div>
+      <span class="step-label" id="step-label-1">Address</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item">
+      <div class="step-num inactive" id="step-num-2">2</div>
+      <span class="step-label" id="step-label-2">Payment</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item">
+      <div class="step-num inactive" id="step-num-3">3</div>
+      <span class="step-label" id="step-label-3">Done</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: Address -->
+  <div id="step-1">
+    <h1>Your address</h1>
+    <p class="sub">Used for shipping calculations and order delivery. Never shared publicly.</p>
+
+    <div class="card">
+      <div class="card-title"><span>🏠</span> Home address</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Street address</label>
+          <input type="text" id="addr-street" placeholder="123 Main St">
+        </div>
+        <div class="form-group">
+          <label>Apt / Suite (optional)</label>
+          <input type="text" id="addr-apt" placeholder="Apt 4B">
+        </div>
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" id="addr-city" placeholder="Baltimore">
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <select id="addr-state">
+            <option value="">Select state</option>
+            <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+            <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+            <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+            <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+            <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+            <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+            <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+            <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+            <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+            <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+            <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+            <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+            <option>WI</option><option>WY</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ZIP code</label>
+          <input type="text" id="addr-zip" placeholder="21001" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <select id="addr-country">
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+            <option value="GB">United Kingdom</option>
+            <option value="AU">Australia</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-msg" id="addr-error"></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="saveAddress()">Continue →</button>
+      <button class="btn-skip" onclick="skipToPayment()">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Payment -->
+  <div id="step-2" style="display:none;">
+    <h1>Payment method</h1>
+    <p class="sub">Required to place orders or receive payouts as a seller.</p>
+
+    <div class="card">
+      <div class="card-title"><span>💳</span> Add a payment method</div>
+
+      <div class="payment-tabs">
+        <button class="pay-tab active" onclick="switchPayTab('card')">Credit / Debit</button>
+        <button class="pay-tab" onclick="switchPayTab('bank')">Bank Account</button>
+        <button class="pay-tab" onclick="switchPayTab('paypal')">PayPal</button>
+      </div>
+
+      <!-- Card panel -->
+      <div class="pay-panel active" id="panel-card">
+        <div class="placeholder-notice">
+          <span>ℹ️</span>
+          <div>Card processing will be powered by <strong>Stripe</strong> — coming at launch. Your card details will never be stored on Sellnook's servers.</div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Cardholder name</label>
+            <input type="text" id="card-name" placeholder="Jane Doe">
+          </div>
+          <div class="form-group full">
+            <label>Card number</label>
+            <div class="card-input-wrap">
+              <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+              <div class="card-icons"><span class="card-icon">💳</span></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Expiry date</label>
+            <input type="text" id="card-expiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="password" id="card-cvv" placeholder="•••" maxlength="4">
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank panel -->
+      <div class="pay-panel" id="panel-bank">
+        <div class="placeholder-notice">
+          <span>ℹ️</span>
+          <div>Bank account (ACH) linking will be powered by <strong>Stripe</strong> — coming at launch. Used for seller payouts.</div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Account holder name</label>
+            <input type="text" id="bank-name" placeholder="Jane Doe">
+          </div>
+          <div class="form-group">
+            <label>Routing number</label>
+            <input type="text" id="bank-routing" placeholder="021000021" maxlength="9">
+          </div>
+          <div class="form-group">
+            <label>Account number</label>
+            <input type="text" id="bank-account" placeholder="000123456789">
+          </div>
+          <div class="form-group full">
+            <label>Account type</label>
+            <select id="bank-type">
+              <option>Checking</option>
+              <option>Savings</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- PayPal panel -->
+      <div class="pay-panel" id="panel-paypal">
+        <div class="placeholder-notice">
+          <span>ℹ️</span>
+          <div>PayPal linking will be available at launch. You'll be redirected to PayPal to authorize the connection.</div>
+        </div>
+        <button class="btn-paypal-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7.144 19.532l1.049-5.751c.11-.605.691-1.002 1.304-.99l.022.001c2.808.108 5.578-.69 5.578-4.524 0-3.109-2.187-4.368-5.221-4.368H5.044c-.568 0-1.055.409-1.15.969L2.002 18.42c-.07.4.235.77.643.77h3.63c.455 0 .839-.317.869-.758v.1z"/><path d="M17.513 6.5c.11 3.658-2.397 6.229-6.54 6.229l-1.188.003-1.122 6.148h2.5c.478 0 .885-.343.958-.815l.035-.196.742-4.698.048-.26c.073-.472.48-.815.958-.815h.604c3.908 0 6.968-1.587 7.86-6.174.377-1.934.182-3.552-.814-4.688-.3-.335-.665-.614-1.041-.849z"/></svg>
+          Connect PayPal — Coming Soon
+        </button>
+      </div>
+    </div>
+
+    <div class="saved-notice" id="pay-saved">
+      <span>✓</span> Payment method saved — you're all set for launch!
+    </div>
+    <div class="error-msg" id="pay-error"></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="savePayment()">Save & Continue →</button>
+      <button class="btn-skip" onclick="skipToDone()">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Done -->
+  <div id="step-3" style="display:none;text-align:center;padding:20px 0;">
+    <div style="font-size:3.5rem;margin-bottom:24px;">🎉</div>
+    <h1 style="margin-bottom:12px;">You're all set!</h1>
+    <p class="sub" style="margin:0 auto 36px;">Your profile is complete. You're ready to shop and sell on Sellnook when we launch.</p>
+    <a href="dashboard" style="display:inline-block;padding:13px 32px;background:#1a1a1a;color:#fff;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;text-decoration:none;font-size:0.9rem;">Go to Dashboard →</a>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const timeout = setTimeout(() => window.location.href = 'login', 20000);
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+
+    // Check access server-side
+    let access;
+    try {
+      const token = await user.getIdToken();
+      const res   = await fetch(`${API}/api/auth/access`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+      });
+      access = await res.json();
+    } catch (e) {
+      access = { access: 'coming_soon' };
+    }
+
+    // Lock before July 7
+    const hasAccess = access.isDev || access.earlyAccess || access.isLaunched;
+    if (!hasAccess) {
+      window.location.href = 'coming-soon';
+      return;
+    }
+
+    // Lock if not Pro
+    if (!access.isPro && !access.isDev) {
+      window.location.href = 'dashboard';
+      return;
+    }
+
+    window._uid = user.uid;
+
+    // Load saved data if returning
+    const saved = JSON.parse(localStorage.getItem('sellnook_profile_' + user.uid) || '{}');
+    if (saved.address) {
+      document.getElementById('addr-street').value  = saved.address.street || '';
+      document.getElementById('addr-apt').value     = saved.address.apt    || '';
+      document.getElementById('addr-city').value    = saved.address.city   || '';
+      document.getElementById('addr-zip').value     = saved.address.zip    || '';
+      if (saved.address.state)   document.getElementById('addr-state').value   = saved.address.state;
+      if (saved.address.country) document.getElementById('addr-country').value = saved.address.country;
+    }
+
+    document.getElementById('loading').classList.add('hide');
+    setTimeout(() => document.getElementById('loading').remove(), 400);
+  });
+
+  // Step 1 — save address
+  window.saveAddress = function() {
+    const street  = document.getElementById('addr-street').value.trim();
+    const city    = document.getElementById('addr-city').value.trim();
+    const state   = document.getElementById('addr-state').value;
+    const zip     = document.getElementById('addr-zip').value.trim();
+
+    if (!street || !city || !state || !zip) {
+      showError('addr-error', 'Please fill in street, city, state and ZIP.');
+      return;
+    }
+
+    const profile = JSON.parse(localStorage.getItem('sellnook_profile_' + window._uid) || '{}');
+    profile.address = {
+      street, city, state, zip,
+      apt:     document.getElementById('addr-apt').value.trim(),
+      country: document.getElementById('addr-country').value
+    };
+    localStorage.setItem('sellnook_profile_' + window._uid, JSON.stringify(profile));
+    goToStep(2);
+  };
+
+  window.skipToPayment = () => goToStep(2);
+  window.skipToDone    = () => goToStep(3);
+
+  // Step 2 — save payment
+  window.savePayment = function() {
+    const activeTab = document.querySelector('.pay-tab.active').textContent.trim();
+
+    // For now, just save a flag that payment was added (real data goes to Stripe later)
+    const profile = JSON.parse(localStorage.getItem('sellnook_profile_' + window._uid) || '{}');
+    profile.paymentMethod = activeTab;
+    localStorage.setItem('sellnook_profile_' + window._uid, JSON.stringify(profile));
+
+    document.getElementById('pay-saved').classList.add('show');
+    setTimeout(() => goToStep(3), 1200);
+  };
+
+  function goToStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('step-' + i).style.display = i === n ? 'block' : 'none';
+      const num = document.getElementById('step-num-' + i);
+      const lbl = document.getElementById('step-label-' + i);
+      if (i < n)      { num.className = 'step-num done';     num.textContent = '✓'; lbl.className = 'step-label'; }
+      else if (i === n){ num.className = 'step-num active';   lbl.className = 'step-label active'; }
+      else             { num.className = 'step-num inactive'; lbl.className = 'step-label'; }
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Tab switching
+  window.switchPayTab = function(tab) {
+    document.querySelectorAll('.pay-tab').forEach((t,i) => {
+      const tabs = ['card','bank','paypal'];
+      t.classList.toggle('active', tabs[i] === tab);
+    });
+    document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+  };
+
+  // Card number formatter
+  window.formatCard = function(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,16);
+    el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  };
+
+  // Expiry formatter
+  window.formatExpiry = function(el) {
+    let v = el.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
+    el.value = v;
+  };
+
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+</script>
+</body>
+</html>
+
+
+

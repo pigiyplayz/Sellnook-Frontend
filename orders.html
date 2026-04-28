@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO -->
+  <meta name="description" content="Track your order status and shipping on Sellnook.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://sellnook.com/orders">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sellnook">
+  <meta property="og:title" content="Order Details — Sellnook">
+  <meta property="og:description" content="Track your order status and shipping on Sellnook.">
+  <meta property="og:url" content="https://sellnook.com/orders">
+  <meta property="og:image" content="https://sellnook.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sellnook">
+  <meta name="twitter:title" content="Order Details — Sellnook">
+  <meta name="twitter:description" content="Track your order status and shipping on Sellnook.">
+  <meta name="twitter:image" content="https://sellnook.com/og-image.png">
+<title>Sellnook — Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-back { font-size:0.82rem; color:#888; text-decoration:none; font-weight:500; }
+  .nav-back:hover { color:#1a1a1a; }
+
+  .page { max-width:800px; margin:0 auto; padding:40px 40px 80px; animation:up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Order header */
+  .order-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:32px; flex-wrap:wrap; gap:16px; }
+  .order-header-left h1 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:6px; }
+  .order-header-left p { font-size:0.82rem; color:#888; }
+  .status-badge { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:50px; font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700; }
+  .status-processing { background:#eff6ff; color:#2563eb; }
+  .status-shipped { background:#fff4ee; color:#e8734a; }
+  .status-delivered { background:#e8f5ee; color:#2d9e6b; }
+  .status-cancelled { background:#f0f0ee; color:#888; }
+  .status-disputed { background:#fef2f2; color:#e05c5c; }
+
+  /* Cards */
+  .card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:24px; margin-bottom:16px; }
+  .card-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:16px; }
+
+  /* Item card */
+  .item-row { display:flex; gap:16px; align-items:center; }
+  .item-img { width:72px; height:72px; border-radius:8px; background:#f0f0ee; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
+  .item-img img { width:100%; height:100%; object-fit:cover; }
+  .item-info { flex:1; }
+  .item-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:4px; }
+  .item-meta { font-size:0.82rem; color:#888; margin-bottom:8px; }
+  .item-price { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; color:#e8734a; }
+
+  /* Timeline */
+  .timeline { display:flex; flex-direction:column; gap:0; }
+  .timeline-step { display:flex; gap:16px; position:relative; }
+  .timeline-step:not(:last-child)::before { content:''; position:absolute; left:15px; top:32px; bottom:-4px; width:2px; background:#e8e8e5; }
+  .timeline-step:not(:last-child).done::before { background:#2d9e6b; }
+  .timeline-dot { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; position:relative; z-index:1; border:2px solid #e8e8e5; background:#fff; }
+  .timeline-dot.done { background:#2d9e6b; border-color:#2d9e6b; color:#fff; }
+  .timeline-dot.active { background:#e8734a; border-color:#e8734a; color:#fff; }
+  .timeline-dot.cancelled { background:#888; border-color:#888; color:#fff; }
+  .timeline-dot.disputed { background:#e05c5c; border-color:#e05c5c; color:#fff; }
+  .timeline-body { padding-bottom:24px; }
+  .timeline-title { font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:700; margin-bottom:3px; }
+  .timeline-sub { font-size:0.75rem; color:#aaa; line-height:1.5; }
+  .timeline-time { font-size:0.72rem; color:#ccc; margin-top:2px; }
+
+  /* Tracking */
+  .tracking-box { background:#f8f8f6; border-radius:8px; padding:16px; display:flex; align-items:center; gap:16px; }
+  .tracking-icon { font-size:1.8rem; flex-shrink:0; }
+  .tracking-info { flex:1; }
+  .tracking-carrier { font-size:0.72rem; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; }
+  .tracking-number { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:4px; }
+  .tracking-eta { font-size:0.78rem; color:#888; }
+  .btn-track { padding:9px 18px; background:#1a1a1a; color:#fff; border:none; border-radius:7px; font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; transition:background 0.15s; flex-shrink:0; }
+  .btn-track:hover { background:#333; }
+
+  /* Info rows */
+  .info-rows { display:flex; flex-direction:column; gap:0; }
+  .info-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0ee; font-size:0.875rem; }
+  .info-row:last-child { border-bottom:none; }
+  .info-label { color:#888; }
+  .info-value { font-weight:500; color:#1a1a1a; text-align:right; }
+
+  /* Action buttons */
+  .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-primary { padding:11px 22px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+  .btn-primary:hover { background:#333; }
+  .btn-secondary { padding:11px 22px; background:transparent; border:1px solid #e0e0dc; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#555; cursor:pointer; transition:all 0.15s; }
+  .btn-secondary:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .btn-danger { padding:11px 22px; background:transparent; border:1px solid #fecaca; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#e05c5c; cursor:pointer; transition:all 0.15s; }
+  .btn-danger:hover { background:#fef2f2; }
+  .btn-orange { background:#e8734a; }
+  .btn-orange:hover { background:#f07d55; }
+
+  /* Seller card */
+  .seller-row { display:flex; align-items:center; gap:12px; }
+  .seller-avatar { width:42px; height:42px; border-radius:50%; background:#e8734a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; overflow:hidden; flex-shrink:0; }
+  .seller-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .seller-name { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; }
+  .seller-sub { font-size:0.75rem; color:#aaa; }
+
+  /* Modal */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.3); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .modal-overlay.show { display:flex; }
+  .modal { background:#fff; border-radius:16px; padding:28px; width:100%; max-width:440px; }
+  .modal h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+  .modal p { font-size:0.82rem; color:#888; line-height:1.6; margin-bottom:20px; }
+  .modal-field { margin-bottom:14px; }
+  .modal-field label { display:block; font-size:0.75rem; font-weight:500; color:#555; margin-bottom:6px; }
+  .modal-field select, .modal-field textarea, .modal-field input { width:100%; background:#fafaf9; border:1px solid #e0e0dc; border-radius:8px; padding:10px 14px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#1a1a1a; outline:none; transition:border 0.15s; }
+  .modal-field select:focus, .modal-field textarea:focus, .modal-field input:focus { border-color:#1a1a1a; }
+  .modal-field textarea { resize:vertical; min-height:80px; }
+  .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+  .btn-cancel-modal { padding:10px 20px; background:transparent; border:1px solid #e0e0dc; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#888; cursor:pointer; }
+  .btn-cancel-modal:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .btn-confirm { padding:10px 20px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; }
+  .btn-confirm:hover { background:#333; }
+  .btn-confirm.red { background:#e05c5c; }
+  .btn-confirm.red:hover { background:#c94a4a; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a1a1a; color:#fff; padding:14px 24px; border-radius:10px; font-size:0.875rem; font-weight:500; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s; opacity:0; z-index:100; white-space:nowrap; box-shadow:0 8px 32px rgba(0,0,0,0.15); }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  @media (max-width:600px) {
+    nav { padding:0 16px; }
+    .page { padding:24px 16px 60px; }
+    .order-header { flex-direction:column; }
+    .item-row { flex-direction:column; align-items:flex-start; }
+    .tracking-box { flex-direction:column; align-items:flex-start; gap:12px; }
+    .actions { flex-direction:column; }
+    .btn-primary, .btn-secondary, .btn-danger { width:100%; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <a href="dashboard" class="nav-back">← My Orders</a>
+</nav>
+
+<div class="page" id="page" style="display:none;">
+
+  <!-- Order header -->
+  <div class="order-header">
+    <div class="order-header-left">
+      <h1 id="order-heading">Order #—</h1>
+      <p id="order-date">Placed —</p>
+    </div>
+    <span class="status-badge" id="status-badge">—</span>
+  </div>
+
+  <!-- Item -->
+  <div class="card">
+    <div class="card-title">Item</div>
+    <div class="item-row">
+      <div class="item-img" id="item-img">📦</div>
+      <div class="item-info">
+        <div class="item-title" id="item-title">—</div>
+        <div class="item-meta" id="item-meta">—</div>
+        <div class="item-price" id="item-price">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tracking (shown when shipped) -->
+  <div class="card" id="tracking-card" style="display:none;">
+    <div class="card-title">Tracking</div>
+    <div class="tracking-box">
+      <div class="tracking-icon">🚚</div>
+      <div class="tracking-info">
+        <div class="tracking-carrier" id="tracking-carrier">—</div>
+        <div class="tracking-number" id="tracking-number">—</div>
+        <div class="tracking-eta" id="tracking-eta">—</div>
+      </div>
+      <a href="#" class="btn-track" id="tracking-link" target="_blank">Track →</a>
+    </div>
+  </div>
+
+  <!-- Order timeline -->
+  <div class="card">
+    <div class="card-title">Order status</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- Order summary -->
+  <div class="card">
+    <div class="card-title">Summary</div>
+    <div class="info-rows" id="order-summary"></div>
+  </div>
+
+  <!-- Shipping address -->
+  <div class="card">
+    <div class="card-title">Shipping address</div>
+    <div style="font-size:0.875rem;color:#555;line-height:1.7;" id="shipping-address">—</div>
+  </div>
+
+  <!-- Seller -->
+  <div class="card">
+    <div class="card-title">Seller</div>
+    <div class="seller-row" id="seller-row">
+      <div class="seller-avatar" id="seller-avatar">?</div>
+      <div>
+        <div class="seller-name" id="seller-name">—</div>
+        <div class="seller-sub" id="seller-shop">—</div>
+      </div>
+      <a href="messages" class="btn-secondary" style="margin-left:auto;font-size:0.78rem;padding:8px 14px;text-decoration:none;">Message</a>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="card" id="actions-card">
+    <div class="card-title">Actions</div>
+    <div class="actions" id="actions-container"></div>
+  </div>
+
+</div>
+
+<!-- Review modal -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal">
+    <h3>Leave a review</h3>
+    <p>How was your experience with this order?</p>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:0.75rem;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Rating</div>
+      <div style="display:flex;gap:6px;" id="star-row">
+        ${[1,2,3,4,5].map(n => `<span data-val="${n}" onclick="setRating(${n})" style="font-size:2rem;cursor:pointer;opacity:0.3;transition:opacity 0.1s;">★</span>`).join('')}
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Review title (optional)</label>
+      <input type="text" id="review-title" placeholder="Summarise your experience">
+    </div>
+    <div class="modal-field">
+      <label>Your review (optional)</label>
+      <textarea id="review-body" placeholder="Tell others about the product and seller..." style="min-height:80px;"></textarea>
+    </div>
+    <div id="review-msg" style="font-size:0.78rem;color:#e05c5c;margin-bottom:8px;display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="hideModal('review-modal')">Cancel</button>
+      <button class="btn-confirm" onclick="submitReview()">Submit review</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dispute modal -->
+<div class="modal-overlay" id="dispute-modal">
+  <div class="modal">
+    <h3>Open a dispute</h3>
+    <p>Describe the issue with your order. The seller has 48 hours to respond before Sellnook steps in.</p>
+    <div class="modal-field">
+      <label>Reason</label>
+      <select id="dispute-reason">
+        <option value="Item not received">Item not received</option>
+        <option value="Item not as described">Item not as described</option>
+        <option value="Item arrived damaged">Item arrived damaged</option>
+        <option value="Wrong item sent">Wrong item sent</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Details (optional)</label>
+      <textarea id="dispute-details" placeholder="Describe what happened..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="hideModal('dispute-modal')">Cancel</button>
+      <button class="btn-confirm red" onclick="submitDispute()">Open dispute</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel modal -->
+<div class="modal-overlay" id="cancel-modal">
+  <div class="modal">
+    <h3>Cancel this order?</h3>
+    <p>This cannot be undone. The seller will be notified and a refund will be processed if payment was taken.</p>
+    <div class="modal-field">
+      <label>Reason (optional)</label>
+      <textarea id="cancel-reason" placeholder="Why are you cancelling?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="hideModal('cancel-modal')">Keep order</button>
+      <button class="btn-confirm red" onclick="submitCancel()">Cancel order</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const timeout = setTimeout(() => window.location.href = 'login', 20000);
+
+  const params  = new URLSearchParams(window.location.search);
+  const orderId = params.get('id');
+
+  let currentOrder = null;
+  let currentToken = null;
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+
+    if (!orderId) { window.location.href = 'dashboard'; return; }
+
+    currentToken = await user.getIdToken();
+
+    try {
+      const res  = await fetch(`${API}/api/orders/${orderId}`, {
+        headers: { 'Authorization': `Bearer ${currentToken}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.order) {
+        showToast('Order not found');
+        setTimeout(() => window.location.href = 'dashboard', 2000);
+        return;
+      }
+
+      currentOrder = data.order;
+      renderOrder(data.order, user.uid);
+
+    } catch (e) {
+      console.error('Load order error:', e);
+      showToast('Error loading order');
+    }
+
+    document.getElementById('loading').classList.add('hide');
+    document.getElementById('page').style.display = 'block';
+  });
+
+  function renderOrder(order, uid) {
+    const isBuyer = order.buyerId === uid;
+    const date    = new Date(order.createdAt).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+
+    // Header
+    document.getElementById('order-heading').textContent = `Order #${orderId.substring(0, 8).toUpperCase()}`;
+    document.getElementById('order-date').textContent    = `Placed ${date}`;
+
+    // Status badge
+    const badge = document.getElementById('status-badge');
+    badge.textContent = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+    badge.className   = `status-badge status-${order.status}`;
+
+    // Item
+    if (order.itemImage) {
+      document.getElementById('item-img').innerHTML = `<img src="${order.itemImage}" alt="${order.itemTitle}">`;
+    }
+    document.getElementById('item-title').textContent = order.itemTitle || '—';
+    document.getElementById('item-meta').textContent  = `Qty: ${order.quantity} · ${order.itemCategory || ''}`;
+    document.getElementById('item-price').textContent = `$${parseFloat(order.total || 0).toFixed(2)}`;
+
+    // Tracking
+    if (order.trackingNumber) {
+      document.getElementById('tracking-card').style.display = 'block';
+      document.getElementById('tracking-carrier').textContent = order.carrier || 'Carrier';
+      document.getElementById('tracking-number').textContent  = order.trackingNumber;
+      document.getElementById('tracking-eta').textContent     = order.estimatedDelivery ? `Est. delivery: ${order.estimatedDelivery}` : '';
+      // Build tracking URL
+      const trackUrls = {
+        'USPS':  `https://tools.usps.com/go/TrackConfirmAction?tLabels=${order.trackingNumber}`,
+        'UPS':   `https://www.ups.com/track?tracknum=${order.trackingNumber}`,
+        'FedEx': `https://www.fedex.com/apps/fedextrack/?tracknumbers=${order.trackingNumber}`,
+      };
+      document.getElementById('tracking-link').href = trackUrls[order.carrier] || `https://www.google.com/search?q=${order.carrier}+tracking+${order.trackingNumber}`;
+    }
+
+    // Timeline
+    const steps = [
+      { key: 'placed',      label: 'Order placed',   icon: '🛍️' },
+      { key: 'processing',  label: 'Processing',      icon: '⏳' },
+      { key: 'shipped',     label: 'Shipped',         icon: '🚚' },
+      { key: 'delivered',   label: 'Delivered',       icon: '✅' },
+    ];
+
+    const statusOrder = ['placed', 'processing', 'shipped', 'delivered'];
+    const currentIdx  = statusOrder.indexOf(order.status);
+    const isCancelled = order.status === 'cancelled';
+    const isDisputed  = order.status === 'disputed';
+
+    const timelineEl = document.getElementById('timeline');
+    timelineEl.innerHTML = '';
+
+    if (!isCancelled) {
+      steps.forEach((step, i) => {
+        const isDone   = i < currentIdx || (i === currentIdx);
+        const isActive = i === currentIdx;
+        const histItem = order.timeline?.find(t => t.status === step.key);
+
+        const div = document.createElement('div');
+        div.className = `timeline-step ${isDone ? 'done' : ''}`;
+        div.innerHTML = `
+          <div class="timeline-dot ${isActive && !isDone ? 'active' : isDone ? 'done' : ''}">
+            ${isDone ? '✓' : step.icon}
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-title">${step.label}</div>
+            <div class="timeline-sub">${histItem?.note || (isDone ? 'Completed' : 'Pending')}</div>
+            ${histItem ? `<div class="timeline-time">${new Date(histItem.timestamp).toLocaleString()}</div>` : ''}
+          </div>`;
+        timelineEl.appendChild(div);
+      });
+    } else {
+      const cancelItem = order.timeline?.find(t => t.status === 'cancelled');
+      timelineEl.innerHTML = `
+        <div class="timeline-step">
+          <div class="timeline-dot cancelled">✕</div>
+          <div class="timeline-body">
+            <div class="timeline-title">Order cancelled</div>
+            <div class="timeline-sub">${cancelItem?.note || 'Cancelled'}</div>
+            ${cancelItem ? `<div class="timeline-time">${new Date(cancelItem.timestamp).toLocaleString()}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    // Summary
+    document.getElementById('order-summary').innerHTML = `
+      <div class="info-row"><span class="info-label">Subtotal</span><span class="info-value">$${parseFloat(order.itemPrice || 0).toFixed(2)} × ${order.quantity}</span></div>
+      <div class="info-row"><span class="info-label">Shipping</span><span class="info-value">TBD at checkout</span></div>
+      <div class="info-row"><span class="info-label">Total</span><span class="info-value" style="font-weight:700;font-size:1rem;">$${parseFloat(order.total || 0).toFixed(2)}</span></div>
+      <div class="info-row"><span class="info-label">Payment</span><span class="info-value">${order.paymentMethod || '—'}</span></div>`;
+
+    // Shipping address
+    const addr = order.shippingAddress;
+    document.getElementById('shipping-address').textContent = addr
+      ? `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zip || ''}`
+      : 'No address on file';
+
+    // Seller
+    const sellerAv = document.getElementById('seller-avatar');
+    if (order.sellerPhoto) sellerAv.innerHTML = `<img src="${order.sellerPhoto}" alt="">`;
+    else sellerAv.textContent = (order.sellerName || '?')[0].toUpperCase();
+    document.getElementById('seller-name').textContent = order.sellerName || '—';
+    document.getElementById('seller-shop').textContent = order.shopName || '—';
+
+    // Actions
+    const actionsEl = document.getElementById('actions-container');
+    actionsEl.innerHTML = '';
+
+    if (isBuyer) {
+      if (order.status === 'processing') {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn-danger';
+        cancelBtn.textContent = 'Cancel order';
+        cancelBtn.onclick = () => showModal('cancel-modal');
+        actionsEl.appendChild(cancelBtn);
+      }
+      if (order.status === 'delivered' || order.status === 'shipped') {
+        const disputeBtn = document.createElement('button');
+        disputeBtn.className = 'btn-danger';
+        disputeBtn.textContent = 'Open dispute';
+        disputeBtn.onclick = () => showModal('dispute-modal');
+        actionsEl.appendChild(disputeBtn);
+      }
+      if (order.status === 'delivered' && !order.reviewed) {
+        const reviewBtn = document.createElement('button');
+        reviewBtn.className = 'btn-primary btn-orange';
+        reviewBtn.textContent = '⭐ Leave a review';
+        reviewBtn.onclick = () => showModal('review-modal');
+        actionsEl.appendChild(reviewBtn);
+      } else if (order.status === 'delivered' && order.reviewed) {
+        actionsEl.innerHTML += '<p style="font-size:0.82rem;color:#2d9e6b;">✓ You reviewed this order</p>';
+      }
+    }
+
+    if (!actionsEl.children.length) {
+      actionsEl.innerHTML = '<p style="font-size:0.82rem;color:#aaa;">No actions available for this order.</p>';
+    }
+  }
+
+  window.submitDispute = async function() {
+    const reason  = document.getElementById('dispute-reason').value;
+    const details = document.getElementById('dispute-details').value;
+
+    try {
+      const res = await fetch(`${API}/api/orders/${orderId}/dispute`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+        body:    JSON.stringify({ reason, details })
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Error opening dispute'); return; }
+      hideModal('dispute-modal');
+      showToast('✅ Dispute opened — seller has 48 hours to respond');
+      setTimeout(() => location.reload(), 2000);
+    } catch (e) { showToast('Error opening dispute'); }
+  };
+
+  window.submitCancel = async function() {
+    const reason = document.getElementById('cancel-reason').value;
+    try {
+      const res = await fetch(`${API}/api/orders/${orderId}/cancel`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+        body:    JSON.stringify({ reason })
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Error cancelling order'); return; }
+      hideModal('cancel-modal');
+      showToast('Order cancelled');
+      setTimeout(() => location.reload(), 2000);
+    } catch (e) { showToast('Error cancelling order'); }
+  };
+
+  window.showModal  = id => document.getElementById(id).classList.add('show');
+  window.hideModal  = id => document.getElementById(id).classList.remove('show');
+
+  // ── Star rating ────────────────────────────────────────
+  let selectedRating = 0;
+  window.setRating = function(val) {
+    selectedRating = val;
+    document.querySelectorAll('#star-row span').forEach((s, i) => {
+      s.style.opacity = i < val ? '1' : '0.25';
+    });
+  };
+
+  // ── Submit review ──────────────────────────────────────
+  window.submitReview = async function() {
+    const msgEl = document.getElementById('review-msg');
+    if (selectedRating === 0) {
+      msgEl.textContent = '⚠️ Please select a star rating'; msgEl.style.display = 'block'; return;
+    }
+    const btn = document.querySelector('#review-modal .btn-confirm');
+    btn.disabled = true; btn.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch(`${API}/api/reviews/submit`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+        body:    JSON.stringify({
+          orderId:    orderId,
+          listingId:  currentOrder.listingId,
+          sellerId:   currentOrder.sellerId,
+          rating:     selectedRating,
+          title:      document.getElementById('review-title').value.trim(),
+          body:       document.getElementById('review-body').value.trim()
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) { msgEl.textContent = data.error || 'Error submitting review'; msgEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Submit review'; return; }
+      hideModal('review-modal');
+      showToast('✅ Review submitted — thank you!');
+      setTimeout(() => location.reload(), 1500);
+    } catch (e) {
+      msgEl.textContent = 'Error submitting review'; msgEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Submit review';
+    }
+  };
+
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+  });
+
+  let toastTimer;
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  };
+</script>
+</body>
+</html>
+
+
+

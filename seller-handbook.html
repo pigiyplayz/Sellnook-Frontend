@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO -->
+  <meta name="description" content="Learn how to sell on Sellnook — listings, shipping, fees, payouts and everything in between.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sellnook.com/seller-handbook">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sellnook">
+  <meta property="og:title" content="Seller Handbook — Sellnook">
+  <meta property="og:description" content="Learn how to sell on Sellnook — listings, shipping, fees, payouts and everything in between.">
+  <meta property="og:url" content="https://sellnook.com/seller-handbook">
+  <meta property="og:image" content="https://sellnook.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sellnook">
+  <meta name="twitter:title" content="Seller Handbook — Sellnook">
+  <meta name="twitter:description" content="Learn how to sell on Sellnook — listings, shipping, fees, payouts and everything in between.">
+  <meta name="twitter:image" content="https://sellnook.com/og-image.png">
+<title>Sellnook — Seller Handbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+  @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-right { display:flex; align-items:center; gap:12px; }
+  .btn-nav { padding:8px 16px; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; text-decoration:none; transition:all 0.15s; border:none; }
+  .btn-outline { background:transparent; border:1px solid #e0e0dc; color:#555; }
+  .btn-outline:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .btn-solid { background:#1a1a1a; color:#fff; }
+  .btn-solid:hover { background:#333; }
+
+  /* Layout */
+  .page { max-width:1100px; margin:0 auto; padding:64px 40px 100px; display:grid; grid-template-columns:220px 1fr; gap:60px; align-items:start; animation:up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Sidebar */
+  .sidebar { position:sticky; top:80px; }
+  .sidebar-label { font-size:0.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#bbb; margin-bottom:12px; }
+  .sidebar-nav { list-style:none; display:flex; flex-direction:column; gap:2px; }
+  .sidebar-nav a { display:block; padding:8px 12px; border-radius:7px; font-size:0.82rem; color:#888; text-decoration:none; transition:all 0.15s; }
+  .sidebar-nav a:hover { background:#f0f0ee; color:#1a1a1a; }
+  .sidebar-nav a.active { background:#1a1a1a; color:#fff; font-weight:500; }
+
+  /* Content */
+  .content { min-width:0; }
+  .page-eyebrow { display:inline-flex; align-items:center; gap:6px; background:#fff4ee; color:#e8734a; font-size:0.72rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; padding:5px 12px; border-radius:50px; margin-bottom:20px; }
+  .page-title { font-family:'Syne',sans-serif; font-size:clamp(2rem,5vw,3rem); font-weight:700; letter-spacing:-1.5px; margin-bottom:16px; line-height:1.05; }
+  .page-sub { font-size:1rem; color:#888; font-weight:300; line-height:1.7; max-width:560px; margin-bottom:56px; }
+
+  /* Sections */
+  .section { margin-bottom:64px; scroll-margin-top:90px; }
+  .section-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #e8e8e5; }
+  .section-icon { width:40px; height:40px; border-radius:10px; background:#f0f0ee; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+  .section-title { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:700; letter-spacing:-0.3px; }
+  .section p { font-size:0.9rem; color:#555; line-height:1.8; margin-bottom:16px; }
+  .section p:last-child { margin-bottom:0; }
+
+  /* Steps */
+  .steps { display:flex; flex-direction:column; gap:0; margin:24px 0; }
+  .step { display:flex; gap:20px; position:relative; }
+  .step:not(:last-child)::before { content:''; position:absolute; left:15px; top:36px; bottom:-4px; width:1px; background:#e8e8e5; }
+  .step-num { width:32px; height:32px; border-radius:50%; background:#1a1a1a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; flex-shrink:0; margin-top:2px; position:relative; z-index:1; }
+  .step-body { padding-bottom:28px; }
+  .step-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:6px; }
+  .step-desc { font-size:0.875rem; color:#666; line-height:1.7; }
+
+  /* Highlight box */
+  .highlight-box { background:#fff; border:1px solid #e8e8e5; border-left:3px solid #e8734a; border-radius:0 10px 10px 0; padding:16px 20px; margin:20px 0; font-size:0.875rem; color:#555; line-height:1.7; }
+  .highlight-box strong { color:#1a1a1a; font-weight:600; }
+
+  /* Info rows */
+  .info-rows { margin:20px 0; }
+  .info-row { display:flex; gap:16px; padding:14px 0; border-bottom:1px solid #f0f0ee; font-size:0.875rem; }
+  .info-row:last-child { border-bottom:none; }
+  .info-row-icon { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
+  .info-row-content { flex:1; }
+  .info-row-title { font-weight:600; color:#1a1a1a; margin-bottom:3px; }
+  .info-row-desc { color:#888; line-height:1.6; font-size:0.82rem; }
+
+  /* Fee table */
+  .fee-table { width:100%; border-collapse:collapse; margin:20px 0; font-size:0.875rem; }
+  .fee-table th { background:#1a1a1a; color:#fff; padding:12px 16px; text-align:left; font-family:'Syne',sans-serif; font-weight:600; font-size:0.8rem; }
+  .fee-table th:first-child { border-radius:8px 0 0 0; }
+  .fee-table th:last-child { border-radius:0 8px 0 0; }
+  .fee-table td { padding:12px 16px; border-bottom:1px solid #f0f0ee; color:#555; vertical-align:top; }
+  .fee-table tr:last-child td { border-bottom:none; }
+  .fee-table tr:nth-child(even) td { background:#fafaf9; }
+  .fee-pro { color:#e8734a; font-weight:600; }
+  .fee-free { color:#888; }
+
+  /* Photo tips grid */
+  .tips-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+  .tip-card { background:#fff; border:1px solid #e8e8e5; border-radius:10px; padding:18px; }
+  .tip-icon { font-size:1.4rem; margin-bottom:8px; display:block; }
+  .tip-title { font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:700; margin-bottom:4px; }
+  .tip-desc { font-size:0.78rem; color:#888; line-height:1.5; }
+
+  /* Prohibited items */
+  .prohibited-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0; }
+  .prohibited-item { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e8e8e5; border-radius:8px; padding:12px 14px; font-size:0.82rem; color:#555; }
+  .prohibited-icon { font-size:1rem; flex-shrink:0; }
+
+  /* FAQ */
+  .faq { margin:20px 0; }
+  .faq-item { border-bottom:1px solid #f0f0ee; }
+  .faq-item:last-child { border-bottom:none; }
+  .faq-question { width:100%; background:none; border:none; padding:16px 0; text-align:left; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; color:#1a1a1a; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .faq-question:hover { color:#e8734a; }
+  .faq-chevron { font-size:0.7rem; color:#bbb; transition:transform 0.2s; flex-shrink:0; }
+  .faq-item.open .faq-chevron { transform:rotate(180deg); }
+  .faq-answer { display:none; font-size:0.875rem; color:#666; line-height:1.8; padding-bottom:16px; }
+  .faq-item.open .faq-answer { display:block; }
+
+  /* CTA */
+  .cta-box { background:#1a1a1a; border-radius:16px; padding:40px; text-align:center; margin-top:20px; position:relative; overflow:hidden; }
+  .cta-box::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:radial-gradient(circle, rgba(232,115,74,0.25), transparent 70%); pointer-events:none; }
+  .cta-box h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; color:#fff; letter-spacing:-0.5px; margin-bottom:10px; }
+  .cta-box p { font-size:0.9rem; color:rgba(255,255,255,0.5); margin-bottom:28px; line-height:1.6; }
+  .btn-cta { display:inline-block; padding:13px 28px; background:#e8734a; color:#fff; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; text-decoration:none; transition:background 0.15s; margin:0 6px; }
+  .btn-cta:hover { background:#f07d55; }
+  .btn-cta-outline { display:inline-block; padding:13px 28px; background:transparent; color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.2); border-radius:8px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:600; text-decoration:none; transition:all 0.15s; margin:0 6px; }
+  .btn-cta-outline:hover { border-color:rgba(255,255,255,0.5); color:#fff; }
+
+  @media (max-width:768px) {
+    nav { padding:0 20px; }
+    .page { grid-template-columns:1fr; padding:40px 20px 80px; gap:0; }
+    .sidebar { display:none; }
+    .tips-grid { grid-template-columns:1fr; }
+    .prohibited-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-right">
+    <a href="coming-soon" class="btn-nav btn-outline">← Back</a>
+    <a href="seller-dashboard" class="btn-nav btn-solid">Seller Dashboard</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-label">On this page</div>
+    <ul class="sidebar-nav">
+      <li><a href="#shipping" class="active">Shipping guide</a></li>
+      <li><a href="#payouts">How payouts work</a></li>
+      <li><a href="#fees">Fee breakdown</a></li>
+      <li><a href="#disputes">Returns & disputes</a></li>
+      <li><a href="#prohibited">Prohibited items</a></li>
+      <li><a href="#photos">Photo tips</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="page-eyebrow">📦 Seller Handbook</div>
+    <h1 class="page-title">Everything you need<br>to sell with confidence.</h1>
+    <p class="page-sub">This handbook covers shipping, payouts, fees, disputes, and everything in between. Read it once and you'll know exactly how Sellnook works for sellers.</p>
+
+    <!-- SHIPPING -->
+    <div class="section" id="shipping">
+      <div class="section-header">
+        <div class="section-icon">🚚</div>
+        <div class="section-title">Shipping guide</div>
+      </div>
+      <p>You're responsible for shipping every order within your stated processing time. Buyers expect fast, careful shipping — it's one of the biggest factors in your reviews and repeat business.</p>
+
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-row-icon">⏱️</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Processing time</div>
+            <div class="info-row-desc">Set a realistic processing time on every listing — this is how long it takes you to prepare and ship after an order comes in. Common options are 1–2 days, 3–5 days, or 1–2 weeks for made-to-order items. Always ship within your stated window or buyers can open a case.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">📮</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Carriers</div>
+            <div class="info-row-desc">You can use any carrier — USPS, UPS, FedEx, or DHL. USPS is typically the most affordable for small items. Always get a tracking number and add it to the order so buyers can follow along.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">📦</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Packaging</div>
+            <div class="info-row-desc">Package items securely enough to survive shipping. Use bubble wrap or packing peanuts for fragile items. Items damaged in transit that weren't packaged properly are your responsibility — not the carrier's.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">💰</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Shipping costs</div>
+            <div class="info-row-desc">You can charge buyers calculated shipping (based on their ZIP and item weight), a flat rate, or offer free shipping and build the cost into your price. Free shipping often boosts sales — buyers love seeing $0 at checkout.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">🌎</div>
+          <div class="info-row-content">
+            <div class="info-row-title">International shipping</div>
+            <div class="info-row-desc">You choose whether to ship internationally on each listing. International orders take longer and can be subject to customs delays — set expectations clearly in your listing description. Buyers pay any customs fees.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">🚨</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Lost or damaged shipments</div>
+            <div class="info-row-desc">If an item is lost in transit, file a claim with the carrier and contact Sellnook support. We'll work with you on a resolution. For damaged items, ask the buyer for photos and work toward a replacement or refund.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Pro tip:</strong> Purchase shipping insurance for high-value items. It's inexpensive and protects both you and the buyer if something goes wrong in transit.
+      </div>
+    </div>
+
+    <!-- PAYOUTS -->
+    <div class="section" id="payouts">
+      <div class="section-header">
+        <div class="section-icon">💸</div>
+        <div class="section-title">How payouts work</div>
+      </div>
+      <p>When a buyer places an order, their payment is held securely by Sellnook until the transaction is complete. Here's the full payout timeline:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Buyer places order</div>
+            <div class="step-desc">Payment is charged immediately and held securely. You'll get an email notification with the order details.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">You ship the item</div>
+            <div class="step-desc">Mark the order as shipped in your seller dashboard and add the tracking number. The buyer is notified automatically.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">30-day buyer protection window</div>
+            <div class="step-desc">After delivery, the buyer has 30 days to report any issues. During this time the payment is held. If no dispute is opened, the payment is released automatically.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Payout released</div>
+            <div class="step-desc">After the window closes, your payout (order total minus Sellnook's fee) is sent to your connected Stripe or PayPal account. Standard payouts arrive in 2–5 business days.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Pro sellers get early payout.</strong> With a Pro account you can request your payout immediately after delivery is confirmed — no waiting for the full 30-day window. Funds arrive within 1 business day.
+      </div>
+
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-row-icon">🏦</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Payout methods</div>
+            <div class="info-row-desc">Connect your Stripe account for bank transfers or your PayPal account for PayPal payouts. You can connect both and choose per transaction.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">📅</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Payout schedule</div>
+            <div class="info-row-desc">Standard payouts process weekly every Monday. If you're on Pro with early payout enabled, you can request payout anytime from your dashboard.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">⏸️</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Held payouts</div>
+            <div class="info-row-desc">Payouts may be held if there's an open dispute on an order, if your account is under review, or if we need to verify your identity. We'll always email you if a payout is held.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEES -->
+    <div class="section" id="fees">
+      <div class="section-header">
+        <div class="section-icon">💰</div>
+        <div class="section-title">Fee breakdown</div>
+      </div>
+      <p>Sellnook keeps fees simple and transparent. Here's exactly what you pay:</p>
+
+      <table class="fee-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Free</th>
+            <th>Pro — $19/mo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Transaction fee</td>
+            <td class="fee-free">8% per sale</td>
+            <td class="fee-pro">4% per sale</td>
+          </tr>
+          <tr>
+            <td>Monthly fee</td>
+            <td class="fee-free">$0</td>
+            <td class="fee-pro">$19/month</td>
+          </tr>
+          <tr>
+            <td>Listings</td>
+            <td class="fee-free">250 total / 25 active</td>
+            <td class="fee-pro">Unlimited</td>
+          </tr>
+          <tr>
+            <td>Photos per listing</td>
+            <td class="fee-free">5 photos</td>
+            <td class="fee-pro">10 photos</td>
+          </tr>
+          <tr>
+            <td>Shop URL</td>
+            <td class="fee-free">Numeric (e.g. /48291)</td>
+            <td class="fee-pro">Custom (e.g. /yourname)</td>
+          </tr>
+          <tr>
+            <td>Payout speed</td>
+            <td class="fee-free">30-day window</td>
+            <td class="fee-pro">Instant on request</td>
+          </tr>
+          <tr>
+            <td>Analytics</td>
+            <td class="fee-free">Basic overview</td>
+            <td class="fee-pro">Advanced — views, conversions, revenue</td>
+          </tr>
+          <tr>
+            <td>Discount codes</td>
+            <td class="fee-free">—</td>
+            <td class="fee-pro">✓ Unlimited codes</td>
+          </tr>
+          <tr>
+            <td>Verified seller badge</td>
+            <td class="fee-free">—</td>
+            <td class="fee-pro">✓ On all listings</td>
+          </tr>
+          <tr>
+            <td>Bulk listing tools</td>
+            <td class="fee-free">—</td>
+            <td class="fee-pro">✓ Included</td>
+          </tr>
+          <tr>
+            <td>Shop customization</td>
+            <td class="fee-free">Basic</td>
+            <td class="fee-pro">Custom banner, colors, featured items</td>
+          </tr>
+          <tr>
+            <td>Customer support</td>
+            <td class="fee-free">Standard</td>
+            <td class="fee-pro">Priority</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <strong>Example:</strong> On a $100 sale, a free seller pays $8 in fees and keeps $92. A Pro seller pays $4 and keeps $96 — the Pro plan pays for itself after just a few sales per month.
+      </div>
+    </div>
+
+    <!-- DISPUTES -->
+    <div class="section" id="disputes">
+      <div class="section-header">
+        <div class="section-icon">⚖️</div>
+        <div class="section-title">Returns & disputes</div>
+      </div>
+      <p>Disputes are rare when sellers communicate clearly and ship carefully. Here's how to handle them if they come up.</p>
+
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-row-icon">📋</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Set a clear return policy</div>
+            <div class="info-row-desc">State your return policy clearly on every listing. If you don't accept returns, say so. If you do, specify the timeframe and who pays return shipping. Clarity prevents disputes before they happen.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">💬</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Respond quickly</div>
+            <div class="info-row-desc">When a buyer messages you about a problem, respond within 24 hours. Most issues can be resolved directly without involving Sellnook. A quick, friendly response goes a long way.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">🔍</div>
+          <div class="info-row-content">
+            <div class="info-row-title">When a case is opened</div>
+            <div class="info-row-desc">If a buyer opens a case, you'll be notified by email. You have 48 hours to respond with your side of the situation. Sellnook will review both sides and make a decision within 3 business days.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">📸</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Document everything</div>
+            <div class="info-row-desc">Take photos of items before shipping, especially fragile or high-value goods. Save your shipping receipts and tracking numbers. This documentation protects you if a dispute is filed.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">💵</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Refunds</div>
+            <div class="info-row-desc">If a refund is issued, it comes from your pending payout balance. If your balance is insufficient, it may be deducted from a future payout. Repeated disputes may result in account review.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Best defence against disputes:</strong> accurate photos, honest descriptions, careful packaging, and fast shipping. Sellers with clear listings and quick communication rarely face disputes.
+      </div>
+    </div>
+
+    <!-- PROHIBITED ITEMS -->
+    <div class="section" id="prohibited">
+      <div class="section-header">
+        <div class="section-icon">🚫</div>
+        <div class="section-title">Prohibited items</div>
+      </div>
+      <p>The following items are strictly not allowed on Sellnook. Listings violating these rules will be removed immediately and repeated violations result in permanent account suspension.</p>
+
+      <div class="prohibited-grid">
+        <div class="prohibited-item"><span class="prohibited-icon">🔫</span> Weapons, firearms & ammunition</div>
+        <div class="prohibited-item"><span class="prohibited-icon">💊</span> Drugs & drug paraphernalia</div>
+        <div class="prohibited-item"><span class="prohibited-icon">🎭</span> Counterfeit or replica goods</div>
+        <div class="prohibited-item"><span class="prohibited-icon">⚠️</span> Hazardous or recalled materials</div>
+        <div class="prohibited-item"><span class="prohibited-icon">🐾</span> Live animals</div>
+        <div class="prohibited-item"><span class="prohibited-icon">🔞</span> Adult or explicit content</div>
+        <div class="prohibited-item"><span class="prohibited-icon">©️</span> Items infringing IP rights</div>
+        <div class="prohibited-item"><span class="prohibited-icon">🩸</span> Human remains or body parts</div>
+        <div class="prohibited-item"><span class="prohibited-icon">🎰</span> Gambling items or lottery tickets</div>
+        <div class="prohibited-item"><span class="prohibited-icon">🚗</span> Stolen goods of any kind</div>
+        <div class="prohibited-item"><span class="prohibited-icon">💣</span> Explosive devices or materials</div>
+        <div class="prohibited-item"><span class="prohibited-icon">⚖️</span> Anything illegal in the US</div>
+      </div>
+
+      <div class="highlight-box">
+        If you're unsure whether an item is allowed, email <a href="/cdn-cgi/l/email-protection#b9caccc9c9d6cbcdf9cadcd5d5d7d6d6d297dad6d4" style="color:#e8734a;"><span class="__cf_email__" data-cfemail="25565055554a575165564049494b4a4a4e0b464a48">[email&#160;protected]</span></a> before listing it. It's always better to ask first.
+      </div>
+    </div>
+
+    <!-- PHOTO TIPS -->
+    <div class="section" id="photos">
+      <div class="section-header">
+        <div class="section-icon">📷</div>
+        <div class="section-title">Tips for great photos</div>
+      </div>
+      <p>Your photos are the single biggest factor in whether someone buys your item. Buyers can't touch or inspect it in person — your photos have to do that job. Here's how to take great ones.</p>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <span class="tip-icon">☀️</span>
+          <div class="tip-title">Use natural light</div>
+          <div class="tip-desc">Shoot near a window on a bright day. Natural light shows true colors and eliminates harsh shadows. Avoid flash — it flattens texture and creates glare.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">⬜</span>
+          <div class="tip-title">Clean background</div>
+          <div class="tip-desc">Use a plain white, light grey, or neutral surface. A piece of poster board works perfectly. Keep the focus on your product, not the surroundings.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">📐</span>
+          <div class="tip-title">Multiple angles</div>
+          <div class="tip-desc">Show front, back, sides, top, and any important details. Use all your photo slots. The more angles you show, the more confident buyers feel.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🔍</span>
+          <div class="tip-title">Close-up details</div>
+          <div class="tip-desc">Include at least one close-up shot showing texture, material, or craftsmanship. This builds trust and reduces "not as described" disputes.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">📏</span>
+          <div class="tip-title">Show scale</div>
+          <div class="tip-desc">Include a photo with a common object (coin, hand, ruler) to show size. Buyers frequently misjudge dimensions from photos alone.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">✅</span>
+          <div class="tip-title">Show any flaws</div>
+          <div class="tip-desc">For used or vintage items, photograph any wear, scratches, or imperfections clearly. Honesty prevents disputes and builds your reputation as a trustworthy seller.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">📱</span>
+          <div class="tip-title">Modern phones are fine</div>
+          <div class="tip-desc">You don't need a professional camera. A modern smartphone in good light takes excellent product photos. Clean your lens before shooting.</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🖼️</span>
+          <div class="tip-title">Cover photo matters most</div>
+          <div class="tip-desc">Your first photo is what buyers see in search results. Make it the clearest, most attractive shot of the item — straight-on, well-lit, and filling the frame.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="section" id="reviews">
+      <div class="section-header">
+        <div class="section-icon">⭐</div>
+        <div class="section-title">How reviews work</div>
+      </div>
+      <p>Reviews are how buyers decide whether to trust you. A strong review record is one of your most valuable assets as a seller on Sellnook.</p>
+
+      <div class="info-rows">
+        <div class="info-row">
+          <div class="info-row-icon">📬</div>
+          <div class="info-row-content">
+            <div class="info-row-title">When reviews happen</div>
+            <div class="info-row-desc">Buyers can leave a review within 60 days of their order being marked as delivered. You'll be notified by email when a new review is posted.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">💬</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Responding to reviews</div>
+            <div class="info-row-desc">You can respond publicly to any review on your shop. Keep responses professional and constructive — future buyers will read them. A thoughtful response to a negative review often does more good than the review does harm.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">🚩</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Flagging a review</div>
+            <div class="info-row-desc">If a review contains false information, hate speech, or violates Sellnook's policies, you can flag it for review. We investigate all flags within 48 hours. We cannot remove reviews simply because they're negative.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">📈</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Building a great rating</div>
+            <div class="info-row-desc">The fastest way to build a strong rating is to ship quickly, package carefully, describe items accurately, and communicate promptly. Buyers review based on the full experience — not just the product.</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-row-icon">⚠️</div>
+          <div class="info-row-content">
+            <div class="info-row-title">Review manipulation</div>
+            <div class="info-row-desc">Offering discounts, refunds, or free items in exchange for positive reviews is strictly prohibited and can result in account suspension. All reviews must be genuine.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section" id="faq">
+      <div class="section-header">
+        <div class="section-icon">💬</div>
+        <div class="section-title">Frequently asked questions</div>
+      </div>
+
+      <div class="faq">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How do I get started selling on Sellnook?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Create a free account, go to your Seller Dashboard, set up your shop profile with a name and description, then add your first listing. Pro sellers can list items before launch — free sellers go live on July 21, 2026.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            When will my listings go live?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Free seller listings go live when Sellnook launches on July 21, 2026 at 5pm. Pro sellers can list items from July 7 (early access) and they'll be visible to buyers at launch. You can add listings anytime before then to get ahead.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Can I sell handmade items?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Absolutely — handmade goods are a great fit for Sellnook. Just make sure your photos and descriptions accurately represent the item. For made-to-order items, set your processing time accordingly so buyers know when to expect their order.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What happens if I run out of stock?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Update your listing quantity to 0 — the listing will automatically show as unavailable and buyers won't be able to purchase it. You can update stock levels anytime from your Seller Dashboard.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Can I offer local pickup?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Yes. Set your listing's shipping option to include local pickup and specify in the description that buyers should message you to arrange it. All payments still go through Sellnook for buyer and seller protection.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Is there a limit to how much I can sell?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">No limit on sales volume for either plan. Free sellers have listing limits (250 total, 25 active) but no cap on how much revenue they can generate. Pro sellers have unlimited listings.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            What do I do if a buyer claims they didn't receive their order?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">First check the tracking status. If tracking shows delivered, share that with the buyer — sometimes packages are left with neighbours or in unusual spots. If tracking shows lost, file a claim with the carrier and contact Sellnook support. We'll help you work toward a resolution.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            Can I cancel an order after it's placed?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">You can cancel an unshipped order within 24 hours if both you and the buyer agree. After 24 hours, cancellations require contacting Sellnook support. Frequent cancellations negatively affect your seller standing.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            How do I upgrade to Pro?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">Go to your Dashboard and scroll down to the Pro Seller section. Click "Pay with Stripe" or "Pay with PayPal" to subscribe for $19/month. Your Pro features activate immediately after payment.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="section">
+      <div class="cta-box">
+        <h2>Ready to start selling?</h2>
+        <p>Set up your shop and list your first item today. Go live on July 21, 2026.</p>
+        <a href="seller-dashboard" class="btn-cta">Go to Seller Dashboard →</a>
+        <a href="dashboard#pro" class="btn-cta-outline">Upgrade to Pro</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function toggleFaq(btn) {
+    btn.parentElement.classList.toggle('open');
+  }
+
+  // Active sidebar on scroll
+  const sections = document.querySelectorAll('.section');
+  const links    = document.querySelectorAll('.sidebar-nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+    links.forEach(l => { l.classList.toggle('active', l.getAttribute('href') === '#' + current); });
+  });
+
+  links.forEach(link => {
+    link.addEv

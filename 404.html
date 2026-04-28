@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sellnook — Uh oh</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; display:flex; flex-direction:column; }
+  @keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes float { 0%,100% { transform:translateY(0) rotate(-3deg); } 50% { transform:translateY(-16px) rotate(3deg); } }
+  @keyframes wiggle { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-8deg); } 75% { transform:rotate(8deg); } }
+  @keyframes blink { 0%,90%,100% { opacity:1; } 95% { opacity:0; } }
+
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; background:#fafaf9; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+
+  .page { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:48px 24px 64px; animation:up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Big emoji */
+  .big-emoji { font-size:5.5rem; animation:float 3.5s ease-in-out infinite; display:block; margin-bottom:8px; cursor:pointer; }
+  .big-emoji:hover { animation:wiggle 0.4s ease-in-out; }
+
+  /* 404 number */
+  .four-oh-four { font-family:'Syne',sans-serif; font-size:clamp(5rem,18vw,9rem); font-weight:700; letter-spacing:-6px; color:#f0f0ee; line-height:1; position:relative; display:inline-block; user-select:none; }
+  .four-oh-four .zero { color:#e8734a; display:inline-block; animation:blink 4s infinite; }
+
+  /* Headline */
+  h1 { font-family:'Syne',sans-serif; font-size:clamp(1.3rem,4vw,1.9rem); font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; margin-top:4px; }
+
+  /* Rotating excuses */
+  .excuse-box { min-height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:28px; }
+  .excuse { font-size:0.95rem; color:#888; line-height:1.7; max-width:420px; font-weight:300; font-style:italic; }
+
+  /* Suggestions */
+  .suggestions { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:36px; }
+  .suggestion { padding:9px 18px; background:#fff; border:1px solid #e0e0dc; border-radius:50px; font-size:0.82rem; color:#555; text-decoration:none; transition:all 0.15s; font-weight:500; }
+  .suggestion:hover { border-color:#1a1a1a; color:#1a1a1a; }
+
+  /* Main button */
+  .btn-home { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; background:#1a1a1a; color:#fff; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; text-decoration:none; transition:background 0.15s; margin-bottom:16px; }
+  .btn-home:hover { background:#333; }
+
+  /* Easter egg button */
+  .egg-btn { background:none; border:none; font-size:0.72rem; color:#ccc; cursor:pointer; font-family:'Inter',sans-serif; transition:color 0.15s; margin-top:4px; }
+  .egg-btn:hover { color:#888; }
+
+  /* Confetti */
+  .confetti { position:fixed; pointer-events:none; top:0; left:0; width:100%; height:100%; z-index:100; }
+  .c { position:absolute; width:8px; height:8px; border-radius:2px; animation:fall linear forwards; }
+  @keyframes fall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
+
+  .footer-note { margin-top:40px; font-size:0.75rem; color:#ccc; }
+  .footer-note a { color:#ccc; }
+
+  @media (max-width:480px) { nav { padding:0 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+</nav>
+
+<div class="page">
+
+  <span class="big-emoji" id="emoji" onclick="cycleEmoji()">📦</span>
+
+  <div class="four-oh-four">4<span class="zero">0</span>4</div>
+
+  <h1 id="headline">You found the void.</h1>
+
+  <div class="excuse-box">
+    <p class="excuse" id="excuse">Loading a completely valid excuse...</p>
+  </div>
+
+  <div class="suggestions">
+    <a href="coming-soon" class="suggestion">🏠 Home</a>
+    <a href="dashboard" class="suggestion">📊 Dashboard</a>
+    <a href="browse" class="suggestion">🛍️ Browse</a>
+    <a href="seller-dashboard" class="suggestion">📦 Sell</a>
+    <a href="buyer-handbook" class="suggestion">📖 Buyer Handbook</a>
+    <a href="seller-handbook" class="suggestion">📋 Seller Handbook</a>
+  </div>
+
+  <a href="coming-soon" class="btn-home">← Get me out of here</a>
+  <button class="egg-btn" onclick="celebrate()">👆 do not press this</button>
+
+  <p class="footer-note">
+    If you're 100% sure this page should exist, <a href="mailto:support@sellnook.com">tell us</a> and we'll feel bad about it.
+  </p>
+
+</div>
+
+<canvas class="confetti" id="confetti"></canvas>
+
+<script>
+  // Rotating excuses
+  const excuses = [
+    "The page was listed for sale but someone already bought it.",
+    "Our intern typed the URL. We've had a word with them.",
+    "This page is on backorder. Estimated restock: never.",
+    "The seller shipped it to the wrong address. Classic.",
+    "This URL does not spark joy. We've let it go.",
+    "404 means we have exactly 404 things to fix. This is one of them.",
+    "The page exists, but only in our hearts.",
+    "Turns out 'page not found' is just a vibe.",
+    "We searched the whole warehouse. Nothing.",
+    "Have you tried turning the URL off and on again?",
+    "The page was recalled due to quality issues.",
+    "Delivery failed: recipient (the page) does not exist.",
+    "This page took one look at your request and left.",
+    "It's not you, it's us. Actually it might be you.",
+    "Processing your request... just kidding. There's nothing here."
+  ];
+
+  const headlines = [
+    "You found the void.",
+    "Absolutely nothing here.",
+    "Impressive. You broke the internet.",
+    "Plot twist: no page.",
+    "This wasn't in the listing.",
+    "Gone. Vanished. Poof.",
+    "404: page left the chat.",
+  ];
+
+  let excuseIndex = Math.floor(Math.random() * excuses.length);
+  let headlineIndex = Math.floor(Math.random() * headlines.length);
+
+  document.getElementById('excuse').textContent   = excuses[excuseIndex];
+  document.getElementById('headline').textContent = headlines[headlineIndex];
+
+  // Rotate excuse every 4 seconds
+  setInterval(() => {
+    excuseIndex = (excuseIndex + 1) % excuses.length;
+    const el = document.getElementById('excuse');
+    el.style.opacity = 0;
+    el.style.transition = 'opacity 0.3s';
+    setTimeout(() => {
+      el.textContent = excuses[excuseIndex];
+      el.style.opacity = 1;
+    }, 300);
+  }, 4000);
+
+  // Emoji cycle
+  const emojis = ['📦', '🫥', '👻', '🕳️', '🌀', '❓', '📭', '🙈', '💀', '🛸'];
+  let emojiIndex = 0;
+  window.cycleEmoji = function() {
+    emojiIndex = (emojiIndex + 1) % emojis.length;
+    document.getElementById('emoji').textContent = emojis[emojiIndex];
+  };
+
+  // Confetti easter egg
+  window.celebrate = function() {
+    const canvas  = document.getElementById('confetti');
+    const colors  = ['#e8734a','#1a1a1a','#fbbf24','#2d9e6b','#e05c5c','#7c3aed'];
+    const pieces  = 120;
+    const frags   = [];
+
+    for (let i = 0; i < pieces; i++) {
+      const div = document.createElement('div');
+      div.className = 'c';
+      div.style.cssText = `
+        left:${Math.random()*100}%;
+        top:${-8 - Math.random()*40}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${1.5 + Math.random()*2}s;
+        animation-delay:${Math.random()*0.8}s;
+        transform:rotate(${Math.random()*360}deg);
+        width:${6 + Math.random()*8}px;
+        height:${6 + Math.random()*8}px;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      `;
+      document.body.appendChild(div);
+      frags.push(div);
+    }
+
+    // Change button text
+    const btn = document.querySelector('.egg-btn');
+    btn.textContent = '🎉 ok fine you can press it';
+
+    setTimeout(() => {
+      frags.forEach(d => d.remove());
+      btn.textContent = '👆 do not press this again';
+    }, 4000);
+  };
+</script>
+
+</body>
+</html>

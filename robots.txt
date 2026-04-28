@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /dashboard.html
+Disallow: /seller-dashboard.html
+Disallow: /messages.html
+Disallow: /orders.html
+Disallow: /cart.html
+Disallow: /checkout.html
+Disallow: /order-confirmation.html
+
+Sitemap: https://sellnook.com/sitemap.xml

@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<title>Sellnook — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+  @keyframes up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+
+  /* Banners */
+  .dev-banner { background:#1a1a1a; color:#e8734a; padding:8px 40px; font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; display:none; align-items:center; gap:8px; }
+  .dev-banner.show { display:flex; }
+  .verify-banner { background:#fffbeb; border-bottom:1px solid #fde68a; padding:12px 40px; display:none; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .verify-banner.show { display:flex; }
+  .verify-banner-left { display:flex; align-items:center; gap:10px; font-size:0.82rem; color:#92400e; }
+  .verify-banner-left strong { font-weight:600; }
+  .verify-banner-actions { display:flex; align-items:center; gap:10px; }
+  .btn-resend { font-size:0.78rem; font-weight:600; color:#92400e; background:transparent; border:1px solid #fbbf24; border-radius:6px; padding:5px 12px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .btn-resend:hover { background:#fef3c7; }
+  .btn-dismiss { font-size:0.78rem; color:#aaa; background:transparent; border:none; cursor:pointer; font-family:'Inter',sans-serif; }
+
+  /* Nav */
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-right { display:flex; align-items:center; gap:12px; }
+  .nav-link { font-size:0.82rem; color:#888; text-decoration:none; font-weight:500; padding:7px 12px; border-radius:7px; transition:all 0.15s; }
+  .nav-link:hover { background:#f0f0ee; color:#1a1a1a; }
+  .nav-link.seller { background:#fff4ee; color:#e8734a; font-weight:600; }
+  .nav-link.seller:hover { background:#ffe8d6; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:#1a1a1a; color:#fafaf9; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700; flex-shrink:0; overflow:hidden; cursor:pointer; }
+  .avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .btn-signout { background:transparent; border:1px solid #e0e0dc; border-radius:7px; padding:7px 14px; font-family:'Inter',sans-serif; font-size:0.78rem; color:#888; cursor:pointer; transition:all 0.15s; }
+  .btn-signout:hover { border-color:#ccc; color:#1a1a1a; }
+  .notif-btn { position:relative; background:none; border:none; cursor:pointer; padding:4px; }
+  .notif-dot { position:absolute; top:2px; right:2px; width:8px; height:8px; background:#e8734a; border-radius:50%; display:none; }
+  .notif-dot.show { display:block; }
+
+  /* Layout */
+  .layout { max-width:1000px; margin:0 auto; padding:40px 40px 80px; display:grid; grid-template-columns:220px 1fr; gap:32px; align-items:start; animation:up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Sidebar */
+  .sidebar { position:sticky; top:80px; }
+  .user-card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:20px; margin-bottom:12px; text-align:center; }
+  .user-card-avatar { width:56px; height:56px; border-radius:50%; background:#1a1a1a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; margin:0 auto 12px; overflow:hidden; }
+  .user-card-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .user-card-name { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:4px; }
+  .user-card-email { font-size:0.72rem; color:#aaa; margin-bottom:12px; word-break:break-all; }
+  .user-card-plan { display:inline-block; background:#f0f0ee; color:#888; font-size:0.68rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:3px 10px; border-radius:50px; }
+  .user-card-plan.pro { background:#fff4ee; color:#e8734a; }
+  .user-card-plan.dev { background:#1a1a1a; color:#e8734a; }
+
+  .sidebar-nav { list-style:none; display:flex; flex-direction:column; gap:2px; }
+  .sidebar-nav button { width:100%; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.82rem; color:#888; background:none; border:none; cursor:pointer; transition:all 0.15s; text-align:left; font-weight:400; }
+  .sidebar-nav button:hover { background:#f0f0ee; color:#1a1a1a; }
+  .sidebar-nav button.active { background:#1a1a1a; color:#fff; font-weight:500; }
+  .sidebar-nav button .nav-icon { font-size:1rem; width:20px; text-align:center; flex-shrink:0; }
+  .sidebar-nav button .nav-badge { margin-left:auto; background:#e8734a; color:#fff; font-size:0.65rem; font-weight:700; padding:2px 6px; border-radius:50px; }
+
+  .sidebar-divider { height:1px; background:#e8e8e5; margin:8px 0; }
+
+  /* Main content */
+  .main { min-width:0; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* Section header */
+  .section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .section-head h2 { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:700; letter-spacing:-0.3px; }
+  .section-head p { font-size:0.82rem; color:#888; margin-top:4px; }
+
+  /* Cards */
+  .card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:24px; margin-bottom:16px; }
+  .card-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:16px; }
+
+  /* Empty state */
+  .empty { text-align:center; padding:52px 20px; color:#bbb; }
+  .empty-icon { font-size:2.5rem; margin-bottom:12px; }
+  .empty h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#888; margin-bottom:6px; }
+  .empty p { font-size:0.82rem; line-height:1.6; }
+  .btn-empty { display:inline-block; margin-top:16px; padding:10px 20px; background:#1a1a1a; color:#fff; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; text-decoration:none; }
+
+  /* Orders */
+  .order-card { background:#fff; border:1px solid #e8e8e5; border-radius:10px; padding:18px; margin-bottom:12px; display:flex; align-items:center; gap:16px; }
+  .order-img { width:56px; height:56px; border-radius:8px; background:#f0f0ee; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden; }
+  .order-img img { width:100%; height:100%; object-fit:cover; }
+  .order-info { flex:1; min-width:0; }
+  .order-title { font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:700; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .order-meta { font-size:0.75rem; color:#888; margin-bottom:6px; }
+  .order-status { display:inline-flex; align-items:center; gap:5px; font-size:0.7rem; font-weight:700; padding:3px 10px; border-radius:50px; }
+  .status-processing { background:#eff6ff; color:#2563eb; }
+  .status-shipped { background:#fff4ee; color:#e8734a; }
+  .status-delivered { background:#e8f5ee; color:#2d9e6b; }
+  .status-cancelled { background:#f0f0ee; color:#aaa; }
+  .order-price { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; text-align:right; flex-shrink:0; }
+  .order-date { font-size:0.72rem; color:#bbb; margin-top:2px; text-align:right; }
+
+  /* Wishlist */
+  .wishlist-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:12px; }
+  .wishlist-card { background:#fff; border:1px solid #e8e8e5; border-radius:10px; overflow:hidden; position:relative; }
+  .wishlist-img { width:100%; aspect-ratio:1; background:#f0f0ee; display:flex; align-items:center; justify-content:center; font-size:2rem; }
+  .wishlist-body { padding:10px; }
+  .wishlist-title { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wishlist-price { font-size:0.82rem; font-weight:600; color:#e8734a; }
+  .wishlist-remove { position:absolute; top:6px; right:6px; width:22px; height:22px; background:rgba(0,0,0,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:0.65rem; border:none; }
+
+  /* Messages */
+  .message-list { display:flex; flex-direction:column; gap:2px; }
+  .message-item { display:flex; align-items:center; gap:12px; padding:14px; border-radius:10px; cursor:pointer; transition:background 0.15s; }
+  .message-item:hover { background:#f0f0ee; }
+  .message-item.unread { background:#fff8f5; }
+  .msg-avatar { width:40px; height:40px; border-radius:50%; background:#e8734a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; flex-shrink:0; }
+  .msg-info { flex:1; min-width:0; }
+  .msg-name { font-weight:600; font-size:0.875rem; margin-bottom:2px; }
+  .msg-preview { font-size:0.78rem; color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .msg-time { font-size:0.72rem; color:#bbb; flex-shrink:0; }
+  .msg-unread-dot { width:8px; height:8px; background:#e8734a; border-radius:50%; flex-shrink:0; }
+
+  /* Notifications */
+  .notif-list { display:flex; flex-direction:column; gap:2px; }
+  .notif-item { display:flex; align-items:flex-start; gap:12px; padding:14px; border-radius:10px; transition:background 0.15s; }
+  .notif-item:hover { background:#f0f0ee; }
+  .notif-item.unread { background:#fff8f5; }
+  .notif-icon-wrap { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+  .notif-icon-wrap.orange { background:#fff4ee; }
+  .notif-icon-wrap.green { background:#e8f5ee; }
+  .notif-icon-wrap.blue { background:#eff6ff; }
+  .notif-text { flex:1; }
+  .notif-msg { font-size:0.82rem; color:#555; line-height:1.5; margin-bottom:3px; }
+  .notif-msg strong { color:#1a1a1a; }
+  .notif-time { font-size:0.72rem; color:#bbb; }
+
+  /* Recently viewed */
+  .recent-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; }
+  .recent-card { background:#fff; border:1px solid #e8e8e5; border-radius:10px; overflow:hidden; text-decoration:none; display:block; transition:all 0.2s; }
+  .recent-card:hover { border-color:#1a1a1a; transform:translateY(-2px); }
+  .recent-img { width:100%; aspect-ratio:1; background:#f0f0ee; display:flex; align-items:center; justify-content:center; font-size:2rem; }
+  .recent-body { padding:10px; }
+  .recent-title { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; color:#1a1a1a; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .recent-price { font-size:0.78rem; color:#888; }
+
+  /* Settings */
+  .settings-section { margin-bottom:24px; }
+  .settings-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#bbb; margin-bottom:12px; }
+  .settings-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #f0f0ee; }
+  .settings-row:last-child { border-bottom:none; }
+  .settings-row-left { }
+  .settings-row-title { font-size:0.875rem; font-weight:500; color:#1a1a1a; margin-bottom:2px; }
+  .settings-row-sub { font-size:0.75rem; color:#aaa; }
+  .btn-edit { padding:6px 14px; background:transparent; border:1px solid #e0e0dc; border-radius:6px; font-family:'Inter',sans-serif; font-size:0.75rem; color:#555; cursor:pointer; transition:all 0.15s; }
+  .btn-edit:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .btn-danger { padding:6px 14px; background:transparent; border:1px solid #fecaca; border-radius:6px; font-family:'Inter',sans-serif; font-size:0.75rem; color:#e05c5c; cursor:pointer; transition:all 0.15s; }
+  .btn-danger:hover { background:#fef2f2; }
+
+  /* Pro upgrade card */
+  .pro-card { background:#1a1a1a; border-radius:14px; padding:28px; position:relative; overflow:hidden; margin-bottom:16px; }
+  .pro-card::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:radial-gradient(circle, rgba(232,115,74,0.25), transparent 70%); pointer-events:none; }
+  .pro-tag { display:inline-block; background:#e8734a; color:#fff; font-size:0.68rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; border-radius:50px; margin-bottom:14px; }
+  .pro-card h2 { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:700; color:#fff; margin-bottom:8px; letter-spacing:-0.3px; }
+  .pro-card p { font-size:0.82rem; color:rgba(255,255,255,0.5); margin-bottom:20px; line-height:1.6; }
+  .pro-perks-mini { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+  .perk-mini { font-size:0.78rem; color:rgba(255,255,255,0.7); display:flex; align-items:center; gap:6px; }
+  .perk-mini::before { content:'✓'; color:#e8734a; font-weight:700; flex-shrink:0; }
+  .btn-pro { padding:11px 22px; background:#e8734a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:700; cursor:pointer; transition:background 0.15s; }
+  .btn-pro:hover { background:#f07d55; }
+
+  /* Form elements */
+  .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  label { font-size:0.75rem; font-weight:500; color:#555; }
+  input, select { background:#fafaf9; border:1px solid #e0e0dc; border-radius:8px; padding:11px 14px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#1a1a1a; outline:none; transition:border 0.15s; width:100%; }
+  input:focus, select:focus { border-color:#1a1a1a; background:#fff; }
+  input::placeholder { color:#ccc; }
+  .btn-save { padding:11px 24px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+  .btn-save:hover { background:#333; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a1a1a; color:#fff; padding:14px 24px; border-radius:10px; font-size:0.875rem; font-weight:500; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s; opacity:0; z-index:100; white-space:nowrap; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  @media (max-width:768px) {
+    nav { padding:0 20px; }
+    .layout { grid-template-columns:1fr; padding:24px 20px 60px; }
+    .sidebar { position:static; }
+    .user-card { display:flex; align-items:center; gap:16px; text-align:left; }
+    .user-card-avatar { margin:0; flex-shrink:0; }
+    .sidebar-nav { flex-direction:row; flex-wrap:wrap; }
+    .sidebar-nav button { flex:1; min-width:80px; justify-content:center; flex-direction:column; gap:4px; padding:8px; font-size:0.7rem; }
+    .sidebar-nav button .nav-icon { font-size:1.2rem; }
+    .wishlist-grid { grid-template-columns:repeat(2,1fr); }
+    .recent-grid { grid-template-columns:repeat(2,1fr); }
+    .pro-perks-mini { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+<!-- Dev banner -->
+<div class="dev-banner" id="dev-banner">⚡ Developer Mode — Full access enabled</div>
+
+<!-- Verify banner -->
+<div class="verify-banner" id="verify-banner">
+  <div class="verify-banner-left">
+    <span>⚠️</span>
+    <span><strong>Verify your email</strong> — check your inbox for a verification link.</span>
+  </div>
+  <div class="verify-banner-actions">
+    <button class="btn-resend" onclick="resendVerify()">Resend email</button>
+    <button class="btn-dismiss" onclick="document.getElementById('verify-banner').classList.remove('show')">Dismiss</button>
+  </div>
+</div>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-right">
+    <a href="browse" class="nav-link">Browse</a>
+    <a href="messages" class="nav-link">Messages</a>
+    <a href="seller-dashboard" class="nav-link seller" id="seller-link">Seller Dashboard →</a>
+    <button class="notif-btn" onclick="switchTab('notifications')" title="Notifications">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-dot" id="notif-dot"></div>
+    </button>
+    <div class="avatar" id="nav-avatar">?</div>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="user-card">
+      <div class="user-card-avatar" id="sidebar-avatar">?</div>
+      <div>
+        <div class="user-card-name" id="sidebar-name">Loading...</div>
+        <div class="user-card-email" id="sidebar-email"></div>
+        <span class="user-card-plan" id="sidebar-plan">Free</span>
+      </div>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><button class="active" onclick="switchTab('overview', this)"><span class="nav-icon">🏠</span> Overview</button></li>
+      <li><button onclick="switchTab('orders', this)"><span class="nav-icon">📦</span> Orders <span class="nav-badge" id="orders-badge" style="display:none">0</span></button></li>
+      <li><button onclick="switchTab('offers', this)"><span class="nav-icon">💬</span> Offers</button></li>
+      <li><button onclick="switchTab('wishlist', this)"><span class="nav-icon">❤️</span> Wishlist</button></li>
+      <li><button onclick="switchTab('messages', this)"><span class="nav-icon">💬</span> Messages <span class="nav-badge" id="msg-badge" style="display:none">0</span></button></li>
+      <li><button onclick="switchTab('recent', this)"><span class="nav-icon">👁️</span> Recently Viewed</button></li>
+      <div class="sidebar-divider"></div>
+      <li><button onclick="switchTab('notifications', this)"><span class="nav-icon">🔔</span> Notifications <span class="nav-badge" id="notif-badge" style="display:none">0</span></button></li>
+      <li><button onclick="switchTab('settings', this)"><span class="nav-icon">⚙️</span> Settings</button></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="section-head">
+        <div>
+          <h2 id="welcome-heading">Hey there 👋</h2>
+          <p>Welcome to your Sellnook dashboard.</p>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
+        <div class="card" style="padding:18px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;" id="ov-orders">0</div>
+          <div style="font-size:0.72rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Orders</div>
+        </div>
+        <div class="card" style="padding:18px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;" id="ov-wishlist">0</div>
+          <div style="font-size:0.72rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Wishlist</div>
+        </div>
+        <div class="card" style="padding:18px;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;" id="ov-messages">0</div>
+          <div style="font-size:0.72rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Messages</div>
+        </div>
+      </div>
+
+      <!-- Coming at launch -->
+      <div class="card">
+        <div class="card-title">Coming at launch — July 21, 2026</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:14px;background:#fafaf9;border-radius:8px;border:1px solid #f0f0ee;">
+            <div style="font-size:1.2rem;margin-bottom:6px;">🛍️</div>
+            <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;margin-bottom:3px;">Browse listings</div>
+            <div style="font-size:0.75rem;color:#aaa;">Shop from independent sellers</div>
+          </div>
+          <div style="padding:14px;background:#fafaf9;border-radius:8px;border:1px solid #f0f0ee;">
+            <div style="font-size:1.2rem;margin-bottom:6px;">🚚</div>
+            <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;margin-bottom:3px;">Fast shipping</div>
+            <div style="font-size:0.75rem;color:#aaa;">Real-time rates at checkout</div>
+          </div>
+          <div style="padding:14px;background:#fafaf9;border-radius:8px;border:1px solid #f0f0ee;">
+            <div style="font-size:1.2rem;margin-bottom:6px;">🔒</div>
+            <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;margin-bottom:3px;">Buyer protection</div>
+            <div style="font-size:0.75rem;color:#aaa;"><a href="buyer-handbook" style="color:#e8734a;text-decoration:none;">Read the handbook →</a></div>
+          </div>
+          <div style="padding:14px;background:#fafaf9;border-radius:8px;border:1px solid #f0f0ee;">
+            <div style="font-size:1.2rem;margin-bottom:6px;">⭐</div>
+            <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;margin-bottom:3px;">Reviews</div>
+            <div style="font-size:0.75rem;color:#aaa;">Rate your purchases</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro upgrade (free users only) -->
+      <div class="pro-card" id="pro-upgrade-card">
+        <div class="pro-tag">Pro Seller</div>
+        <h2>Unlock the full selling experience.</h2>
+        <p>Lower fees, unlimited listings, advanced analytics, discount codes and more — all for $19/month.</p>
+        <div class="pro-perks-mini">
+          <div class="perk-mini">4% transaction fee</div>
+          <div class="perk-mini">Unlimited listings</div>
+          <div class="perk-mini">Custom shop URL</div>
+          <div class="perk-mini">Verified seller badge</div>
+          <div class="perk-mini">Advanced analytics</div>
+          <div class="perk-mini">Discount codes</div>
+          <div class="perk-mini">Early payout</div>
+          <div class="perk-mini">Priority support</div>
+        </div>
+        <button class="btn-pro" onclick="handleUpgrade()">Upgrade to Pro — $19/mo</button>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="tab-content" id="tab-orders">
+      <div class="section-head">
+        <div><h2>Your orders</h2><p>Track and manage your purchases.</p></div>
+      </div>
+      <div id="orders-list">
+        <div class="empty">
+          <div class="empty-icon">📦</div>
+          <h3>No orders yet</h3>
+          <p>Your orders will appear here once the marketplace launches on July 21.</p>
+          <a href="browse" class="btn-empty">Browse listings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- OFFERS -->
+    <div class="tab-content" id="tab-offers">
+      <div class="section-head">
+        <div><h2>Your offers</h2><p>Offers you've made on listings.</p></div>
+      </div>
+      <div id="offers-list">
+        <div class="empty">
+          <div class="empty-icon">💬</div>
+          <h3>No offers yet</h3>
+          <p>Make an offer on a listing and it'll appear here.</p>
+          <a href="browse" class="btn-empty">Browse listings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- WISHLIST -->
+    <div class="tab-content" id="tab-wishlist">
+      <div class="section-head">
+        <div><h2>Wishlist</h2><p>Items you've saved for later.</p></div>
+      </div>
+      <div id="wishlist-content">
+        <div class="empty">
+          <div class="empty-icon">❤️</div>
+          <h3>Your wishlist is empty</h3>
+          <p>Save items you love while browsing — they'll show up here.</p>
+          <a href="browse" class="btn-empty">Start browsing</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="tab-content" id="tab-messages">
+      <div class="section-head">
+        <div><h2>Messages</h2><p>Your conversations with sellers.</p></div>
+      </div>
+
+      <!-- Thread list + chat panel -->
+      <div style="display:grid;grid-template-columns:240px 1fr;gap:0;background:#fff;border:1px solid #e8e8e5;border-radius:12px;overflow:hidden;min-height:480px;">
+
+        <!-- Thread list -->
+        <div style="border-right:1px solid #e8e8e5;display:flex;flex-direction:column;">
+          <div style="padding:14px 16px;border-bottom:1px solid #f0f0ee;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;color:#888;">Conversations</div>
+          <div id="thread-list" style="flex:1;overflow-y:auto;">
+            <div style="padding:32px 16px;text-align:center;color:#bbb;font-size:0.78rem;">
+              <div style="font-size:1.8rem;margin-bottom:8px;">💬</div>
+              No conversations yet
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat panel -->
+        <div style="display:flex;flex-direction:column;" id="chat-panel">
+          <div id="chat-empty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;text-align:center;padding:32px;">
+            <div style="font-size:2.5rem;margin-bottom:12px;">👈</div>
+            <div style="font-size:0.82rem;">Select a conversation or start a new one from a product page</div>
+          </div>
+          <div id="chat-active" style="display:none;flex-direction:column;height:100%;">
+            <div id="chat-header" style="padding:14px 16px;border-bottom:1px solid #f0f0ee;display:flex;align-items:center;gap:10px;">
+              <div id="chat-avatar" style="width:32px;height:32px;border-radius:50%;background:#e8734a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;flex-shrink:0;">?</div>
+              <div>
+                <div id="chat-name" style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;"></div>
+                <div id="chat-sub" style="font-size:0.72rem;color:#aaa;"></div>
+              </div>
+            </div>
+            <div id="chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:300px;max-height:340px;"></div>
+            <div style="padding:12px 16px;border-top:1px solid #f0f0ee;display:flex;gap:8px;">
+              <input type="text" id="chat-input" placeholder="Type a message..." style="flex:1;padding:10px 14px;border:1px solid #e0e0dc;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;" onkeydown="if(event.key==='Enter')sendMessage()">
+              <button onclick="sendMessage()" style="padding:10px 18px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">Send</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RECENTLY VIEWED -->
+    <div class="tab-content" id="tab-recent">
+      <div class="section-head">
+        <div><h2>Recently viewed</h2><p>Listings you've checked out.</p></div>
+        <button onclick="clearRecent()" style="font-size:0.75rem;color:#aaa;background:none;border:none;cursor:pointer;">Clear all</button>
+      </div>
+      <div id="recent-content">
+        <div class="empty">
+          <div class="empty-icon">👁️</div>
+          <h3>Nothing here yet</h3>
+          <p>Listings you view will be saved here automatically.</p>
+          <a href="browse" class="btn-empty">Browse listings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="tab-content" id="tab-notifications">
+      <div class="section-head">
+        <div><h2>Notifications</h2><p>What's been happening on your account.</p></div>
+        <button onclick="markAllRead()" style="font-size:0.75rem;color:#aaa;background:none;border:none;cursor:pointer;">Mark all read</button>
+      </div>
+      <div class="notif-list" id="notif-list">
+        <div class="empty">
+          <div class="empty-icon">🔔</div>
+          <h3>All caught up!</h3>
+          <p>Notifications about your orders, messages and account will appear here.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-content" id="tab-settings">
+      <div class="section-head">
+        <div><h2>Account settings</h2><p>Manage your profile, address and payment methods.</p></div>
+      </div>
+
+      <!-- Profile -->
+      <div class="card">
+        <div class="card-title">Profile</div>
+        <div class="settings-section">
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-row-title">Full name</div>
+              <div class="settings-row-sub" id="set-name">—</div>
+            </div>
+            <button class="btn-edit" onclick="editField('name')">Edit</button>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-row-title">Email address</div>
+              <div class="settings-row-sub" id="set-email">—</div>
+            </div>
+            <button class="btn-edit" onclick="editField('email')">Edit</button>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-row-title">Sign-in method</div>
+              <div class="settings-row-sub" id="set-method">—</div>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-row-title">Member since</div>
+              <div class="settings-row-sub" id="set-since">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="card">
+        <div class="card-title">Shipping address</div>
+        <div id="address-display" style="font-size:0.875rem;color:#888;line-height:1.7;margin-bottom:16px;">No address saved yet.</div>
+        <button class="btn-edit" onclick="showAddressForm()">Edit address</button>
+        <div id="address-form" style="display:none;margin-top:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group" style="grid-column:1/-1;"><label>Street address</label><input type="text" id="addr-street" placeholder="123 Main St"></div>
+            <div class="form-group"><label>City</label><input type="text" id="addr-city" placeholder="Baltimore"></div>
+            <div class="form-group"><label>State</label><input type="text" id="addr-state" placeholder="MD" maxlength="2"></div>
+            <div class="form-group"><label>ZIP</label><input type="text" id="addr-zip" placeholder="21001" maxlength="10"></div>
+            <div class="form-group"><label>Country</label><select id="addr-country"><option value="US">United States</option><option value="CA">Canada</option><option value="GB">United Kingdom</option></select></div>
+          </div>
+          <button class="btn-save" onclick="saveAddress()" style="margin-top:8px;">Save address</button>
+        </div>
+      </div>
+
+      <!-- Payment -->
+      <div class="card">
+        <div class="card-title">Payment methods</div>
+        <div style="font-size:0.875rem;color:#888;margin-bottom:16px;">Payment methods will be linked at checkout when the marketplace launches.</div>
+        <div style="display:flex;gap:10px;">
+          <div style="padding:12px 16px;background:#f0f0ee;border-radius:8px;font-size:0.78rem;color:#888;display:flex;align-items:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.479 9.883c-1.626-.604-2.512-1.067-2.512-1.803 0-.622.511-1.035 1.423-1.035 1.642 0 3.221.65 4.303 1.216l.624-3.913C16.17 3.59 14.398 3 12.021 3 9.084 3 6.9 4.576 6.9 7.265c0 2.636 1.956 3.797 4.133 4.598 1.577.565 2.193 1.035 2.193 1.726 0 .721-.677 1.109-1.734 1.109-1.454 0-3.357-.72-4.684-1.656l-.633 3.981c1.337.826 3.2 1.453 5.312 1.453 3.029 0 5.393-1.479 5.393-4.434-.001-2.87-2.048-3.896-3.401-4.159z"/></svg>
+            Stripe — coming at launch
+          </div>
+          <div style="padding:12px 16px;background:#f0f0ee;border-radius:8px;font-size:0.78rem;color:#888;display:flex;align-items:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.144 19.532l1.049-5.751c.11-.605.691-1.002 1.304-.99l.022.001c2.808.108 5.578-.69 5.578-4.524 0-3.109-2.187-4.368-5.221-4.368H5.044c-.568 0-1.055.409-1.15.969L2.002 18.42c-.07.4.235.77.643.77h3.63c.455 0 .839-.317.869-.758v.1z"/></svg>
+            PayPal — coming at launch
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="card">
+        <div class="card-title" style="color:#e05c5c;">Danger zone</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-title">Delete account</div>
+            <div class="settings-row-sub">Permanently delete your account and all data. This cannot be undone.</div>
+          </div>
+          <button class="btn-danger" onclick="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+  import "/js/notifications.js";
+import { onAuthStateChanged, signOut as fbSignOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, getDocs, getDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const timeout = setTimeout(() => window.location.href = 'login', 20000);
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+
+    // Server-side access check with timeout — dashboard loads even if backend is down
+    let access = { isDev: false, isPro: false };
+    try {
+      const token      = await user.getIdToken();
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), 6000);
+      const res        = await fetch(`${API}/api/auth/access`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        signal:  controller.signal
+      });
+      clearTimeout(timeoutId);
+      access = await res.json();
+    } catch (e) {
+      // Backend sleeping or unreachable — dashboard still loads with defaults
+      console.warn('Access check timed out, loading dashboard with defaults');
+    }
+
+    // Hide loader
+    const loader = document.getElementById('loading');
+    if (loader) {
+      loader.classList.add('hide');
+      setTimeout(() => loader.remove(), 400);
+    }
+
+    const name   = user.displayName || user.email.split('@')[0];
+    const first  = name.split(' ')[0];
+    const since  = new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+    const method = user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'Email & password';
+    const isPro  = access.isPro || access.isDev;
+
+    // Dev banner
+    if (access.isDev) document.getElementById('dev-banner').classList.add('show');
+
+    // Verify banner
+    const isEmailUser = user.providerData[0]?.providerId === 'password';
+    if (isEmailUser && !user.emailVerified) document.getElementById('verify-banner').classList.add('show');
+
+    // Nav avatar
+    const setAvatar = (el) => {
+      if (user.photoURL) el.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+      else el.textContent = name.charAt(0).toUpperCase();
+    };
+    setAvatar(document.getElementById('nav-avatar'));
+    setAvatar(document.getElementById('sidebar-avatar'));
+
+    // Sidebar user info
+    document.getElementById('sidebar-name').textContent  = name;
+    document.getElementById('sidebar-email').textContent = user.email;
+    const planEl = document.getElementById('sidebar-plan');
+    planEl.textContent  = access.isDev ? '⚡ Developer' : isPro ? '⭐ Pro Seller' : 'Free';
+    planEl.className    = 'user-card-plan' + (access.isDev ? ' dev' : isPro ? ' pro' : '');
+
+    // Welcome heading
+    document.getElementById('welcome-heading').textContent = `Hey, ${first} 👋`;
+
+    // Hide Pro upgrade card if already Pro
+    if (isPro) document.getElementById('pro-upgrade-card').style.display = 'none';
+
+    // Settings fields
+    document.getElementById('set-name').textContent   = name;
+    document.getElementById('set-email').textContent  = user.email;
+    document.getElementById('set-method').textContent = method;
+    document.getElementById('set-since').textContent  = since;
+
+    // Load saved address
+    const profile = JSON.parse(localStorage.getItem('sellnook_profile_' + user.uid) || '{}');
+    if (profile.address) {
+      const a = profile.address;
+      document.getElementById('address-display').textContent = `${a.street}${a.apt ? ', ' + a.apt : ''}, ${a.city}, ${a.state} ${a.zip}`;
+      document.getElementById('addr-street').value = a.street || '';
+      document.getElementById('addr-city').value   = a.city   || '';
+      document.getElementById('addr-state').value  = a.state  || '';
+      document.getElementById('addr-zip').value    = a.zip    || '';
+    }
+
+    // Load recently viewed from localStorage
+    loadRecent();
+
+    // Load message threads
+    loadThreads(user.uid);
+
+    // Simulate a notification for demo
+    const notifs = JSON.parse(localStorage.getItem('sellnook_notifs_' + user.uid) || '[]');
+    if (notifs.length) {
+      document.getElementById('notif-dot').classList.add('show');
+      document.getElementById('notif-badge').textContent = notifs.length;
+      document.getElementById('notif-badge').style.display = 'inline-block';
+      renderNotifs(notifs);
+    }
+
+    window._user   = user;
+    window._isPro  = isPro;
+    window._access = access;
+  });
+
+  // Tab switching
+  window.switchTab = function(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (btn) btn.classList.add('active');
+    else {
+      document.querySelectorAll('.sidebar-nav button').forEach(b => {
+        if (b.getAttribute('onclick')?.includes(`'${tab}'`)) b.classList.add('active');
+      });
+    }
+    if (tab === 'orders')   loadOrders();
+    if (tab === 'wishlist') loadWishlist();
+    if (tab === 'messages') loadMessages();
+    if (tab === 'offers')   loadOffers();
+  };
+
+  // ── Load wishlist from Firestore ───────────────────────
+  async function loadWishlist() {
+    const container = document.getElementById('wishlist-content');
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#bbb;font-size:0.875rem;">Loading...</div>';
+
+    try {
+      const userSnap = await getDoc(doc(db, 'users', auth.currentUser.uid));
+      const wishlist  = userSnap.data()?.wishlist || [];
+
+      if (!wishlist.length) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">❤️</div><h3>Your wishlist is empty</h3><p>Save items while browsing — they'll show up here.</p><a href="browse" class="btn-empty">Start browsing</a></div>`;
+        return;
+      }
+
+      // Fetch each listing
+      const items = [];
+      for (const id of wishlist.slice(0, 20)) {
+        try {
+          const snap = await getDoc(doc(db, 'listings', id));
+          if (snap.exists()) items.push({ id: snap.id, ...snap.data() });
+        } catch (e) {}
+      }
+
+      if (!items.length) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">❤️</div><h3>Wishlist items unavailable</h3><p>Some items may have been removed.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = `<div class="wishlist-grid">${items.map(l => {
+        const url = (l.shopIdentifier && l.itemIdentifier)
+          ? `product?shop=${l.shopIdentifier}&item=${l.itemIdentifier}`
+          : `product?id=${l.id}`;
+        return `
+          <a href="${url}" class="wishlist-card" style="text-decoration:none;">
+            <button class="wishlist-remove" onclick="removeWishlist(event,'${l.id}')" title="Remove">✕</button>
+            <div class="wishlist-img">
+              ${l.images?.[0] ? `<img src="${l.images[0]}" style="width:100%;height:100%;object-fit:cover;">` : '📦'}
+            </div>
+            <div class="wishlist-body">
+              <div class="wishlist-title">${l.title}</div>
+              <div class="wishlist-price">$${parseFloat(l.price||0).toFixed(2)}</div>
+            </div>
+          </a>`;
+      }).join('')}</div>`;
+
+    } catch (e) {
+      console.error('Wishlist error:', e);
+      container.innerHTML = '<div style="text-align:center;padding:24px;color:#aaa;font-size:0.875rem;">Error loading wishlist.</div>';
+    }
+  }
+
+  window.removeWishlist = async function(e, listingId) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        wishlist: arrayRemove(listingId)
+      });
+      loadWishlist();
+    } catch (err) { console.error(err); }
+  };
+
+  // ── Load messages ──────────────────────────────────────
+  function loadMessages() {
+    // Messages already load via onSnapshot — just ensure thread list refreshes
+    if (window._messagesLoaded) return;
+    window._messagesLoaded = true;
+  }
+
+  // ── Load offers ────────────────────────────────────────
+  async function loadOffers() {
+    const container = document.getElementById('offers-list');
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#bbb;font-size:0.875rem;">Loading...</div>';
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/offers/buyer`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data   = await res.json();
+      const offers = data.offers || [];
+      if (!offers.length) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><h3>No offers yet</h3><p>Make an offer on a listing and it'll appear here.</p><a href="browse" class="btn-empty">Browse listings</a></div>`;
+        return;
+      }
+      const statusStyle = { pending: ['#eff6ff','#2563eb','Pending'], accepted: ['#e8f5ee','#2d9e6b','Accepted ✓'], declined: ['#f0f0ee','#888','Declined'], countered: ['#fff4ee','#e8734a','Countered'] };
+      container.innerHTML = offers.map(o => {
+        const [bg, color, label] = statusStyle[o.status] || statusStyle.pending;
+        const img  = o.listingImage ? `<img src="${o.listingImage}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;">` : `<div style="width:52px;height:52px;border-radius:8px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📦</div>`;
+        const date = new Date(o.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        return `
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;background:#fff;border:1px solid #e8e8e5;border-radius:10px;margin-bottom:10px;">
+            ${img}
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${o.listingTitle}</div>
+              <div style="font-size:0.75rem;color:#aaa;margin-bottom:6px;">Listed $${parseFloat(o.listingPrice||0).toFixed(2)} · Your offer <strong>$${parseFloat(o.offerAmount||0).toFixed(2)}</strong> · ${date}</div>
+              ${o.status === 'countered' ? `<div style="font-size:0.75rem;color:#e8734a;margin-bottom:4px;">Seller countered: $${parseFloat(o.counterAmount||0).toFixed(2)}</div>` : ''}
+              <span style="background:${bg};color:${color};font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:50px;">${label}</span>
+            </div>
+            ${o.status === 'countered' ? `<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+              <button onclick="acceptCounter('${o.id}')" style="padding:7px 12px;background:#2d9e6b;color:#fff;border:none;border-radius:7px;font-size:0.75rem;font-weight:600;cursor:pointer;">Accept $${parseFloat(o.counterAmount||0).toFixed(2)}</button>
+              <button onclick="declineCounter('${o.id}')" style="padding:7px 12px;background:#f0f0ee;color:#888;border:none;border-radius:7px;font-size:0.75rem;cursor:pointer;">Decline</button>
+            </div>` : ''}
+            ${o.status === 'accepted' ? `<a href="cart" style="padding:7px 12px;background:#e8734a;color:#fff;border-radius:7px;font-size:0.75rem;font-weight:600;text-decoration:none;flex-shrink:0;">Buy now →</a>` : ''}
+          </div>`;
+      }).join('');
+    } catch (e) {
+      container.innerHTML = '<div style="text-align:center;padding:24px;color:#aaa;font-size:0.875rem;">Error loading offers.</div>';
+    }
+  }
+
+  window.acceptCounter = async function(id) {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await fetch(`${API}/api/offers/${id}/counter-accept`, { method:'POST', headers:{'Authorization':`Bearer ${token}`} });
+      loadOffers(); showToast('✅ Counter accepted!');
+    } catch (e) { showToast('Error'); }
+  };
+
+  window.declineCounter = async function(id) {
+    if (!confirm('Decline counter offer?')) return;
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await fetch(`${API}/api/offers/${id}/respond`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify({action:'decline'}) });
+      loadOffers(); showToast('Counter declined');
+    } catch (e) { showToast('Error'); }
+  };
+
+  // ── Load buyer orders ──────────────────────────────────
+  async function loadOrders() {
+    const container = document.getElementById('orders-list');
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#bbb;font-size:0.875rem;">Loading orders...</div>';
+
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/orders/buyer`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data  = await res.json();
+      const orders = data.orders || [];
+
+      // Update badge
+      const badge = document.getElementById('orders-badge');
+      if (orders.length > 0) {
+        badge.textContent   = orders.length;
+        badge.style.display = 'inline-block';
+      }
+
+      // Update overview count
+      document.getElementById('ov-orders').textContent = orders.length;
+
+      if (!orders.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">📦</div>
+            <h3>No orders yet</h3>
+            <p>Your orders will appear here once you make a purchase.</p>
+            <a href="browse" class="btn-empty">Browse listings</a>
+          </div>`;
+        return;
+      }
+
+      const statusColors = {
+        processing: '#2563eb', shipped: '#e8734a',
+        delivered: '#2d9e6b', cancelled: '#888', disputed: '#e05c5c'
+      };
+
+      container.innerHTML = orders.map(o => {
+        const date    = new Date(o.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        const color   = statusColors[o.status] || '#888';
+        const imgHtml = o.itemImage
+          ? `<img src="${o.itemImage}" style="width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;">`
+          : `<div style="width:56px;height:56px;border-radius:8px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">📦</div>`;
+
+        return `
+          <a href="orders?id=${o.id}" style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border:1px solid #e8e8e5;border-radius:10px;margin-bottom:10px;text-decoration:none;transition:border 0.15s;" onmouseover="this.style.borderColor='#1a1a1a'" onmouseout="this.style.borderColor='#e8e8e5'">
+            ${imgHtml}
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;color:#1a1a1a;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${o.itemTitle}</div>
+              <div style="font-size:0.75rem;color:#aaa;margin-bottom:6px;">From ${o.shopName || o.sellerName || 'Seller'} · ${date}</div>
+              <span style="background:${color}18;color:${color};font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:50px;">${o.status.charAt(0).toUpperCase() + o.status.slice(1)}</span>
+              ${o.trackingNumber ? `<div style="font-size:0.72rem;color:#aaa;margin-top:4px;">Tracking: ${o.trackingNumber}</div>` : ''}
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:#1a1a1a;">$${parseFloat(o.total || 0).toFixed(2)}</div>
+              <div style="font-size:0.72rem;color:#aaa;margin-top:4px;">View →</div>
+            </div>
+          </a>`;
+      }).join('');
+
+    } catch (e) {
+      console.error('Load orders error:', e);
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📦</div>
+          <h3>No orders yet</h3>
+          <p>Your orders will appear here once you make a purchase.</p>
+        </div>`;
+    }
+  }
+
+  function loadRecent() {
+    const uid    = window._user?.uid;
+    if (!uid) return;
+    const recent = JSON.parse(localStorage.getItem('sellnook_recent_' + uid) || '[]');
+    if (!recent.length) return;
+    const grid = document.createElement('div');
+    grid.className = 'recent-grid';
+    grid.innerHTML = recent.map(item => `
+      <a href="${item.url || 'browse'}" class="recent-card">
+        <div class="recent-img">${item.emoji || '📦'}</div>
+        <div class="recent-body">
+          <div class="recent-title">${item.title}</div>
+          <div class="recent-price">$${item.price}</div>
+        </div>
+      </a>
+    `).join('');
+    const container = document.getElementById('recent-content');
+    container.innerHTML = '';
+    container.appendChild(grid);
+  }
+
+  window.clearRecent = function() {
+    const uid = window._user?.uid;
+    if (uid) localStorage.removeItem('sellnook_recent_' + uid);
+    document.getElementById('recent-content').innerHTML = `
+      <div class="empty"><div class="empty-icon">👁️</div><h3>Nothing here yet</h3><p>Listings you view will be saved here automatically.</p></div>`;
+    showToast('Recently viewed cleared');
+  };
+
+  function renderNotifs(notifs) {
+    const list = document.getElementById('notif-list');
+    list.innerHTML = notifs.map(n => `
+      <div class="notif-item ${n.read ? '' : 'unread'}">
+        <div class="notif-icon-wrap ${n.color || 'orange'}">${n.icon || '🔔'}</div>
+        <div class="notif-text">
+          <div class="notif-msg">${n.message}</div>
+          <div class="notif-time">${n.time}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.markAllRead = function() {
+    const uid = window._user?.uid;
+    const notifs = JSON.parse(localStorage.getItem('sellnook_notifs_' + uid) || '[]');
+    notifs.forEach(n => n.read = true);
+    localStorage.setItem('sellnook_notifs_' + uid, JSON.stringify(notifs));
+    document.getElementById('notif-dot').classList.remove('show');
+    document.getElementById('notif-badge').style.display = 'none';
+    renderNotifs(notifs);
+    showToast('All notifications marked as read');
+  };
+
+  window.showAddressForm = function() {
+    const form = document.getElementById('address-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  };
+
+  window.saveAddress = function() {
+    const uid = window._user?.uid;
+    const addr = {
+      street:  document.getElementById('addr-street').value.trim(),
+      city:    document.getElementById('addr-city').value.trim(),
+      state:   document.getElementById('addr-state').value.trim(),
+      zip:     document.getElementById('addr-zip').value.trim(),
+      country: document.getElementById('addr-country').value
+    };
+    if (!addr.street || !addr.city || !addr.state || !addr.zip) {
+      showToast('⚠️ Please fill in all address fields'); return;
+    }
+    const profile = JSON.parse(localStorage.getItem('sellnook_profile_' + uid) || '{}');
+    profile.address = addr;
+    localStorage.setItem('sellnook_profile_' + uid, JSON.stringify(profile));
+    document.getElementById('address-display').textContent = `${addr.street}, ${addr.city}, ${addr.state} ${addr.zip}`;
+    document.getElementById('address-form').style.display = 'none';
+    showToast('✅ Address saved!');
+  };
+
+  window.editField = function(field) {
+    const val = prompt(`Enter new ${field}:`);
+    if (!val) return;
+    showToast(`✅ ${field.charAt(0).toUpperCase() + field.slice(1)} updated — changes take effect after re-login`);
+  };
+
+  window.confirmDelete = function() {
+    if (confirm('Are you absolutely sure? This permanently deletes your account and all data.')) {
+      showToast('Account deletion coming soon — contact support@sellnook.com');
+    }
+  };
+
+  window.handleUpgrade = function() {
+    alert('Stripe payments coming soon!\n\nWe\'ll email you at ' + (window._user?.email || '') + ' when Pro subscriptions are available.');
+  };
+
+  window.resendVerify = async function() {
+    const user = auth.currentUser;
+    if (user) {
+      await sendEmailVerification(user);
+      const btn = document.querySelector('.btn-resend');
+      btn.textContent = 'Sent!';
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = 'Resend email'; btn.disabled = false; }, 5000);
+    }
+  };
+
+  // ── Messaging ──────────────────────────────────────────
+  let activeThreadId  = null;
+  let chatUnsub       = null;
+
+  async function loadThreads(uid) {
+    const q = query(
+      collection(db, 'messages'),
+      where('participants', 'array-contains', uid),
+      orderBy('lastMessageAt', 'desc')
+    );
+
+    onSnapshot(q, snap => {
+      const threads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const list    = document.getElementById('thread-list');
+
+      // Update message count badge
+      const unread = threads.filter(t => t.lastSenderId !== uid && !t.readBy?.includes(uid)).length;
+      const badge  = document.getElementById('msg-badge');
+      if (unread > 0) {
+        badge.textContent     = unread;
+        badge.style.display   = 'inline-block';
+        document.getElementById('notif-dot').classList.add('show');
+      }
+
+      if (!threads.length) {
+        list.innerHTML = `<div style="padding:32px 16px;text-align:center;color:#bbb;font-size:0.78rem;"><div style="font-size:1.8rem;margin-bottom:8px;">💬</div>No conversations yet</div>`;
+        return;
+      }
+
+      list.innerHTML = threads.map(t => {
+        const otherName  = t.buyerId === uid ? t.sellerName : t.buyerName;
+        const isUnread   = t.lastSenderId !== uid && !t.readBy?.includes(uid);
+        const initial    = (otherName || '?').charAt(0).toUpperCase();
+        return `
+          <div onclick="openThread('${t.id}')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f0f0ee;transition:background 0.15s;${activeThreadId === t.id ? 'background:#f0f0ee;' : ''}${isUnread ? 'background:#fff8f5;' : ''}" onmouseover="this.style.background='#f0f0ee'" onmouseout="this.style.background='${activeThreadId === t.id ? '#f0f0ee' : isUnread ? '#fff8f5' : ''}'">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:#e8734a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;flex-shrink:0;">${initial}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:0.82rem;font-weight:${isUnread ? '700' : '500'};color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${otherName || 'User'}</div>
+                <div style="font-size:0.72rem;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.lastMessage || '...'}</div>
+              </div>
+              ${isUnread ? '<div style="width:8px;height:8px;background:#e8734a;border-radius:50%;flex-shrink:0;"></div>' : ''}
+            </div>
+          </div>`;
+      }).join('');
+    });
+  }
+
+  window.openThread = async function(threadId) {
+    activeThreadId = threadId;
+    const uid = window._user.uid;
+
+    // Unsubscribe from previous thread
+    if (chatUnsub) chatUnsub();
+
+    // Show chat panel
+    document.getElementById('chat-empty').style.display  = 'none';
+    document.getElementById('chat-active').style.display = 'flex';
+
+    // Get thread data
+    const threadSnap = await getDocs(query(collection(db, 'messages'), where('__name__', '==', threadId)));
+    // Use onSnapshot instead for thread header
+    const threadRef = doc(db, 'messages', threadId);
+
+    // Mark as read
+    try {
+      const snap = await getDocs(query(collection(db, 'messages'), where('__name__', '>=', threadId), where('__name__', '<=', threadId)));
+      if (!snap.empty) {
+        const data     = snap.docs[0].data();
+        const otherName = data.buyerId === uid ? data.sellerName : data.buyerName;
+        document.getElementById('chat-avatar').textContent  = (otherName || '?').charAt(0).toUpperCase();
+        document.getElementById('chat-name').textContent    = otherName || 'User';
+        document.getElementById('chat-sub').textContent     = data.listingTitle || 'General inquiry';
+      }
+    } catch (e) { console.error(e); }
+
+    // Listen to chats subcollection in real time
+    const chatsQ = query(
+      collection(db, 'messages', threadId, 'chats'),
+      orderBy('sentAt', 'asc')
+    );
+
+    chatUnsub = onSnapshot(chatsQ, snap => {
+      const msgs    = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const chatEl  = document.getElementById('chat-messages');
+      chatEl.innerHTML = msgs.map(m => {
+        const isMine = m.senderId === uid;
+        const time   = m.sentAt?.toDate ? m.sentAt.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+        return `
+          <div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
+            <div style="max-width:70%;padding:10px 14px;border-radius:${isMine ? '12px 12px 2px 12px' : '12px 12px 12px 2px'};background:${isMine ? '#1a1a1a' : '#f0f0ee'};color:${isMine ? '#fff' : '#1a1a1a'};font-size:0.875rem;line-height:1.5;">${m.text}</div>
+            <div style="font-size:0.65rem;color:#bbb;margin-top:3px;padding:0 4px;">${time}</div>
+          </div>`;
+      }).join('');
+      chatEl.scrollTop = chatEl.scrollHeight;
+    });
+  };
+
+  window.sendMessage = async function() {
+    const input = document.getElementById('chat-input');
+    const text  = input.value.trim();
+    if (!text || !activeThreadId) return;
+
+    const uid  = window._user.uid;
+    const name = window._user.displayName || window._user.email.split('@')[0];
+    input.value = '';
+
+    try {
+      // Add message to subcollection
+      await addDoc(collection(db, 'messages', activeThreadId, 'chats'), {
+        text,
+        senderId:   uid,
+        senderName: name,
+        sentAt:     serverTimestamp()
+      });
+
+      // Update thread last message
+      await updateDoc(doc(db, 'messages', activeThreadId), {
+        lastMessage:   text,
+        lastMessageAt: serverTimestamp(),
+        lastSenderId:  uid,
+        readBy:        [uid]
+      });
+    } catch (e) {
+      console.error('Send error:', e);
+      showToast('⚠️ Failed to send message');
+    }
+  };
+
+  // Start a new conversation (called from product page)
+  window.startConversation = async function({ sellerId, sellerName, buyerId, buyerName, listingId, listingTitle }) {
+    // Check if thread already exists
+    const existing = await getDocs(query(
+      collection(db, 'messages'),
+      where('listingId', '==', listingId),
+      where('buyerId',   '==', buyerId),
+      where('sellerId',  '==', sellerId)
+    ));
+
+    let threadId;
+    if (!existing.empty) {
+      threadId = existing.docs[0].id;
+    } else {
+      const ref = await addDoc(collection(db, 'messages'), {
+        sellerId,
+        sellerName,
+        buyerId,
+        buyerName,
+        listingId,
+        listingTitle,
+        participants:  [sellerId, buyerId],
+        lastMessage:   '',
+        lastMessageAt: serverTimestamp(),
+        lastSenderId:  '',
+        readBy:        [],
+        createdAt:     serverTimestamp()
+      });
+      threadId = ref.id;
+    }
+
+    // Switch to messages tab and open thread
+    switchTab('messages', document.querySelector('[onclick*="messages"]'));
+    setTimeout(() => openThread(threadId), 300);
+    return threadId;
+  };
+
+  window.signOut = async () => {
+    await fbSignOut(auth);
+    window.location.href = 'login';
+  };
+
+  let toastTimer;
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  };
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sellnook — Cart</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-right { display:flex; align-items:center; gap:12px; }
+  .nav-link { font-size:0.82rem; color:#888; text-decoration:none; }
+  .nav-link:hover { color:#1a1a1a; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:#1a1a1a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700; overflow:hidden; }
+  .avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+
+  .page { max-width:900px; margin:0 auto; padding:40px 40px 80px; animation:up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  h1 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:8px; }
+  .page-sub { font-size:0.82rem; color:#888; margin-bottom:32px; }
+
+  .layout { display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; }
+
+  /* Cart items */
+  .cart-items { display:flex; flex-direction:column; gap:12px; }
+  .cart-item { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:18px; display:flex; gap:16px; align-items:flex-start; }
+  .cart-img { width:80px; height:80px; border-radius:8px; background:#f0f0ee; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
+  .cart-img img { width:100%; height:100%; object-fit:cover; }
+  .cart-info { flex:1; min-width:0; }
+  .cart-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:4px; }
+  .cart-shop { font-size:0.78rem; color:#aaa; margin-bottom:8px; }
+  .cart-condition { display:inline-block; background:#f0f0ee; color:#888; font-size:0.68rem; font-weight:600; padding:2px 8px; border-radius:4px; margin-bottom:10px; }
+  .cart-qty-row { display:flex; align-items:center; gap:10px; }
+  .qty-btn { width:28px; height:28px; border-radius:6px; border:1px solid #e0e0dc; background:#fff; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; color:#1a1a1a; font-weight:600; }
+  .qty-btn:hover { border-color:#1a1a1a; }
+  .qty-val { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; min-width:24px; text-align:center; }
+  .btn-remove { background:none; border:none; font-size:0.75rem; color:#ccc; cursor:pointer; margin-left:auto; padding:4px 8px; border-radius:5px; transition:all 0.15s; }
+  .btn-remove:hover { color:#e05c5c; background:#fef2f2; }
+  .cart-price { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; text-align:right; flex-shrink:0; }
+  .cart-price-sub { font-size:0.72rem; color:#aaa; text-align:right; margin-top:2px; }
+
+  /* Empty cart */
+  .empty-cart { text-align:center; padding:80px 20px; background:#fff; border:1px solid #e8e8e5; border-radius:12px; }
+  .empty-icon { font-size:3rem; margin-bottom:16px; }
+  .empty-cart h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+  .empty-cart p { font-size:0.875rem; color:#888; margin-bottom:20px; }
+  .btn-browse { display:inline-block; padding:11px 24px; background:#1a1a1a; color:#fff; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; text-decoration:none; }
+
+  /* Order summary card */
+  .summary-card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:24px; position:sticky; top:80px; }
+  .summary-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:20px; }
+  .summary-rows { display:flex; flex-direction:column; gap:0; margin-bottom:20px; }
+  .summary-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0f0ee; font-size:0.875rem; }
+  .summary-row:last-child { border-bottom:none; }
+  .summary-label { color:#888; }
+  .summary-value { font-weight:500; }
+  .summary-total { display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:2px solid #1a1a1a; margin-top:4px; }
+  .summary-total-label { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; }
+  .summary-total-value { font-family:'Syne',sans-serif; font-weight:700; font-size:1.3rem; }
+
+  /* Promo code */
+  .promo-row { display:flex; gap:8px; margin-bottom:16px; }
+  .promo-input { flex:1; background:#fafaf9; border:1px solid #e0e0dc; border-radius:8px; padding:9px 12px; font-family:'Inter',sans-serif; font-size:0.82rem; color:#1a1a1a; outline:none; transition:border 0.15s; }
+  .promo-input:focus { border-color:#1a1a1a; background:#fff; }
+  .promo-input::placeholder { color:#ccc; }
+  .btn-apply { padding:9px 14px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:background 0.15s; }
+  .btn-apply:hover { background:#333; }
+  .promo-msg { font-size:0.75rem; margin-top:-8px; margin-bottom:12px; }
+  .promo-msg.success { color:#2d9e6b; }
+  .promo-msg.error { color:#e05c5c; }
+
+  .btn-checkout { width:100%; padding:14px; background:#e8734a; color:#fff; border:none; border-radius:10px; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:background 0.15s; margin-top:16px; }
+  .btn-checkout:hover { background:#f07d55; }
+  .btn-checkout:disabled { background:#ccc; cursor:not-allowed; }
+
+  .secure-note { display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.72rem; color:#bbb; margin-top:12px; }
+
+  @media (max-width:700px) {
+    nav { padding:0 16px; }
+    .page { padding:24px 16px 60px; }
+    .layout { grid-template-columns:1fr; }
+    .summary-card { position:static; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-right">
+    <a href="browse" class="nav-link">← Keep shopping</a>
+    <div class="avatar" id="nav-avatar">?</div>
+  </div>
+</nav>
+
+<div class="page">
+  <h1>Your cart</h1>
+  <p class="page-sub" id="cart-sub">Loading...</p>
+
+  <div class="layout">
+    <div id="cart-items"></div>
+
+    <div class="summary-card" id="summary-card" style="display:none;">
+      <div class="summary-title">Order summary</div>
+
+      <div class="summary-rows" id="summary-rows"></div>
+
+      <!-- Promo code -->
+      <div class="promo-row">
+        <input type="text" class="promo-input" id="promo-input" placeholder="Discount code" style="text-transform:uppercase;">
+        <button class="btn-apply" onclick="applyPromo()">Apply</button>
+      </div>
+      <div class="promo-msg" id="promo-msg"></div>
+
+      <div class="summary-total">
+        <div class="summary-total-label">Total</div>
+        <div class="summary-total-value" id="cart-total">$0.00</div>
+      </div>
+
+      <button class="btn-checkout" id="btn-checkout" onclick="proceedToCheckout()">
+        Proceed to checkout →
+      </button>
+
+      <div class="secure-note">
+        🔒 Secure checkout powered by Stripe
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+  import "/js/notifications.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { doc, getDoc, collection, where, query, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const timeout = setTimeout(() => window.location.href = 'login', 20000);
+
+  let cart        = [];   // [{ listingId, quantity }]
+  let cartDetails = [];   // [{ listing, quantity }]
+  let promoData   = null; // applied promo code
+  let currentUser = null;
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+    currentUser = user;
+
+    const av = document.getElementById('nav-avatar');
+    if (user.photoURL) av.innerHTML = `<img src="${user.photoURL}" alt="">`;
+    else av.textContent = (user.displayName || user.email)[0].toUpperCase();
+
+    loadCart(user.uid);
+
+    document.getElementById('loading').classList.add('hide');
+    setTimeout(() => document.getElementById('loading').remove(), 400);
+  });
+
+  // ── Load cart from localStorage ────────────────────────
+  async function loadCart(uid) {
+    cart = JSON.parse(localStorage.getItem(`sellnook_cart_${uid}`) || '[]');
+
+    if (!cart.length) {
+      showEmptyCart();
+      return;
+    }
+
+    // Fetch listing details for each cart item
+    cartDetails = [];
+    for (const item of cart) {
+      try {
+        const snap = await getDoc(doc(db, 'listings', item.listingId));
+        if (snap.exists()) {
+          cartDetails.push({ listing: { id: snap.id, ...snap.data() }, quantity: item.quantity });
+        }
+      } catch (e) { console.error('Fetch listing error:', e); }
+    }
+
+    if (!cartDetails.length) { showEmptyCart(); return; }
+
+    renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items');
+    document.getElementById('cart-sub').textContent =
+      `${cartDetails.length} item${cartDetails.length !== 1 ? 's' : ''} in your cart`;
+
+    container.innerHTML = cartDetails.map((item, i) => {
+      const l = item.listing;
+      const imgHtml = l.images?.[0]
+        ? `<img src="${l.images[0]}" alt="${l.title}">`
+        : `<span>📦</span>`;
+
+      return `
+        <div class="cart-item" id="item-${l.id}">
+          <div class="cart-img">${imgHtml}</div>
+          <div class="cart-info">
+            <div class="cart-title">${l.title}</div>
+            <div class="cart-shop">From ${l.shopName || l.sellerName}</div>
+            <span class="cart-condition">${l.condition}</span>
+            <div class="cart-qty-row">
+              <button class="qty-btn" onclick="changeQty('${l.id}', -1)">−</button>
+              <span class="qty-val" id="qty-${l.id}">${item.quantity}</span>
+              <button class="qty-btn" onclick="changeQty('${l.id}', 1)">+</button>
+              <span style="font-size:0.72rem;color:#aaa;margin-left:4px;">${l.quantity > 0 ? `${l.quantity} available` : ''}</span>
+              <button class="btn-remove" onclick="removeItem('${l.id}')">Remove</button>
+            </div>
+          </div>
+          <div>
+            <div class="cart-price">$${(parseFloat(l.price) * item.quantity).toFixed(2)}</div>
+            <div class="cart-price-sub">$${parseFloat(l.price).toFixed(2)} each</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    updateSummary();
+    document.getElementById('summary-card').style.display = 'block';
+  }
+
+  function updateSummary() {
+    let subtotal = cartDetails.reduce((sum, item) =>
+      sum + parseFloat(item.listing.price) * item.quantity, 0);
+
+    let discount = 0;
+    if (promoData) {
+      if (promoData.type === 'percent') discount = subtotal * (promoData.amount / 100);
+      else if (promoData.type === 'fixed') discount = Math.min(promoData.amount, subtotal);
+    }
+
+    const afterDiscount = subtotal - discount;
+    const shipping      = 0; // calculated at checkout
+    const total         = afterDiscount + shipping;
+
+    const rows = document.getElementById('summary-rows');
+    rows.innerHTML = `
+      <div class="summary-row">
+        <span class="summary-label">Subtotal (${cartDetails.length} item${cartDetails.length !== 1 ? 's' : ''})</span>
+        <span class="summary-value">$${subtotal.toFixed(2)}</span>
+      </div>
+      ${discount > 0 ? `
+      <div class="summary-row">
+        <span class="summary-label" style="color:#2d9e6b;">Discount (${promoData.code})</span>
+        <span class="summary-value" style="color:#2d9e6b;">−$${discount.toFixed(2)}</span>
+      </div>` : ''}
+      <div class="summary-row">
+        <span class="summary-label">Shipping</span>
+        <span class="summary-value">Calculated at checkout</span>
+      </div>`;
+
+    document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+
+    // Save cart state for checkout
+    localStorage.setItem(`sellnook_checkout_${currentUser.uid}`, JSON.stringify({
+      cartDetails, subtotal, discount, promoData, total
+    }));
+  }
+
+  window.changeQty = function(listingId, delta) {
+    const item   = cartDetails.find(i => i.listing.id === listingId);
+    if (!item) return;
+    const maxQty = item.listing.quantity || 99;
+    const newQty = Math.max(1, Math.min(maxQty, item.quantity + delta));
+    if (newQty === item.quantity) {
+      if (delta > 0) showToastCart(`⚠️ Only ${maxQty} available`);
+      return;
+    }
+    item.quantity = newQty;
+    document.getElementById(`qty-${listingId}`).textContent = newQty;
+    const cartItem = cart.find(c => c.listingId === listingId);
+    if (cartItem) cartItem.quantity = newQty;
+    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
+    updateSummary();
+  };
+
+  window.removeItem = function(listingId) {
+    cartDetails = cartDetails.filter(i => i.listing.id !== listingId);
+    cart        = cart.filter(c => c.listingId !== listingId);
+    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
+    document.getElementById(`item-${listingId}`)?.remove();
+    if (!cartDetails.length) { showEmptyCart(); return; }
+    updateSummary();
+    document.getElementById('cart-sub').textContent =
+      `${cartDetails.length} item${cartDetails.length !== 1 ? 's' : ''} in your cart`;
+  };
+
+  // ── Apply promo code ───────────────────────────────────
+  window.applyPromo = async function() {
+    const code = document.getElementById('promo-input').value.trim().toUpperCase();
+    const msg  = document.getElementById('promo-msg');
+    if (!code) return;
+
+    try {
+      // Find promo code in Firestore
+      const q    = query(collection(db, 'promoCodes'),
+        where('code', '==', code),
+        where('active', '==', true)
+      );
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        msg.textContent = '✕ Invalid or expired code';
+        msg.className   = 'promo-msg error';
+        return;
+      }
+
+      const promo = { id: snap.docs[0].id, ...snap.docs[0].data() };
+
+      // Check expiry
+      if (promo.expiry && new Date(promo.expiry) < new Date()) {
+        msg.textContent = '✕ This code has expired';
+        msg.className   = 'promo-msg error';
+        return;
+      }
+
+      // Check max uses
+      if (promo.maxUses && promo.usedCount >= promo.maxUses) {
+        msg.textContent = '✕ This code has reached its usage limit';
+        msg.className   = 'promo-msg error';
+        return;
+      }
+
+      // Check minimum order
+      const subtotal = cartDetails.reduce((sum, item) =>
+        sum + parseFloat(item.listing.price) * item.quantity, 0);
+      if (promo.minOrder && subtotal < promo.minOrder) {
+        msg.textContent = `✕ Minimum order of $${promo.minOrder} required`;
+        msg.className   = 'promo-msg error';
+        return;
+      }
+
+      promoData = promo;
+      const discountText = promo.type === 'percent' ? `${promo.amount}% off`
+                         : promo.type === 'fixed'   ? `$${promo.amount} off`
+                         : 'Free shipping';
+      msg.textContent = `✓ Code applied — ${discountText}`;
+      msg.className   = 'promo-msg success';
+      updateSummary();
+
+    } catch (e) {
+      msg.textContent = '✕ Error applying code';
+      msg.className   = 'promo-msg error';
+    }
+  };
+
+  // ── Proceed to checkout ────────────────────────────────
+  window.proceedToCheckout = function() {
+    if (!cartDetails.length) return;
+    window.location.href = 'checkout';
+  };
+
+  function showEmptyCart() {
+    document.getElementById('cart-sub').textContent = '0 items';
+    document.getElementById('cart-items').innerHTML = `
+      <div class="empty-cart">
+        <div class="empty-icon">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p>Browse the marketplace and add items to get started.</p>
+        <a href="browse" class="btn-browse">Browse listings</a>
+      </div>`;
+    document.getElementById('summary-card').style.display = 'none';
+  }
+
+  // ── Allow product page to add to cart ─────────────────
+  window.addToCart = function(listingId, quantity = 1) {
+    if (!currentUser) { window.location.href = 'login'; return; }
+    const existing = cart.find(c => c.listingId === listingId);
+    if (existing) existing.quantity += quantity;
+    else cart.push({ listingId, quantity });
+    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
+  };
+
+  // ── Toast ──────────────────────────────────────────────
+  let toastTimer;
+  window.showToastCart = function(msg) {
+    let t = document.getElementById('cart-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'cart-toast';
+      t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:8px;font-size:0.875rem;font-weight:500;transition:transform 0.3s,opacity 0.3s;opacity:0;z-index:100;white-space:nowrap;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    t.style.opacity   = '1';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      t.style.transform = 'translateX(-50%) translateY(80px)';
+      t.style.opacity   = '0';
+    }, 3000);
+  };
+</script>
+</body>
+</html>
+
+
+

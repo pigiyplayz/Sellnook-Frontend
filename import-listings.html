@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sellnook — Import Listings</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-back { font-size:0.82rem; color:#888; text-decoration:none; }
+  .nav-back:hover { color:#1a1a1a; }
+
+  .page { max-width:800px; margin:0 auto; padding:40px 40px 80px; animation:up 0.5s ease both; }
+  h1 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:6px; }
+  .page-sub { font-size:0.875rem; color:#888; margin-bottom:32px; }
+
+  .source-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:32px; }
+  .source-card { background:#fff; border:2px solid #e8e8e5; border-radius:12px; padding:20px; cursor:pointer; transition:all 0.15s; text-align:center; }
+  .source-card:hover { border-color:#1a1a1a; }
+  .source-card.selected { border-color:#1a1a1a; background:#f9f9f8; }
+  .source-icon { font-size:2rem; margin-bottom:10px; }
+  .source-name { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; margin-bottom:4px; }
+  .source-desc { font-size:0.75rem; color:#888; line-height:1.5; }
+
+  .card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:24px; margin-bottom:16px; }
+  .card-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:16px; }
+
+  .upload-zone { border:2px dashed #e0e0dc; border-radius:10px; padding:40px 20px; text-align:center; cursor:pointer; transition:all 0.15s; position:relative; }
+  .upload-zone:hover { border-color:#1a1a1a; background:#f9f9f8; }
+  .upload-zone.drag-over { border-color:#e8734a; background:#fff4ee; }
+  .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .upload-icon { font-size:2.5rem; margin-bottom:12px; }
+  .upload-label { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; margin-bottom:6px; }
+  .upload-sub { font-size:0.78rem; color:#aaa; }
+
+  .template-link { display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; color:#888; text-decoration:none; margin-top:12px; padding:7px 12px; background:#f0f0ee; border-radius:6px; transition:all 0.15s; }
+  .template-link:hover { background:#e8e8e5; color:#1a1a1a; }
+
+  /* Preview table */
+  .preview-wrap { overflow-x:auto; margin-top:16px; }
+  table { width:100%; border-collapse:collapse; font-size:0.78rem; }
+  th { text-align:left; padding:8px 10px; background:#f0f0ee; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#555; }
+  td { padding:10px; border-bottom:1px solid #f0f0ee; color:#555; }
+  td:first-child { font-weight:600; color:#1a1a1a; }
+  .td-status { display:inline-block; padding:2px 8px; border-radius:4px; font-size:0.68rem; font-weight:700; }
+  .td-ok { background:#e8f5ee; color:#2d9e6b; }
+  .td-warn { background:#fff4ee; color:#e8734a; }
+  .td-err { background:#fef2f2; color:#e05c5c; }
+
+  .progress-bar-wrap { background:#f0f0ee; border-radius:50px; height:8px; overflow:hidden; margin-bottom:8px; }
+  .progress-bar-fill { height:100%; background:#e8734a; border-radius:50px; transition:width 0.3s; }
+
+  .btn-primary { padding:12px 24px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+  .btn-primary:hover { background:#333; }
+  .btn-primary:disabled { background:#ccc; cursor:not-allowed; }
+  .btn-secondary { padding:12px 24px; background:transparent; border:1px solid #e0e0dc; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#555; cursor:pointer; transition:all 0.15s; }
+  .btn-secondary:hover { border-color:#1a1a1a; color:#1a1a1a; }
+
+  .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a1a1a; color:#fff; padding:14px 24px; border-radius:10px; font-size:0.875rem; font-weight:500; transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s; opacity:0; z-index:100; white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  @media (max-width:600px) {
+    nav { padding:0 16px; }
+    .page { padding:24px 16px 60px; }
+    .source-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <a href="seller-dashboard" class="nav-back">← Seller Dashboard</a>
+</nav>
+
+<div class="page">
+  <h1>Import listings</h1>
+  <p class="page-sub">Bring your listings from Etsy, Shopify, or any platform using CSV.</p>
+
+  <!-- Source selection -->
+  <div class="source-grid">
+    <div class="source-card selected" onclick="selectSource('sellnook', this)" id="src-sellnook">
+      <div class="source-icon">📋</div>
+      <div class="source-name">Sellnook CSV</div>
+      <div class="source-desc">Use our template to bulk upload any listings</div>
+    </div>
+    <div class="source-card" onclick="selectSource('etsy', this)" id="src-etsy">
+      <div class="source-icon">🛍️</div>
+      <div class="source-name">Etsy Export</div>
+      <div class="source-desc">Download your listings from Etsy and import directly</div>
+    </div>
+    <div class="source-card" onclick="selectSource('shopify', this)" id="src-shopify">
+      <div class="source-icon">🏪</div>
+      <div class="source-name">Shopify Export</div>
+      <div class="source-desc">Import your Shopify product catalog</div>
+    </div>
+  </div>
+
+  <!-- Instructions card -->
+  <div class="card" id="instructions-card">
+    <div class="card-title" id="instructions-title">Sellnook CSV Format</div>
+    <div id="instructions-body" style="font-size:0.82rem;color:#555;line-height:1.8;">
+      Download the template, fill in your listings, and upload the file. Required columns:
+      <strong>title, price, category, condition, description, quantity, weight_lbs</strong>.
+      Optional: <em>images (comma separated URLs), shipping_price, free_shipping</em>.
+    </div>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="#" class="template-link" onclick="downloadTemplate(); return false;">⬇️ Download Sellnook template</a>
+      <a href="https://www.etsy.com/your/shops/me/tools/listings" target="_blank" class="template-link" id="platform-link" style="display:none;">🔗 Get Etsy export</a>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div class="card">
+    <div class="card-title">Upload your CSV file</div>
+    <div class="upload-zone" id="upload-zone" ondragover="handleDrag(event)" ondrop="handleDrop(event)">
+      <input type="file" accept=".csv,.txt" onchange="handleFile(this.files[0])">
+      <div class="upload-icon">📂</div>
+      <div class="upload-label">Drop your CSV here or click to browse</div>
+      <div class="upload-sub" id="file-label">Supports .csv files up to 5MB</div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="card" id="preview-card" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="card-title" style="margin:0;">Preview (<span id="preview-count">0</span> listings)</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" onclick="clearFile()">Clear</button>
+        <button class="btn-primary" id="import-btn" onclick="importListings()">Import all →</button>
+      </div>
+    </div>
+    <div class="progress-bar-wrap" id="progress-wrap" style="display:none;">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%;"></div>
+    </div>
+    <div id="progress-text" style="font-size:0.75rem;color:#888;margin-bottom:12px;display:none;"></div>
+    <div class="preview-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Condition</th>
+            <th>Weight</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="preview-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, addDoc, doc, getDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const LAUNCH_DATE = new Date('2026-07-21T17:00:00');
+  const timeout = setTimeout(() => window.location.href = 'login', 20000);
+
+  let currentUser  = null;
+  let parsedRows   = [];
+  let currentSource = 'sellnook';
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+    currentUser = user;
+    document.getElementById('loading').classList.add('hide');
+    setTimeout(() => document.getElementById('loading')?.remove(), 400);
+  });
+
+  // ── Source selection ───────────────────────────────────
+  window.selectSource = function(source, el) {
+    currentSource = source;
+    document.querySelectorAll('.source-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+
+    const titles = {
+      sellnook: 'Sellnook CSV Format',
+      etsy:     'Etsy Export Instructions',
+      shopify:  'Shopify Export Instructions'
+    };
+    const bodies = {
+      sellnook: 'Download the template, fill in your listings, and upload. Required: <strong>title, price, category, condition, description, quantity, weight_lbs</strong>.',
+      etsy:     'In Etsy, go to <strong>Shop Manager → Listings</strong>, click the gear icon and select <strong>Download data</strong>. Upload the downloaded CSV here.',
+      shopify:  'In Shopify, go to <strong>Products → All products</strong>, click <strong>Export</strong>, choose "All products" and "CSV for Excel". Upload that file here.'
+    };
+
+    document.getElementById('instructions-title').textContent = titles[source];
+    document.getElementById('instructions-body').innerHTML    = bodies[source];
+
+    const platformLink = document.getElementById('platform-link');
+    if (source === 'etsy') {
+      platformLink.style.display = 'inline-flex';
+      platformLink.href          = 'https://www.etsy.com/your/shops/me/tools/listings';
+      platformLink.textContent   = '🔗 Get Etsy export';
+    } else if (source === 'shopify') {
+      platformLink.style.display = 'inline-flex';
+      platformLink.href          = '#';
+      platformLink.textContent   = '📖 Shopify export guide';
+    } else {
+      platformLink.style.display = 'none';
+    }
+  };
+
+  // ── CSV parsing ────────────────────────────────────────
+  function parseCSV(text) {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, '').replace(/\s+/g, '_'));
+
+    return lines.slice(1).map(line => {
+      const vals = parseCSVLine(line);
+      const obj  = {};
+      headers.forEach((h, i) => obj[h] = (vals[i] || '').trim().replace(/^"|"$/g, ''));
+      return obj;
+    }).filter(r => r.title || r.listing_title || r.name || r['title ']);
+  }
+
+  function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQuotes = !inQuotes; continue; }
+      if (line[i] === ',' && !inQuotes) { result.push(current); current = ''; continue; }
+      current += line[i];
+    }
+    result.push(current);
+    return result;
+  }
+
+  // ── Map CSV row to Sellnook listing format ─────────────
+  function mapRow(row, source) {
+    // Normalize field names across platforms
+    const get = (...keys) => {
+      for (const k of keys) {
+        const val = row[k] || row[k + ' '] || row[' ' + k];
+        if (val && val.trim()) return val.trim();
+      }
+      return '';
+    };
+
+    let title, price, category, condition, description, quantity, weight, images;
+
+    if (source === 'etsy') {
+      title       = get('title', 'listing_title');
+      price       = get('price', 'listing_price', 'item_price');
+      category    = get('category', 'type', 'taxonomy_path');
+      condition   = 'Good'; // Etsy doesn't export condition
+      description = get('description', 'listing_description');
+      quantity    = get('quantity', 'qty', 'available_quantity') || '1';
+      weight      = get('item_weight') || '1';
+      images      = get('main_image_url', 'image1', 'image_url');
+    } else if (source === 'shopify') {
+      title       = get('title', 'product_title');
+      price       = get('variant_price', 'price', 'sale_price');
+      category    = get('product_category', 'type', 'product_type');
+      condition   = 'New';
+      description = get('body_(html)', 'body', 'description');
+      quantity    = get('variant_inventory_qty', 'quantity', 'stock') || '1';
+      weight      = get('variant_grams') ? (parseFloat(get('variant_grams')) / 453.6).toFixed(2) : '1';
+      images      = get('image_src', 'variant_image', 'image_url');
+    } else {
+      title       = get('title');
+      price       = get('price');
+      category    = get('category');
+      condition   = get('condition') || 'Good';
+      description = get('description');
+      quantity    = get('quantity', 'qty') || '1';
+      weight      = get('weight_lbs', 'weight') || '1';
+      images      = get('images', 'image_urls', 'image_url');
+    }
+
+    // Clean up price
+    price = parseFloat((price || '0').replace(/[^0-9.]/g, '')) || 0;
+    quantity = parseInt(quantity) || 1;
+    weight   = parseFloat(weight) || 1;
+
+    // Validate
+    const errors = [];
+    if (!title) errors.push('Missing title');
+    if (!price || price <= 0) errors.push('Invalid price');
+    if (!category) errors.push('Missing category');
+    if (weight > 70) errors.push('Weight over 70lbs');
+
+    return {
+      title,
+      price,
+      category:    mapCategory(category),
+      condition:   mapCondition(condition),
+      description: description.replace(/<[^>]*>/g, '').substring(0, 1000), // strip HTML
+      quantity,
+      weight,
+      images:      images ? images.split(',').map(u => u.trim()).filter(Boolean) : [],
+      valid:       errors.length === 0,
+      errors
+    };
+  }
+
+  function mapCategory(cat) {
+    const c = (cat || '').toLowerCase();
+    if (c.includes('art') || c.includes('craft')) return 'Art & Crafts';
+    if (c.includes('fashion') || c.includes('clothing') || c.includes('apparel')) return 'Fashion';
+    if (c.includes('book')) return 'Books';
+    if (c.includes('home') || c.includes('garden') || c.includes('furniture')) return 'Home & Garden';
+    if (c.includes('electronic') || c.includes('tech') || c.includes('computer')) return 'Electronics';
+    if (c.includes('toy') || c.includes('game')) return 'Toys & Games';
+    if (c.includes('jewelry') || c.includes('jewellery')) return 'Jewelry';
+    if (c.includes('music') || c.includes('instrument')) return 'Music';
+    return cat || 'Other';
+  }
+
+  function mapCondition(cond) {
+    const c = (cond || '').toLowerCase();
+    if (c.includes('new')) return 'New';
+    if (c.includes('like new') || c.includes('excellent')) return 'Like New';
+    if (c.includes('good') || c.includes('used')) return 'Good';
+    if (c.includes('fair') || c.includes('acceptable')) return 'Fair';
+    return 'Good';
+  }
+
+  // ── File handling ──────────────────────────────────────
+  window.handleFile = function(file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('⚠️ File too large. Max 5MB.'); return; }
+
+    document.getElementById('file-label').textContent = `📄 ${file.name} (${(file.size/1024).toFixed(1)}KB)`;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const rows = parseCSV(e.target.result);
+      parsedRows = rows.map(r => mapRow(r, currentSource));
+      showPreview();
+    };
+    reader.readAsText(file);
+  };
+
+  window.handleDrag = function(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.add('drag-over');
+  };
+
+  window.handleDrop = function(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  };
+
+  function showPreview() {
+    document.getElementById('preview-card').style.display = 'block';
+    document.getElementById('preview-count').textContent  = parsedRows.length;
+
+    document.getElementById('preview-table').innerHTML = parsedRows.map((r, i) => `
+      <tr>
+        <td>${r.title || '—'}</td>
+        <td>$${parseFloat(r.price || 0).toFixed(2)}</td>
+        <td>${r.category || '—'}</td>
+        <td>${r.condition || '—'}</td>
+        <td>${r.weight || '—'} lbs</td>
+        <td>
+          ${r.valid
+            ? '<span class="td-status td-ok">✓ Ready</span>'
+            : `<span class="td-status td-err" title="${r.errors.join(', ')}">⚠ ${r.errors[0]}</span>`}
+        </td>
+      </tr>`).join('');
+  }
+
+  window.clearFile = function() {
+    parsedRows = [];
+    document.getElementById('preview-card').style.display  = 'none';
+    document.getElementById('file-label').textContent      = 'Supports .csv files up to 5MB';
+  };
+
+  // ── Import to Firestore ────────────────────────────────
+  window.importListings = async function() {
+    if (!currentUser || !parsedRows.length) return;
+
+    const valid = parsedRows.filter(r => r.valid);
+    if (!valid.length) { showToast('⚠️ No valid listings to import'); return; }
+
+    const btn = document.getElementById('import-btn');
+    btn.disabled    = true;
+    btn.textContent = 'Importing...';
+
+    const progressWrap = document.getElementById('progress-wrap');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    progressWrap.style.display = 'block';
+    progressText.style.display = 'block';
+
+    // Get seller profile data
+    const userDoc  = await getDoc(doc(db, 'users', currentUser.uid));
+    const userData = userDoc.data() || {};
+
+    let imported = 0;
+    let failed   = 0;
+
+    for (let i = 0; i < valid.length; i++) {
+      const row = valid[i];
+      try {
+        await addDoc(collection(db, 'listings'), {
+          title:          row.title,
+          price:          row.price,
+          category:       row.category,
+          condition:      row.condition,
+          description:    row.description,
+          quantity:       row.quantity,
+          weight:         row.weight,
+          images:         row.images,
+          sellerId:       currentUser.uid,
+          sellerName:     currentUser.displayName || currentUser.email.split('@')[0],
+          sellerEmail:    currentUser.email,
+          shopName:       userData.shopName || '',
+          sellerPhoto:    currentUser.photoURL || '',
+          isPro:          userData.isPro || false,
+          status:         'active',
+          visibleAt:      LAUNCH_DATE.toISOString(),
+          createdAt:      serverTimestamp(),
+          updatedAt:      serverTimestamp(),
+          importedFrom:   currentSource,
+          sales:          0,
+          views:          0
+        });
+        imported++;
+      } catch (e) {
+        console.error('Import row error:', e);
+        failed++;
+      }
+
+      const pct = Math.round(((i + 1) / valid.length) * 100);
+      progressFill.style.width = `${pct}%`;
+      progressText.textContent = `Importing ${i + 1} of ${valid.length}...`;
+    }
+
+    progressText.textContent = `✅ Done! ${imported} imported${failed > 0 ? `, ${failed} failed` : ''}.`;
+    btn.textContent = `✅ ${imported} imported!`;
+    showToast(`✅ Imported ${imported} listing${imported !== 1 ? 's' : ''}!`);
+
+    setTimeout(() => window.location.href = 'seller-dashboard', 2000);
+  };
+
+  // ── Download template ──────────────────────────────────
+  window.downloadTemplate = function() {
+    const csv = `title,price,category,condition,description,quantity,weight_lbs,images,shipping_price,free_shipping
+"Vintage Denim Jacket",45.00,"Fashion","Good","Classic 90s denim jacket in excellent condition. Size M.",1,1.5,"",5.00,false
+"Handmade Ceramic Mug",18.00,"Art & Crafts","New","Hand-thrown ceramic mug, holds 12oz. Microwave safe.",3,0.8,"",4.00,false
+"Learn Python Book",12.00,"Books","Like New","Python programming book, barely used.",1,0.6,"",3.50,false`;
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'sellnook-import-template.csv';
+    a.click();
+    showToast('✅ Template downloaded!');
+  };
+
+  let toastTimer;
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  };
+</script>
+</body>
+</html>
+
+
+

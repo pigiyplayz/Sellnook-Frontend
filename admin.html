@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sellnook — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#0f0f0f; color:#e8e8e5; min-height:100vh; display:flex; flex-direction:column; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+  /* Loading */
+  .loading { position:fixed; inset:0; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; gap:16px; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2px solid #333; border-top-color:#e8734a; border-radius:50%; animation:spin 0.7s linear infinite; }
+  .loading p { font-size:0.8rem; color:#555; }
+
+  /* Access denied */
+  .denied { position:fixed; inset:0; background:#0f0f0f; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; z-index:998; }
+  .denied.show { display:flex; }
+  .denied h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; margin-bottom:10px; color:#e8734a; }
+  .denied p { font-size:0.875rem; color:#555; margin-bottom:24px; }
+  .denied a { padding:11px 24px; background:#e8734a; color:#fff; border-radius:8px; text-decoration:none; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; }
+
+  /* Top bar */
+  .topbar { background:#161616; border-bottom:1px solid #222; padding:0 24px; height:56px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:sticky; top:0; z-index:10; }
+  .topbar-left { display:flex; align-items:center; gap:16px; }
+  .logo { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:#e8e8e5; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .admin-badge { background:#e8734a; color:#fff; font-size:0.62rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:3px 8px; border-radius:4px; }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .status-dot { width:7px; height:7px; background:#2d9e6b; border-radius:50%; animation:pulse 2s infinite; }
+  .status-text { font-size:0.72rem; color:#555; }
+  .avatar { width:28px; height:28px; border-radius:50%; background:#e8734a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; overflow:hidden; }
+  .avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .btn-signout { background:transparent; border:1px solid #333; border-radius:6px; padding:6px 12px; font-family:'Inter',sans-serif; font-size:0.72rem; color:#555; cursor:pointer; transition:all 0.15s; }
+  .btn-signout:hover { border-color:#555; color:#e8e8e5; }
+
+  /* Layout */
+  .layout { display:grid; grid-template-columns:200px 1fr; flex:1; }
+
+  /* Sidebar */
+  .sidebar { background:#161616; border-right:1px solid #222; padding:20px 12px; display:flex; flex-direction:column; gap:2px; position:sticky; top:56px; height:calc(100vh - 56px); overflow-y:auto; }
+  .sidebar-label { font-size:0.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#333; padding:8px 10px 4px; margin-top:8px; }
+  .sidebar-btn { display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:7px; font-family:'Inter',sans-serif; font-size:0.8rem; color:#666; background:none; border:none; cursor:pointer; transition:all 0.15s; text-align:left; width:100%; }
+  .sidebar-btn:hover { background:#1e1e1e; color:#e8e8e5; }
+  .sidebar-btn.active { background:#1e1e1e; color:#e8e8e5; }
+  .sidebar-btn .icon { font-size:0.9rem; width:18px; text-align:center; flex-shrink:0; }
+  .sidebar-btn .badge { margin-left:auto; background:#e8734a; color:#fff; font-size:0.6rem; font-weight:700; padding:2px 5px; border-radius:50px; }
+  .sidebar-divider { height:1px; background:#222; margin:8px 0; }
+
+  /* Main */
+  .main { padding:32px; animation:up 0.4s ease both; overflow-y:auto; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* Page header */
+  .page-head { margin-bottom:28px; }
+  .page-head h1 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
+  .page-head p { font-size:0.82rem; color:#555; }
+
+  /* Stats grid */
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+  .stat-card { background:#161616; border:1px solid #222; border-radius:10px; padding:18px; }
+  .stat-label { font-size:0.68rem; color:#555; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+  .stat-value { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; color:#e8e8e5; margin-bottom:4px; }
+  .stat-value.orange { color:#e8734a; }
+  .stat-value.green { color:#2d9e6b; }
+  .stat-sub { font-size:0.72rem; color:#444; }
+
+  /* Cards */
+  .card { background:#161616; border:1px solid #222; border-radius:10px; padding:20px; margin-bottom:16px; }
+  .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .card-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; color:#e8e8e5; }
+  .card-sub { font-size:0.72rem; color:#555; margin-top:2px; }
+
+  /* Table */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+  th { text-align:left; padding:10px 12px; font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; color:#444; border-bottom:1px solid #222; }
+  td { padding:12px; border-bottom:1px solid #1e1e1e; color:#aaa; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#1a1a1a; }
+  .td-main { color:#e8e8e5; font-weight:500; }
+
+  /* Badges */
+  .badge { display:inline-flex; align-items:center; padding:3px 8px; border-radius:50px; font-size:0.65rem; font-weight:700; letter-spacing:0.5px; }
+  .badge-green { background:#0d2b1e; color:#2d9e6b; }
+  .badge-orange { background:#2b1a0d; color:#e8734a; }
+  .badge-red { background:#2b0d0d; color:#e05c5c; }
+  .badge-blue { background:#0d1a2b; color:#3b82f6; }
+  .badge-grey { background:#1e1e1e; color:#555; }
+
+  /* Action buttons */
+  .btn-action { padding:5px 10px; border-radius:5px; font-family:'Inter',sans-serif; font-size:0.72rem; cursor:pointer; border:none; transition:all 0.15s; font-weight:500; }
+  .btn-view { background:#1e1e1e; color:#aaa; }
+  .btn-view:hover { background:#2a2a2a; color:#e8e8e5; }
+  .btn-ban { background:#2b0d0d; color:#e05c5c; }
+  .btn-ban:hover { background:#3d1212; }
+  .btn-remove { background:#2b0d0d; color:#e05c5c; }
+  .btn-remove:hover { background:#3d1212; }
+  .btn-approve { background:#0d2b1e; color:#2d9e6b; }
+  .btn-approve:hover { background:#123d2a; }
+  .btn-primary { padding:9px 18px; background:#e8734a; color:#fff; border:none; border-radius:7px; font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+  .btn-primary:hover { background:#f07d55; }
+  .btn-secondary { padding:9px 18px; background:#1e1e1e; color:#aaa; border:1px solid #333; border-radius:7px; font-family:'Inter',sans-serif; font-size:0.8rem; cursor:pointer; transition:all 0.15s; }
+  .btn-secondary:hover { border-color:#555; color:#e8e8e5; }
+
+  /* Search/filter bar */
+  .filter-bar { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .search-input { background:#1e1e1e; border:1px solid #2a2a2a; border-radius:7px; padding:9px 14px; font-family:'Inter',sans-serif; font-size:0.8rem; color:#e8e8e5; outline:none; flex:1; max-width:320px; transition:border 0.15s; }
+  .search-input:focus { border-color:#444; }
+  .search-input::placeholder { color:#444; }
+  .filter-select { background:#1e1e1e; border:1px solid #2a2a2a; border-radius:7px; padding:9px 12px; font-family:'Inter',sans-serif; font-size:0.8rem; color:#aaa; outline:none; cursor:pointer; }
+
+  /* Empty state */
+  .empty { text-align:center; padding:48px 20px; color:#333; }
+  .empty-icon { font-size:2rem; margin-bottom:10px; }
+  .empty p { font-size:0.82rem; }
+
+  /* AI Assistant */
+  .ai-panel { background:#161616; border:1px solid #222; border-radius:10px; overflow:hidden; }
+  .ai-header { padding:16px 20px; border-bottom:1px solid #222; display:flex; align-items:center; gap:10px; }
+  .ai-dot { width:8px; height:8px; background:#e8734a; border-radius:50%; animation:pulse 1.5s infinite; }
+  .ai-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; }
+  .ai-sub { font-size:0.72rem; color:#555; margin-left:auto; }
+  .ai-messages { height:320px; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; }
+  .ai-msg { display:flex; gap:10px; animation:up 0.2s ease both; }
+  .ai-msg.user { flex-direction:row-reverse; }
+  .ai-bubble { max-width:80%; padding:10px 14px; border-radius:12px; font-size:0.82rem; line-height:1.6; }
+  .ai-msg.assistant .ai-bubble { background:#1e1e1e; color:#aaa; border-radius:12px 12px 12px 4px; }
+  .ai-msg.user .ai-bubble { background:#e8734a; color:#fff; border-radius:12px 12px 4px 12px; }
+  .ai-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; flex-shrink:0; margin-top:2px; }
+  .ai-avatar.bot { background:#1e1e1e; color:#e8734a; }
+  .ai-avatar.user { background:#e8734a; color:#fff; }
+  .ai-input-area { padding:12px 16px; border-top:1px solid #222; display:flex; gap:10px; }
+  .ai-input { flex:1; background:#1e1e1e; border:1px solid #2a2a2a; border-radius:8px; padding:10px 14px; font-family:'Inter',sans-serif; font-size:0.82rem; color:#e8e8e5; outline:none; transition:border 0.15s; }
+  .ai-input:focus { border-color:#444; }
+  .ai-input::placeholder { color:#444; }
+  .ai-send { padding:10px 16px; background:#e8734a; border:none; border-radius:8px; color:#fff; font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; transition:background 0.15s; white-space:nowrap; }
+  .ai-send:hover { background:#f07d55; }
+  .ai-send:disabled { background:#333; cursor:not-allowed; }
+  .ai-thinking { display:flex; align-items:center; gap:4px; padding:10px 14px; background:#1e1e1e; border-radius:12px; width:fit-content; }
+  .ai-thinking span { width:5px; height:5px; background:#555; border-radius:50%; animation:pulse 1s infinite; }
+  .ai-thinking span:nth-child(2) { animation-delay:0.2s; }
+  .ai-thinking span:nth-child(3) { animation-delay:0.4s; }
+  .ai-quick-btns { display:flex; gap:8px; flex-wrap:wrap; padding:0 16px 12px; }
+  .ai-quick { padding:6px 12px; background:#1e1e1e; border:1px solid #2a2a2a; border-radius:50px; font-size:0.72rem; color:#666; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .ai-quick:hover { border-color:#555; color:#e8e8e5; }
+
+  /* Email blast */
+  .email-form { display:flex; flex-direction:column; gap:14px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group label { font-size:0.72rem; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:1px; }
+  .form-group input, .form-group textarea, .form-group select { background:#1e1e1e; border:1px solid #2a2a2a; border-radius:8px; padding:10px 14px; font-family:'Inter',sans-serif; font-size:0.82rem; color:#e8e8e5; outline:none; transition:border 0.15s; }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color:#444; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color:#444; }
+  .form-group textarea { resize:vertical; min-height:100px; }
+
+  /* Waitlist export */
+  .waitlist-actions { display:flex; gap:10px; margin-bottom:16px; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#e8734a; color:#fff; padding:12px 24px; border-radius:8px; font-size:0.82rem; font-weight:600; transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s; opacity:0; z-index:100; pointer-events:none; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  @media (max-width:768px) {
+    .layout { grid-template-columns:1fr; }
+    .sidebar { display:none; }
+    .stats-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>Verifying access...</p>
+</div>
+
+<div class="denied" id="denied">
+  <div style="font-size:3rem;margin-bottom:16px;">🚫</div>
+  <h2>Access denied</h2>
+  <p>This panel is restricted to admin accounts only.</p>
+  <a href="dashboard">Back to Dashboard</a>
+</div>
+
+<!-- Top bar -->
+<div class="topbar" id="topbar" style="display:none;">
+  <div class="topbar-left">
+    <a href="coming-soon" class="logo">sell<span>nook</span></a>
+    <span class="admin-badge">Admin</span>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    <span class="status-text">Live</span>
+    <div class="avatar" id="admin-avatar">A</div>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</div>
+
+<div class="layout" id="layout" style="display:none;">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Overview</div>
+    <button class="sidebar-btn active" onclick="switchTab('overview', this)"><span class="icon">📊</span> Dashboard</button>
+    <button class="sidebar-btn" onclick="switchTab('ai', this)"><span class="icon">🤖</span> AI Assistant</button>
+
+    <div class="sidebar-label">Manage</div>
+    <button class="sidebar-btn" onclick="switchTab('users', this)"><span class="icon">👥</span> Users</button>
+    <button class="sidebar-btn" onclick="switchTab('listings', this)"><span class="icon">📦</span> Listings</button>
+    <button class="sidebar-btn" onclick="switchTab('disputes', this)"><span class="icon">⚖️</span> Disputes <span class="badge" id="dispute-badge" style="display:none">0</span></button>
+    <button class="sidebar-btn" onclick="switchTab('pro', this)"><span class="icon">⭐</span> Pro Accounts</button>
+
+    <div class="sidebar-label">Growth</div>
+    <button class="sidebar-btn" onclick="switchTab('waitlist', this)"><span class="icon">📋</span> Waitlist</button>
+    <button class="sidebar-btn" onclick="switchTab('revenue', this)"><span class="icon">💰</span> Revenue</button>
+    <button class="sidebar-btn" onclick="switchTab('blast', this)"><span class="icon">📣</span> Email Blast</button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">Quick actions</div>
+    <button class="sidebar-btn" onclick="sendDailyReport()" style="color:#e8734a;"><span class="icon">📊</span> Send Report</button>
+    <button class="sidebar-btn" onclick="quickScanAll()"><span class="icon">🔍</span> Full AI Scan</button>
+    <button class="sidebar-btn" onclick="switchTab('blast', this);document.getElementById('blast-subject').value='Sellnook launches July 21!';"><span class="icon">📣</span> Quick Blast</button>
+    <button class="sidebar-btn" onclick="exportAllData()"><span class="icon">⬇️</span> Export Data</button>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="page-head">
+        <h1>Dashboard</h1>
+        <p>Welcome back. Here's what's happening on Sellnook.</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total users</div>
+          <div class="stat-value" id="stat-users">—</div>
+          <div class="stat-sub">All accounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total listings</div>
+          <div class="stat-value orange" id="stat-listings">—</div>
+          <div class="stat-sub">Active items</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Waitlist</div>
+          <div class="stat-value green" id="stat-waitlist">—</div>
+          <div class="stat-sub">Signups</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pro accounts</div>
+          <div class="stat-value" id="stat-pro">—</div>
+          <div class="stat-sub">Paying sellers</div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent listings</div>
+            <div class="card-sub">Latest items added to the marketplace</div>
+          </div>
+          <button class="btn-secondary" onclick="switchTab('listings', document.querySelector('[onclick*=\"listings\"]'))">View all</button>
+        </div>
+        <div id="recent-listings-overview">
+          <div class="empty"><div class="empty-icon">📦</div><p>Loading...</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent signups</div>
+            <div class="card-sub">Newest accounts on Sellnook</div>
+          </div>
+        </div>
+        <div id="recent-users-overview">
+          <div class="empty"><div class="empty-icon">👥</div><p>Loading...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ASSISTANT -->
+    <div class="tab-content" id="tab-ai">
+      <div class="page-head">
+        <h1>AI Assistant</h1>
+        <p>Ask about listings, users, disputes, or get platform insights.</p>
+      </div>
+
+      <div class="ai-panel">
+        <div class="ai-header">
+          <div class="ai-dot"></div>
+          <div class="ai-title">Sellnook AI</div>
+          <div class="ai-sub">Powered by Gemini</div>
+        </div>
+        <div class="ai-messages" id="ai-messages">
+          <div class="ai-msg assistant">
+            <div class="ai-avatar bot">AI</div>
+            <div class="ai-bubble">Hey! I'm your Sellnook admin assistant. I can help you analyze listings for policy violations, summarize disputes, review user reports, spot suspicious activity, and give you platform insights. What would you like to look at?</div>
+          </div>
+        </div>
+        <div class="ai-quick-btns">
+          <button class="ai-quick" onclick="aiQuick('Summarize the current state of the platform')">Platform summary</button>
+          <button class="ai-quick" onclick="aiQuick('Are there any listings that might violate our prohibited items policy?')">Check listings</button>
+          <button class="ai-quick" onclick="aiQuick('What are the most common dispute reasons and how should I handle them?')">Dispute advice</button>
+          <button class="ai-quick" onclick="aiQuick('Give me tips to grow the Sellnook waitlist before launch')">Growth tips</button>
+          <button class="ai-quick" onclick="aiQuick('What should I prioritize building before the July 21 launch?')">Launch checklist</button>
+        </div>
+        <div class="ai-input-area">
+          <input class="ai-input" id="ai-input" placeholder="Ask anything about your platform..." onkeydown="if(event.key==='Enter')sendAiMessage()">
+          <button class="ai-send" id="ai-send-btn" onclick="sendAiMessage()">Ask AI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="tab-content" id="tab-users">
+      <div class="page-head">
+        <h1>Users</h1>
+        <p>Manage all Sellnook accounts.</p>
+      </div>
+      <div class="filter-bar">
+        <input class="search-input" placeholder="Search by name or email..." oninput="filterUsers(this.value)" id="user-search">
+        <select class="filter-select" onchange="filterUsers()" id="user-filter">
+          <option value="">All users</option>
+          <option value="pro">Pro only</option>
+          <option value="free">Free only</option>
+          <option value="banned">Banned</option>
+        </select>
+        <span id="user-count" style="font-size:0.75rem;color:#444;margin-left:auto;"></span>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-table">
+              <tr><td colspan="6"><div class="empty"><div class="empty-icon">👥</div><p>Loading users...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTINGS -->
+    <div class="tab-content" id="tab-listings">
+      <div class="page-head">
+        <h1>Listings</h1>
+        <p>Review and moderate all marketplace listings.</p>
+      </div>
+      <div class="filter-bar">
+        <input class="search-input" placeholder="Search listings..." oninput="filterListings(this.value)" id="listing-search">
+        <select class="filter-select" onchange="filterListings()" id="listing-filter">
+          <option value="">All status</option>
+          <option value="active">Active</option>
+          <option value="flagged">Flagged</option>
+          <option value="removed">Removed</option>
+        </select>
+        <button class="btn-primary" onclick="aiAnalyzeListings()" style="white-space:nowrap;">🤖 AI Review</button>
+        <span id="listing-count" style="font-size:0.75rem;color:#444;margin-left:auto;"></span>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Title</th>
+                <th>Seller</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="listings-table">
+              <tr><td colspan="7"><div class="empty"><div class="empty-icon">📦</div><p>Loading listings...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPUTES -->
+    <div class="tab-content" id="tab-disputes">
+      <div class="page-head">
+        <h1>Disputes</h1>
+        <p>Review and resolve buyer-seller disputes.</p>
+      </div>
+      <div class="card">
+        <div class="empty">
+          <div class="empty-icon">⚖️</div>
+          <p>No disputes yet — they'll appear here once the marketplace launches.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRO ACCOUNTS -->
+    <div class="tab-content" id="tab-pro">
+      <div class="page-head">
+        <h1>Pro Accounts</h1>
+        <p>Manage Pro Seller subscriptions.</p>
+      </div>
+      <div class="filter-bar">
+        <input class="search-input" placeholder="Search pro sellers..." id="pro-search">
+        <button class="btn-secondary" onclick="grantPro()" style="white-space:nowrap;">+ Grant Pro</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Seller</th>
+                <th>Email</th>
+                <th>Shop URL</th>
+                <th>Since</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pro-table">
+              <tr><td colspan="5"><div class="empty"><div class="empty-icon">⭐</div><p>Loading Pro accounts...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAITLIST -->
+    <div class="tab-content" id="tab-waitlist">
+      <div class="page-head">
+        <h1>Waitlist</h1>
+        <p>Everyone who signed up to be notified at launch.</p>
+      </div>
+      <div class="waitlist-actions">
+        <button class="btn-primary" onclick="exportWaitlist()">⬇️ Export CSV</button>
+        <button class="btn-secondary" onclick="loadWaitlist()">↻ Refresh</button>
+        <span id="waitlist-count" style="font-size:0.75rem;color:#444;margin-left:auto;align-self:center;"></span>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Source</th>
+                <th>Signed up</th>
+              </tr>
+            </thead>
+            <tbody id="waitlist-table">
+              <tr><td colspan="3"><div class="empty"><div class="empty-icon">📋</div><p>Loading waitlist...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVENUE -->
+    <div class="tab-content" id="tab-revenue">
+      <div class="page-head">
+        <h1>Revenue</h1>
+        <p>Platform earnings and fee collection.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total GMV</div>
+          <div class="stat-value green">$0</div>
+          <div class="stat-sub">Gross merchandise value</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fees collected</div>
+          <div class="stat-value orange">$0</div>
+          <div class="stat-sub">Platform revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pro subscriptions</div>
+          <div class="stat-value">$0</div>
+          <div class="stat-sub">Monthly recurring</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg order value</div>
+          <div class="stat-value">$0</div>
+          <div class="stat-sub">Per transaction</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="empty">
+          <div class="empty-icon">💰</div>
+          <p>Revenue data will populate once the marketplace launches on July 21, 2026.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMAIL BLAST -->
+    <div class="tab-content" id="tab-blast">
+      <div class="page-head">
+        <h1>Email Blast</h1>
+        <p>Send announcements to your users or waitlist.</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Compose announcement</div>
+        </div>
+        <div class="email-form">
+          <div class="form-group">
+            <label>Send to</label>
+            <select id="blast-audience">
+              <option value="waitlist">Waitlist signups</option>
+              <option value="all">All registered users</option>
+              <option value="pro">Pro sellers only</option>
+              <option value="free">Free sellers only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subject line</label>
+            <input type="text" id="blast-subject" placeholder="e.g. Sellnook launches July 21 — here's what to expect">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="blast-message" placeholder="Write your announcement here..." style="min-height:160px;"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="btn-primary" onclick="sendBlast()">Send Email Blast</button>
+            <button class="btn-secondary" onclick="aiDraftBlast()">🤖 AI Draft</button>
+            <span id="blast-status" style="font-size:0.75rem;color:#555;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+import { onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, limit }
+                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const DEV_EMAIL = 'austinmalick9@gmail.com';
+  const t    = setTimeout(() => window.location.href = 'login', 20000);
+
+  let allUsers    = [];
+  let allListings = [];
+  let allWaitlist = [];
+  let currentUser = null;
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(t);
+    if (!user) { window.location.href = 'login'; return; }
+
+    // Only dev account can access
+    if (user.email !== DEV_EMAIL) {
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('denied').classList.add('show');
+      return;
+    }
+
+    currentUser = user;
+
+    // Set avatar
+    const av = document.getElementById('admin-avatar');
+    if (user.photoURL) av.innerHTML = `<img src="${user.photoURL}">`;
+    else av.textContent = (user.displayName || user.email)[0].toUpperCase();
+
+    // Show UI
+    document.getElementById('topbar').style.display = 'flex';
+    document.getElementById('layout').style.display = 'grid';
+    document.getElementById('loading').classList.add('hide');
+    setTimeout(() => document.getElementById('loading').remove(), 400);
+
+    // Load all data then run auto-scans
+    await Promise.all([loadUsers(), loadListings(), loadWaitlist()]);
+    updateOverview();
+
+    // Run AI scans in background
+    setTimeout(() => {
+      autoScanListings();
+      autoScanUsers();
+    }, 1500);
+  });
+
+  // ── Tab switching ──────────────────────────────────────
+  window.switchTab = function(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (tab === 'waitlist') loadWaitlist();
+  };
+
+  // ── Load users ─────────────────────────────────────────
+  async function loadUsers() {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-users').textContent = allUsers.length;
+      renderUsers(allUsers);
+      renderUsersOverview(allUsers.slice(0, 5));
+
+      const proCount = allUsers.filter(u => u.isPro).length;
+      document.getElementById('stat-pro').textContent = proCount;
+      renderProTable(allUsers.filter(u => u.isPro));
+    } catch (e) { console.error('Load users error:', e); }
+  }
+
+  function renderUsers(users) {
+    const tbody = document.getElementById('users-table');
+    document.getElementById('user-count').textContent = `${users.length} users`;
+    if (!users.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-icon">👥</div><p>No users found</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td class="td-main">${u.shopName || u.displayName || '—'}</td>
+        <td>${u.email || u.id}</td>
+        <td>${u.isPro ? '<span class="badge badge-orange">⭐ Pro</span>' : '<span class="badge badge-grey">Free</span>'}</td>
+        <td>${u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString() : '—'}</td>
+        <td>${u.banned ? '<span class="badge badge-red">Banned</span>' : '<span class="badge badge-green">Active</span>'}</td>
+        <td style="display:flex;gap:6px;">
+          <button class="btn-action btn-view" onclick="viewUser('${u.id}')">View</button>
+          <button class="btn-action btn-ban" onclick="toggleBan('${u.id}', ${!!u.banned})">${u.banned ? 'Unban' : 'Ban'}</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderUsersOverview(users) {
+    const container = document.getElementById('recent-users-overview');
+    if (!users.length) { container.innerHTML = '<div class="empty"><p>No users yet</p></div>'; return; }
+    container.innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>User</th><th>Plan</th><th>Joined</th></tr></thead>
+      <tbody>${users.map(u => `
+        <tr>
+          <td class="td-main">${u.shopName || u.email || u.id}</td>
+          <td>${u.isPro ? '<span class="badge badge-orange">Pro</span>' : '<span class="badge badge-grey">Free</span>'}</td>
+          <td>${u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString() : '—'}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+  }
+
+  window.filterUsers = function(val) {
+    val = val ?? document.getElementById('user-search').value;
+    const filter = document.getElementById('user-filter').value;
+    let filtered = allUsers.filter(u => {
+      const matchSearch = !val || (u.shopName || '').toLowerCase().includes(val.toLowerCase()) || (u.email || '').toLowerCase().includes(val.toLowerCase());
+      const matchFilter = !filter || (filter === 'pro' && u.isPro) || (filter === 'free' && !u.isPro) || (filter === 'banned' && u.banned);
+      return matchSearch && matchFilter;
+    });
+    renderUsers(filtered);
+  };
+
+  window.viewUser = function(id) {
+    const u = allUsers.find(u => u.id === id);
+    if (!u) return;
+    alert(`User: ${u.shopName || u.email || id}\nEmail: ${u.email || '—'}\nPlan: ${u.isPro ? 'Pro' : 'Free'}\nShop URL: ${u.shopUrl || '—'}\nLocation: ${u.shopCity || '—'}, ${u.shopState || '—'}`);
+  };
+
+  window.toggleBan = async function(id, isBanned) {
+    if (!confirm(`${isBanned ? 'Unban' : 'Ban'} this user?`)) return;
+    try {
+      await updateDoc(doc(db, 'users', id), { banned: !isBanned });
+      await loadUsers();
+      showToast(`User ${isBanned ? 'unbanned' : 'banned'}`);
+    } catch (e) { alert('Error updating user'); }
+  };
+
+  // ── Load listings ──────────────────────────────────────
+  async function loadListings() {
+    try {
+      const snap = await getDocs(query(collection(db, 'listings'), orderBy('createdAt', 'desc')));
+      allListings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-listings').textContent = allListings.length;
+      renderListings(allListings);
+      renderListingsOverview(allListings.slice(0, 5));
+    } catch (e) { console.error('Load listings error:', e); }
+  }
+
+  function renderListings(listings) {
+    const tbody = document.getElementById('listings-table');
+    document.getElementById('listing-count').textContent = `${listings.length} listings`;
+    if (!listings.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-icon">📦</div><p>No listings found</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = listings.map(l => {
+      const img = l.images?.[0] ? `<img src="${l.images[0]}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;">` : '📦';
+      const statusBadge = l.flagged ? '<span class="badge badge-red">Flagged</span>' : l.status === 'removed' ? '<span class="badge badge-grey">Removed</span>' : '<span class="badge badge-green">Active</span>';
+      return `
+        <tr>
+          <td>${img}</td>
+          <td class="td-main">${l.title}</td>
+          <td>${l.sellerName || '—'}</td>
+          <td>$${parseFloat(l.price || 0).toFixed(2)}</td>
+          <td>${l.category || '—'}</td>
+          <td>${statusBadge}</td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn-action btn-view" onclick="viewListing('${l.id}')">View</button>
+            <button class="btn-action btn-ban" onclick="flagListing('${l.id}', ${!!l.flagged})">${l.flagged ? 'Unflag' : 'Flag'}</button>
+            <button class="btn-action btn-remove" onclick="removeListing('${l.id}')">Remove</button>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderListingsOverview(listings) {
+    const container = document.getElementById('recent-listings-overview');
+    if (!listings.length) { container.innerHTML = '<div class="empty"><p>No listings yet</p></div>'; return; }
+    container.innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Title</th><th>Seller</th><th>Price</th><th>Category</th></tr></thead>
+      <tbody>${listings.map(l => `
+        <tr>
+          <td class="td-main">${l.title}</td>
+          <td>${l.sellerName || '—'}</td>
+          <td>$${parseFloat(l.price || 0).toFixed(2)}</td>
+          <td>${l.category || '—'}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+  }
+
+  window.filterListings = function(val) {
+    val = val ?? document.getElementById('listing-search').value;
+    const filter = document.getElementById('listing-filter').value;
+    let filtered = allListings.filter(l => {
+      const matchSearch = !val || l.title?.toLowerCase().includes(val.toLowerCase()) || l.sellerName?.toLowerCase().includes(val.toLowerCase());
+      const matchFilter = !filter || (filter === 'active' && l.status === 'active' && !l.flagged) || (filter === 'flagged' && l.flagged) || (filter === 'removed' && l.status === 'removed');
+      return matchSearch && matchFilter;
+    });
+    renderListings(filtered);
+  };
+
+  window.viewListing = function(id) {
+    const l = allListings.find(l => l.id === id);
+    if (!l) return;
+    alert(`Listing: ${l.title}\nSeller: ${l.sellerName} (${l.sellerEmail})\nPrice: $${l.price}\nCategory: ${l.category}\nCondition: ${l.condition}\nDescription: ${l.description || '—'}\nID: ${l.id}`);
+  };
+
+  window.flagListing = async function(id, isFlagged) {
+    try {
+      await updateDoc(doc(db, 'listings', id), { flagged: !isFlagged });
+      await loadListings();
+      showToast(`Listing ${isFlagged ? 'unflagged' : 'flagged'}`);
+    } catch (e) { alert('Error updating listing'); }
+  };
+
+  window.removeListing = async function(id) {
+    if (!confirm('Remove this listing? The seller will be able to see it was removed.')) return;
+    try {
+      await updateDoc(doc(db, 'listings', id), { status: 'removed', removedAt: new Date().toISOString() });
+      await loadListings();
+      showToast('Listing removed');
+    } catch (e) { alert('Error removing listing'); }
+  };
+
+  // ── Load waitlist ──────────────────────────────────────
+  window.loadWaitlist = async function() {
+    try {
+      const snap = await getDocs(collection(db, 'waitlist'));
+      allWaitlist = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-waitlist').textContent = allWaitlist.length;
+      document.getElementById('waitlist-count').textContent = `${allWaitlist.length} signups`;
+      const tbody = document.getElementById('waitlist-table');
+      if (!allWaitlist.length) {
+        tbody.innerHTML = '<tr><td colspan="3"><div class="empty"><div class="empty-icon">📋</div><p>No signups yet</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = allWaitlist.map(w => `
+        <tr>
+          <td class="td-main">${w.email}</td>
+          <td><span class="badge badge-grey">${w.source || 'website'}</span></td>
+          <td>${w.signedUpAt?.toDate ? w.signedUpAt.toDate().toLocaleDateString() : '—'}</td>
+        </tr>`).join('');
+    } catch (e) { console.error('Load waitlist error:', e); }
+  };
+
+  window.exportWaitlist = function() {
+    if (!allWaitlist.length) { showToast('No waitlist data to export'); return; }
+    const csv = 'Email,Source,Date\n' + allWaitlist.map(w =>
+      `${w.email},${w.source || 'website'},${w.signedUpAt?.toDate ? w.signedUpAt.toDate().toLocaleDateString() : '—'}`
+    ).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = `sellnook-waitlist-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    showToast('✅ Waitlist exported!');
+  };
+
+  // ── Pro accounts ───────────────────────────────────────
+  function renderProTable(proUsers) {
+    const tbody = document.getElementById('pro-table');
+    if (!proUsers.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">⭐</div><p>No Pro accounts yet</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = proUsers.map(u => `
+      <tr>
+        <td class="td-main">${u.shopName || '—'}</td>
+        <td>${u.email || u.id}</td>
+        <td>${u.shopUrl ? `sellnook.com/${u.shopUrl}` : '—'}</td>
+        <td>${u.proSince ? new Date(u.proSince).toLocaleDateString() : '—'}</td>
+        <td>
+          <button class="btn-action btn-remove" onclick="revokePro('${u.id}')">Revoke Pro</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  window.grantPro = async function() {
+    const email = prompt('Enter the user UID or email to grant Pro:');
+    if (!email) return;
+    const user = allUsers.find(u => u.id === email || u.email === email);
+    if (!user) { showToast('User not found'); return; }
+    try {
+      await updateDoc(doc(db, 'users', user.id), { isPro: true, proSince: new Date().toISOString() });
+      await loadUsers();
+      showToast(`✅ Pro granted to ${user.email || user.id}`);
+    } catch (e) { alert('Error granting Pro'); }
+  };
+
+  window.revokePro = async function(id) {
+    if (!confirm('Revoke Pro from this user?')) return;
+    try {
+      await updateDoc(doc(db, 'users', id), { isPro: false });
+      await loadUsers();
+      showToast('Pro revoked');
+    } catch (e) { alert('Error revoking Pro'); }
+  };
+
+  // ── Overview update ────────────────────────────────────
+  function updateOverview() {
+    // Stats already set by individual loaders
+  }
+
+  // ── Email blast ────────────────────────────────────────
+  window.sendBlast = async function() {
+    const audience = document.getElementById('blast-audience').value;
+    const subject  = document.getElementById('blast-subject').value.trim();
+    const message  = document.getElementById('blast-message').value.trim();
+    const status   = document.getElementById('blast-status');
+
+    if (!subject || !message) { showToast('Please fill in subject and message'); return; }
+
+    const confirm_send = confirm(`Send to all ${audience}? This cannot be undone.`);
+    if (!confirm_send) return;
+
+    status.textContent = 'Sending...';
+
+    // Get recipient emails
+    let emails = [];
+    if (audience === 'waitlist') emails = allWaitlist.map(w => w.email);
+    else if (audience === 'pro') emails = allUsers.filter(u => u.isPro).map(u => u.email).filter(Boolean);
+    else if (audience === 'free') emails = allUsers.filter(u => !u.isPro).map(u => u.email).filter(Boolean);
+    else emails = allUsers.map(u => u.email).filter(Boolean);
+
+    try {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/email/blast`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify({ emails, subject, message })
+      });
+      const data = await res.json();
+      status.textContent = `✅ Sent to ${emails.length} recipients`;
+      showToast(`✅ Blast sent to ${emails.length} people`);
+    } catch (e) {
+      status.textContent = 'Error sending';
+      showToast('Error sending blast');
+    }
+  };
+
+  // ── AI Assistant ───────────────────────────────────────
+  let aiHistory = [];
+
+  async function getPlatformData() {
+    return {
+      totalUsers:    allUsers.length,
+      proUsers:      allUsers.filter(u => u.isPro).length,
+      totalListings: allListings.length,
+      flaggedListings: allListings.filter(l => l.flagged).length,
+      waitlistCount: allWaitlist.length,
+      launchDate:    'July 21, 2026'
+    };
+  }
+
+  window.sendAiMessage = async function() {
+    const input = document.getElementById('ai-input');
+    const text  = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    addAiMessage('user', text);
+
+    const btn = document.getElementById('ai-send-btn');
+    btn.disabled    = true;
+    btn.textContent = '...';
+
+    // Add thinking indicator
+    const thinking = document.createElement('div');
+    thinking.className = 'ai-msg assistant';
+    thinking.innerHTML = '<div class="ai-avatar bot">AI</div><div class="ai-thinking"><span></span><span></span><span></span></div>';
+    document.getElementById('ai-messages').appendChild(thinking);
+    scrollAi();
+
+    aiHistory.push({ role: 'user', content: text });
+
+    try {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/admin/chat`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify({
+          message:      text,
+          history:      aiHistory.slice(-10),
+          platformData: await getPlatformData()
+        })
+      });
+
+      const data  = await res.json();
+      const reply = data.reply || 'Sorry, I had trouble responding.';
+
+      aiHistory.push({ role: 'assistant', content: reply });
+      thinking.remove();
+      addAiMessage('assistant', reply);
+
+    } catch (e) {
+      thinking.remove();
+      addAiMessage('assistant', 'Error connecting to AI. Make sure GEMINI_API_KEY is set in Render environment variables.');
+    }
+
+    btn.disabled    = false;
+    btn.textContent = 'Ask AI';
+  };
+
+  window.aiQuick = function(prompt) {
+    document.getElementById('ai-input').value = prompt;
+    sendAiMessage();
+  };
+
+  // ── Auto-scan listings on load ─────────────────────────
+  async function autoScanListings() {
+    if (!allListings.length) return;
+    try {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/admin/scan-listings`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (data.totalFlagged > 0) {
+        // Show alert banner
+        showAlert(`⚠️ AI flagged ${data.totalFlagged} listing${data.totalFlagged > 1 ? 's' : ''} for review — check the Listings tab.`, 'warning');
+        // Reload listings to show updated flags
+        await loadListings();
+      }
+
+      // Add scan result to AI chat
+      addAiMessage('assistant', `✅ Auto-scan complete. ${data.summary || `Scanned ${allListings.length} listings, found ${data.totalFlagged || 0} potential violations.`}`);
+
+    } catch (e) {
+      console.error('Auto-scan error:', e);
+    }
+  }
+
+  // ── Scan users for suspicious activity ────────────────
+  async function autoScanUsers() {
+    if (!allUsers.length) return;
+    try {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/admin/scan-users`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (data.totalFlagged > 0) {
+        showAlert(`⚠️ AI flagged ${data.totalFlagged} suspicious account${data.totalFlagged > 1 ? 's' : ''} — check the Users tab.`, 'warning');
+      }
+    } catch (e) {
+      console.error('User scan error:', e);
+    }
+  }
+
+  window.aiAnalyzeListings = async function() {
+    switchTab('ai', null);
+    document.querySelectorAll('.sidebar-btn').forEach(b => { if (b.textContent.includes('AI')) b.classList.add('active'); else b.classList.remove('active'); });
+    addAiMessage('user', 'Run a full scan of all listings for policy violations.');
+
+    const btn = document.getElementById('ai-send-btn');
+    btn.disabled = true;
+    const thinking = document.createElement('div');
+    thinking.className = 'ai-msg assistant';
+    thinking.innerHTML = '<div class="ai-avatar bot">AI</div><div class="ai-thinking"><span></span><span></span><span></span></div>';
+    document.getElementById('ai-messages').appendChild(thinking);
+    scrollAi();
+
+    try {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch(`${API}/api/admin/scan-listings`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      thinking.remove();
+
+      let msg = `**Listing Scan Complete**\n\n${data.summary}\n`;
+      if (data.violations?.length) {
+        msg += `\n**Flagged listings (${data.violations.length}):**\n`;
+        data.violations.forEach(v => {
+          msg += `\n• **${v.title}** — ${v.reason} (${v.severity} severity, recommend: ${v.recommendation})`;
+        });
+      }
+      addAiMessage('assistant', msg);
+      await loadListings();
+    } catch (e) {
+      thinking.remove();
+      addAiMessage('assistant', 'Scan failed. Make sure GEMINI_API_KEY is set in Render.');
+    }
+    btn.disabled = false;
+  };
+
+  window.aiDraftBlast = async function() {
+    const audience = document.getElementById('blast-audience').value;
+    document.getElementById('ai-input').value = `Draft a professional email blast for ${audience} about Sellnook launching July 21, 2026. Make it exciting, clear, and include a call to action. Keep it under 150 words.`;
+    switchTab('ai', null);
+    await sendAiMessage();
+  };
+
+  window.sendDailyReport = async function() {
+    try {
+      const token = await currentUser.getIdToken();
+      showToast('Generating report...');
+      const res  = await fetch(`${API}/api/admin/daily-report`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      showToast('✅ Daily report sent to austin@sellnook.com');
+      addAiMessage('assistant', `**Daily Report Generated**\n\n${data.summary}`);
+    } catch (e) {
+      showToast('Error generating report');
+    }
+  };
+
+  function showAlert(msg, type = 'warning') {
+    let alertBar = document.getElementById('alert-bar');
+    if (!alertBar) {
+      alertBar = document.createElement('div');
+      alertBar.id = 'alert-bar';
+      alertBar.style.cssText = 'background:#2b1a0d;border-bottom:1px solid #e8734a;padding:10px 24px;font-size:0.8rem;color:#e8734a;display:flex;align-items:center;justify-content:space-between;';
+      document.getElementById('topbar').after(alertBar);
+    }
+    alertBar.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#e8734a;cursor:pointer;font-size:1rem;">✕</button>`;
+  }
+
+  function addAiMessage(role, text) {
+    const container = document.getElementById('ai-messages');
+    const div = document.createElement('div');
+    div.className = `ai-msg ${role}`;
+    div.innerHTML = `
+      <div class="ai-avatar ${role === 'assistant' ? 'bot' : 'user'}">${role === 'assistant' ? 'AI' : 'You'}</div>
+      <div class="ai-bubble">${text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`;
+    container.appendChild(div);
+    scrollAi();
+  }
+
+  function scrollAi() {
+    const c = document.getElementById('ai-messages');
+    c.scrollTop = c.scrollHeight;
+  }
+
+  // ── Sign out ───────────────────────────────────────────
+  window.quickScanAll = async function() {
+    showToast('🔍 Running full AI scan...');
+    switchTab('ai', document.querySelector('[onclick*="ai"]'));
+    addAiMessage('user', 'Run a full platform scan — check all listings for violations and all users for suspicious activity. Give me a complete summary.');
+    await sendAiMessage();
+  };
+
+  window.exportAllData = function() {
+    const data = {
+      users:    allUsers.length,
+      listings: allListings.length,
+      waitlist: allWaitlist.length,
+      exported: new Date().toISOString()
+    };
+    // Export waitlist as CSV
+    if (allWaitlist.length) {
+      const csv  = 'Email,Source,Date\n' + allWaitlist.map(w =>
+        `${w.email},${w.source || 'website'},${w.signedUpAt?.toDate ? w.signedUpAt.toDate().toLocaleDateString() : '—'}`
+      ).join('\n');
+      const blob = new Blob([csv], { type:'text/csv' });
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = `sellnook-export-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      showToast(`✅ Exported ${allWaitlist.length} waitlist entries`);
+    } else {
+      showToast('No data to export yet');
+    }
+  };
+
+  window.signOut = async () => { await fbSignOut(auth); window.location.href = 'login'; };
+
+  // ── Toast ──────────────────────────────────────────────
+  let toastTimer;
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  };
+</script>
+</body>
+</html>
+
+
+

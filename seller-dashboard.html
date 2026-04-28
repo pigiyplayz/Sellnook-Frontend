@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/assets/logo.png">
+<title>Sellnook — Seller Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
+
+  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading.hide { opacity:0; pointer-events:none; }
+  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* Access denied screen */
+  .denied { position:fixed; inset:0; background:#fafaf9; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; z-index:998; }
+  .denied.show { display:flex; }
+  .denied h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; margin-bottom:10px; }
+  .denied p { font-size:0.9rem; color:#888; margin-bottom:28px; max-width:360px; line-height:1.6; }
+  .btn-back { padding:12px 24px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; text-decoration:none; }
+  .btn-back:hover { background:#333; }
+
+  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
+  main { display:none; } /* hidden until access confirmed */
+  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
+  .logo span { color:#e8734a; }
+  .nav-center { display:flex; gap:4px; }
+  .nav-tab { padding:7px 14px; border-radius:7px; font-size:0.82rem; font-weight:500; color:#888; cursor:pointer; border:none; background:transparent; font-family:'Inter',sans-serif; transition:all 0.15s; }
+  .nav-tab:hover { background:#f0f0ee; color:#1a1a1a; }
+  .nav-tab.active { background:#1a1a1a; color:#fff; }
+  .nav-right { display:flex; align-items:center; gap:12px; }
+  .pro-badge { background:#fff4ee; color:#e8734a; font-size:0.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:50px; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:#1a1a1a; color:#fafaf9; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700; flex-shrink:0; overflow:hidden; }
+  .avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .btn-signout { background:transparent; border:1px solid #e0e0dc; border-radius:7px; padding:7px 14px; font-family:'Inter',sans-serif; font-size:0.78rem; color:#888; cursor:pointer; }
+  .btn-signout:hover { border-color:#ccc; color:#1a1a1a; }
+
+  main { max-width:900px; margin:0 auto; padding:48px 24px 80px; }
+  @keyframes up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .animate { animation:up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+
+  /* Tabs content */
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* Page header */
+  .page-header { margin-bottom:32px; }
+  .page-header h1 { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:700; letter-spacing:-0.8px; margin-bottom:6px; }
+  .page-header p { font-size:0.875rem; color:#888; font-weight:300; }
+
+  /* Metrics */
+  .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:32px; }
+  .metric { background:#fff; border:1px solid #e8e8e5; border-radius:10px; padding:20px; }
+  .metric-label { font-size:0.72rem; color:#aaa; font-weight:500; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .metric-value { font-family:'Syne',sans-serif; font-size:1.7rem; font-weight:700; color:#1a1a1a; margin-bottom:4px; }
+  .metric-value.orange { color:#e8734a; }
+  .metric-change { font-size:0.72rem; color:#888; }
+  .metric-change.up { color:#2d9e6b; }
+
+  /* Shop profile */
+  .shop-banner { width:100%; height:140px; background:linear-gradient(135deg,#1a1a1a,#333); border-radius:12px 12px 0 0; position:relative; overflow:hidden; }
+  .shop-banner-inner { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.1); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; }
+  .shop-profile-card { background:#fff; border:1px solid #e8e8e5; border-radius:0 0 12px 12px; border-top:none; padding:24px 24px 24px; margin-bottom:24px; }
+  .shop-avatar-wrap { margin-top:-40px; margin-bottom:16px; }
+  .shop-avatar { width:72px; height:72px; border-radius:50%; background:#e8734a; border:3px solid #fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; color:#fff; overflow:hidden; }
+  .shop-avatar img { width:100%; height:100%; object-fit:cover; }
+  .shop-name { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; margin-bottom:4px; }
+  .shop-url { font-size:0.8rem; color:#e8734a; margin-bottom:12px; }
+  .shop-bio { font-size:0.85rem; color:#888; line-height:1.6; margin-bottom:16px; max-width:500px; }
+  .shop-stats { display:flex; gap:24px; }
+  .shop-stat { font-size:0.8rem; color:#888; }
+  .shop-stat strong { color:#1a1a1a; font-weight:600; }
+
+  /* Form elements */
+  .card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:28px; margin-bottom:16px; }
+  .card-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:20px; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:1/-1; }
+  label { font-size:0.75rem; font-weight:500; color:#555; letter-spacing:0.2px; }
+  input, select, textarea { background:#fafaf9; border:1px solid #e0e0dc; border-radius:8px; padding:11px 14px; font-family:'Inter',sans-serif; font-size:0.875rem; color:#1a1a1a; outline:none; transition:border 0.15s; width:100%; }
+  input:focus, select:focus, textarea:focus { border-color:#1a1a1a; background:#fff; }
+  input::placeholder, textarea::placeholder { color:#ccc; }
+  textarea { resize:vertical; min-height:90px; }
+  select option { background:#fff; }
+
+  .btn-save { padding:11px 24px; background:#1a1a1a; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.875rem; font-weight:600; cursor:pointer; transition:background 0.15s; }
+  .btn-save:hover { background:#333; }
+  .btn-orange { background:#e8734a; }
+  .btn-orange:hover { background:#f07d55; }
+
+  /* Listings table */
+  .listings-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .listings-header h2 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+  .listing-row { display:flex; align-items:center; gap:16px; padding:14px 0; border-bottom:1px solid #f0f0ee; font-size:0.85rem; }
+  .listing-row:last-child { border-bottom:none; }
+  .listing-emoji { font-size:1.6rem; width:40px; text-align:center; flex-shrink:0; }
+  .listing-info { flex:1; min-width:0; }
+  .listing-name { font-weight:600; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .listing-meta { font-size:0.75rem; color:#aaa; margin-top:2px; }
+  .listing-price { font-family:'Syne',sans-serif; font-weight:700; color:#1a1a1a; white-space:nowrap; }
+  .listing-status { padding:4px 10px; border-radius:50px; font-size:0.68rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap; }
+  .status-active { background:#e8f5ee; color:#2d9e6b; }
+  .status-draft { background:#f0f0ee; color:#aaa; }
+  .listing-count { font-size:0.78rem; color:#aaa; margin-top:12px; }
+
+  /* Analytics */
+  .analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .analytics-card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:24px; }
+  .analytics-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; margin-bottom:16px; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:0.78rem; }
+  .bar-label { width:80px; color:#888; flex-shrink:0; }
+  .bar-track { flex:1; background:#f0f0ee; border-radius:4px; height:8px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; background:#1a1a1a; transition:width 0.6s ease; }
+  .bar-fill.orange { background:#e8734a; }
+  .bar-val { width:36px; text-align:right; font-weight:600; color:#1a1a1a; flex-shrink:0; }
+
+  .empty-state { text-align:center; padding:48px 20px; color:#bbb; font-size:0.875rem; }
+  .empty-state-icon { font-size:2.5rem; margin-bottom:12px; }
+  .empty-state p { line-height:1.6; }
+
+  /* Photo upload */
+  .photo-upload-area { background:#fafaf9; border:1.5px dashed #e0e0dc; border-radius:10px; padding:16px; }
+  .photo-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; min-height:0; }
+  .photo-thumb { width:80px; height:80px; border-radius:8px; overflow:hidden; position:relative; border:1px solid #e0e0dc; flex-shrink:0; }
+  .photo-thumb img { width:100%; height:100%; object-fit:cover; }
+  .photo-thumb-remove { position:absolute; top:3px; right:3px; width:18px; height:18px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:0.65rem; font-weight:700; border:none; line-height:1; }
+  .photo-thumb-remove:hover { background:rgba(220,50,50,0.8); }
+  .photo-thumb.cover::after { content:'Cover'; position:absolute; bottom:0; left:0; right:0; background:rgba(232,115,74,0.85); color:#fff; font-size:0.6rem; font-weight:700; text-align:center; padding:2px; }
+  .photo-add-btn { display:flex; align-items:center; gap:6px; padding:8px 14px; background:#fff; border:1px solid #e0e0dc; border-radius:7px; font-family:'Inter',sans-serif; font-size:0.8rem; font-weight:500; color:#555; cursor:pointer; transition:all 0.15s; }
+  .photo-add-btn:hover { border-color:#1a1a1a; color:#1a1a1a; }
+  .photo-add-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  @media (max-width:600px) {
+    nav { padding:0 16px; }
+    .nav-center { display:none; }
+    main { padding:20px 16px 80px; }
+    .metrics { grid-template-columns:1fr 1fr; }
+    .form-grid { grid-template-columns:1fr; }
+    .analytics-grid { grid-template-columns:1fr; }
+    /* Bottom tab bar for mobile */
+    .mobile-tabs { display:flex; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #e8e8e5; z-index:20; }
+    .mobile-tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 4px; font-size:0.6rem; color:#aaa; cursor:pointer; border:none; background:none; font-family:'Inter',sans-serif; gap:3px; transition:color 0.15s; }
+    .mobile-tab.active { color:#1a1a1a; }
+    .mobile-tab .mt-icon { font-size:1.1rem; }
+  }
+  @media (min-width:601px) { .mobile-tabs { display:none; } }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+
+<!-- Access denied screen -->
+<div class="denied" id="denied">
+  <div style="font-size:2.5rem;margin-bottom:16px;">🔒</div>
+  <h2>Pro Sellers only</h2>
+  <p>The seller dashboard is available to Pro Seller subscribers. Upgrade from your dashboard to get access.</p>
+  <a href="dashboard" class="btn-back">Go to Dashboard</a>
+</div>
+
+<nav>
+  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-center">
+    <button class="nav-tab active" onclick="switchTab('overview')">Overview</button>
+    <button class="nav-tab" onclick="switchTab('orders')">Orders <span id="orders-badge" style="display:none;background:#e8734a;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:50px;margin-left:4px;">0</span></button>
+    <button class="nav-tab" onclick="switchTab('seller-offers')">Offers <span id="offers-badge-nav" style="display:none;background:#e8734a;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:50px;margin-left:4px;">0</span></button>
+    <button class="nav-tab" onclick="switchTab('listings')">Listings</button>
+    <button class="nav-tab" onclick="switchTab('messages')">Messages <span id="seller-msg-badge" style="display:none;background:#e8734a;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:50px;margin-left:4px;">0</span></button>
+    <button class="nav-tab" onclick="switchTab('shop')">Shop Profile</button>
+    <button class="nav-tab" id="tab-btn-analytics" onclick="switchTab('analytics')">Analytics ⭐</button>
+    <button class="nav-tab" id="tab-btn-promo" onclick="switchTab('promo')">Promotions ⭐</button>
+    <button class="nav-tab" onclick="switchTab('promoted')">⭐ Promote</button>
+    <a href="import-listings" class="nav-tab" style="text-decoration:none;">⬆️ Import</a>
+    <a href="seller-handbook" class="nav-tab" style="text-decoration:none;">Handbook</a>
+  </div>
+  <div class="nav-right">
+    <span class="pro-badge" id="plan-badge">⭐ Pro</span>
+    <div class="avatar" id="nav-avatar">?</div>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<main class="animate">
+
+  <!-- ORDERS TAB -->
+  <div class="tab-content" id="tab-orders">
+    <div class="page-header">
+      <h1>Orders</h1>
+      <p>Manage and ship your customer orders.</p>
+    </div>
+    <div class="card" id="seller-orders-card">
+      <div id="seller-orders-list">
+        <div style="text-align:center;padding:48px 20px;color:#bbb;">
+          <div style="font-size:2.5rem;margin-bottom:12px;">📦</div>
+          <p style="font-size:0.875rem;line-height:1.6;">No orders yet — they'll appear here once the marketplace launches.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELLER OFFERS TAB -->
+  <div class="tab-content" id="tab-seller-offers">
+    <div class="page-header">
+      <h1>Offers</h1>
+      <p>Review and respond to buyer offers on your listings.</p>
+    </div>
+    <div class="card">
+      <div id="seller-offers-list">
+        <div style="text-align:center;padding:48px 20px;color:#bbb;">
+          <div style="font-size:2.5rem;margin-bottom:12px;">💬</div>
+          <p style="font-size:0.875rem;">No pending offers.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="page-header">
+      <h1 id="seller-heading">Seller Dashboard</h1>
+      <p>Here's how your shop is looking — everything is ready for launch.</p>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Active Listings</div>
+        <div class="metric-value" id="listing-count">0</div>
+        <div class="metric-change" id="listing-limit-note">Loading...</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Est. Revenue</div>
+        <div class="metric-value orange">$0</div>
+        <div class="metric-change">At launch</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Transaction Fee</div>
+        <div class="metric-value" id="fee-display">—</div>
+        <div class="metric-change" id="fee-note">Loading...</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Your URL</div>
+        <div class="metric-value" style="font-size:0.8rem;padding-top:6px;" id="shop-url-display">Not set</div>
+        <div class="metric-change" id="url-note">Loading...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚀 Pre-launch checklist</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.875rem;">
+          <span style="width:20px;height:20px;border-radius:50%;background:#e8f5ee;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#2d9e6b;flex-shrink:0;">✓</span>
+          <span>Account created</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.875rem;">
+          <span style="width:20px;height:20px;border-radius:50%;background:#e8f5ee;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#2d9e6b;flex-shrink:0;">✓</span>
+          <span>Pro Seller activated</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.875rem;color:#aaa;">
+          <span style="width:20px;height:20px;border-radius:50%;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;">○</span>
+          <span>Set up your shop profile</span>
+          <button class="btn-save" style="padding:6px 14px;font-size:0.75rem;margin-left:auto;" onclick="switchTab('shop')">Set up →</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.875rem;color:#aaa;">
+          <span style="width:20px;height:20px;border-radius:50%;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;">○</span>
+          <span>Add your first listing</span>
+          <button class="btn-save btn-orange" style="padding:6px 14px;font-size:0.75rem;margin-left:auto;" onclick="switchTab('listings')">Add listing →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTINGS TAB -->
+  <div class="tab-content" id="tab-listings">
+    <div class="page-header">
+      <h1>Your Listings</h1>
+      <p>Add items now — they'll go live on the marketplace at launch.</p>
+    </div>
+
+    <!-- Add listing form -->
+    <div class="card">
+      <div class="card-title">+ Add a listing</div>
+      <div style="font-size:0.75rem;color:#aaa;margin-bottom:16px;">Fields marked <span style="color:#e8734a;">*</span> are required</div>
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Product title <span style="color:#e8734a;">*</span></label>
+          <input type="text" id="listing-title" placeholder="e.g. Handmade Ceramic Mug">
+        </div>
+        <div class="form-group">
+          <label>Price (USD) <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-price" placeholder="0.00" min="0.01" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Quantity available <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-qty" placeholder="1" min="1" step="1" value="1">
+        </div>
+        <div class="form-group">
+          <label>Category <span style="color:#e8734a;">*</span></label>
+          <select id="listing-category">
+            <option value="">Select category</option>
+            <option>Art &amp; Crafts</option>
+            <option>Fashion</option>
+            <option>Books</option>
+            <option>Home &amp; Garden</option>
+            <option>Electronics</option>
+            <option>Toys &amp; Games</option>
+            <option>Jewelry</option>
+            <option>Music</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Condition <span style="color:#e8734a;">*</span></label>
+          <select id="listing-condition">
+            <option value="">Select condition</option>
+            <option>New</option>
+            <option>Like New</option>
+            <option>Good</option>
+            <option>Fair</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Description <span style="color:#e8734a;">*</span></label>
+          <textarea id="listing-desc" placeholder="Describe your item — materials, size, what&#39;s included, any defects..." style="min-height:90px;"></textarea>
+        </div>
+
+        <!-- Shipping section -->
+        <div class="form-group full" style="border-top:1px solid #f0f0ee;padding-top:16px;margin-top:4px;">
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#bbb;margin-bottom:4px;">📦 Shipping info</div>
+          <div style="font-size:0.72rem;color:#aaa;margin-bottom:14px;">Required for accurate shipping rates shown to buyers</div>
+        </div>
+        <div class="form-group">
+          <label>Package weight (oz) <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-weight" placeholder="e.g. 12" min="0.1" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Package length (in) <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-length" placeholder="e.g. 10" min="0.1" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Package width (in) <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-width" placeholder="e.g. 8" min="0.1" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Package height (in) <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-height" placeholder="e.g. 4" min="0.1" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Your shipping price ($) <span style="color:#e8734a;">*</span></label>
+          <input type="number" id="listing-shipping-price" placeholder="e.g. 4.99" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Processing time <span style="color:#e8734a;">*</span></label>
+          <select id="listing-processing">
+            <option value="">Select...</option>
+            <option value="1-2 days">1-2 business days</option>
+            <option value="3-5 days">3-5 business days</option>
+            <option value="1-2 weeks">1-2 weeks</option>
+            <option value="2-4 weeks">2-4 weeks (made to order)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Preferred carrier</label>
+          <select id="listing-carrier">
+            <option value="">Any carrier</option>
+            <option value="USPS">USPS</option>
+            <option value="UPS">UPS</option>
+            <option value="FedEx">FedEx</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Free shipping?</label>
+          <select id="listing-free-shipping">
+            <option value="false">No — buyer pays shipping</option>
+            <option value="true">Yes — I cover shipping</option>
+          </select>
+        </div>
+
+        <!-- Photos -->
+        <div class="form-group full" style="border-top:1px solid #f0f0ee;padding-top:16px;margin-top:4px;">
+          <label id="photos-label">Photos <span style="color:#e8734a;">*</span> <span style="color:#bbb;font-weight:400;">(up to 5 free / 10 Pro)</span></label>
+          <div class="photo-upload-area" id="photo-upload-area">
+            <input type="file" id="photo-input" accept="image/*" multiple style="display:none;" onchange="handlePhotos(this)">
+            <div class="photo-grid" id="photo-grid"></div>
+            <button type="button" class="photo-add-btn" id="photo-add-btn" onclick="document.getElementById('photo-input').click()">
+              <span>+</span> Add photos
+            </button>
+          </div>
+          <div style="font-size:0.72rem;color:#bbb;margin-top:6px;">First photo is the cover. At least 1 photo required.</div>
+        </div>
+
+      </div>
+      <button class="btn-save btn-orange" onclick="addListing()">Save Listing</button>
+    </div>
+
+    <!-- Listings list -->
+    <div class="card" id="listings-card">
+      <div class="listings-header">
+        <h2>Your listings</h2>
+      </div>
+      <!-- Sub-tab bar -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;padding:4px;background:#f0f0ee;border-radius:8px;width:fit-content;">
+        <button class="listing-subtab" onclick="switchListingSubTab('active', this)" style="padding:6px 14px;border:none;border-radius:6px;font-family:'Inter',sans-serif;font-size:0.78rem;cursor:pointer;font-weight:500;background:#1a1a1a;color:#fff;transition:all 0.15s;">Active</button>
+        <button class="listing-subtab" onclick="switchListingSubTab('drafts', this)" style="padding:6px 14px;border:none;border-radius:6px;font-family:'Inter',sans-serif;font-size:0.78rem;cursor:pointer;font-weight:500;background:transparent;color:#888;transition:all 0.15s;">Drafts <span id="draft-badge" style="display:none;background:#e8734a;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:50px;margin-left:3px;"></span></button>
+        <button class="listing-subtab" onclick="switchListingSubTab('archived', this)" style="padding:6px 14px;border:none;border-radius:6px;font-family:'Inter',sans-serif;font-size:0.78rem;cursor:pointer;font-weight:500;background:transparent;color:#888;transition:all 0.15s;">Archived 🗃️ <span id="archive-badge" style="display:none;background:#888;color:#fff;font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:50px;margin-left:3px;"></span></button>
+      </div>
+      <!-- Hidden tracker for active sub-tab -->
+      <div id="listing-subtab-active" data-active="active" style="display:none;"></div>
+      <div id="listings-list"></div>
+    </div>
+  </div>
+
+  <!-- SHOP PROFILE TAB -->
+  <div class="tab-content" id="tab-shop">
+    <div class="page-header">
+      <h1>Shop Profile</h1>
+      <p>Customize how buyers see your shop.</p>
+    </div>
+
+    <!-- Preview -->
+    <div style="margin-bottom:24px;">
+      <div class="shop-banner">
+        <div class="shop-banner-inner">Banner image — coming soon</div>
+      </div>
+      <div class="shop-profile-card">
+        <div class="shop-avatar-wrap">
+          <div class="shop-avatar" id="shop-avatar-preview">?</div>
+        </div>
+        <div class="shop-name" id="shop-name-preview">Your Shop Name</div>
+        <div class="shop-url" id="shop-url-preview">sellnook.com/yourname</div>
+        <div class="shop-bio" id="shop-bio-preview">Your shop description will appear here.</div>
+        <div class="shop-stats">
+          <div class="shop-stat"><strong>0</strong> listings</div>
+          <div class="shop-stat"><strong>0</strong> sales</div>
+          <div class="shop-stat"><strong>⭐ Pro</strong> seller</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit form -->
+    <div class="card">
+      <div class="card-title">Edit shop details</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Shop name</label>
+          <input type="text" id="shop-name-input" placeholder="e.g. Jane's Ceramics" oninput="previewShop()">
+        </div>
+        <div class="form-group full">
+          <label>Custom URL — sellnook.com/<span style="color:#e8734a;">yourname</span></label>
+          <input type="text" id="shop-url-input" placeholder="yourname" oninput="previewShop()">
+        </div>
+        <div class="form-group full">
+          <label>Shop bio</label>
+          <textarea id="shop-bio-input" placeholder="Tell buyers what makes your shop unique..." oninput="previewShop()"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Category / niche</label>
+          <select id="shop-category">
+            <option>Handmade / Crafts</option>
+            <option>Vintage</option>
+            <option>Fashion</option>
+            <option>Electronics</option>
+            <option>Home & Garden</option>
+            <option>Art</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" id="shop-city" placeholder="e.g. Baltimore">
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" id="shop-state" placeholder="e.g. MD" maxlength="2" style="text-transform:uppercase;">
+        </div>
+        <div class="form-group">
+          <label>ZIP code (for shipping rates)</label>
+          <input type="text" id="shop-zip" placeholder="e.g. 21201" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label>Preferred carrier</label>
+          <select id="shop-carrier">
+            <option value="">Any carrier</option>
+            <option value="USPS">USPS</option>
+            <option value="UPS">UPS</option>
+            <option value="FedEx">FedEx</option>
+          </select>
+        </div>
+      </div>
+      <br>
+      <button class="btn-save" onclick="saveShop()">Save Profile</button>
+    </div>
+  </div>
+
+  <!-- MESSAGES TAB -->
+  <div class="tab-content" id="tab-messages">
+    <div class="page-header">
+      <h1>Messages</h1>
+      <p>Conversations with your buyers — respond promptly for better reviews.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:240px 1fr;gap:0;background:#fff;border:1px solid #e8e8e5;border-radius:12px;overflow:hidden;min-height:480px;">
+      <div style="border-right:1px solid #e8e8e5;display:flex;flex-direction:column;">
+        <div style="padding:14px 16px;border-bottom:1px solid #f0f0ee;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;color:#888;">Buyers</div>
+        <div id="seller-thread-list" style="flex:1;overflow-y:auto;">
+          <div style="padding:32px 16px;text-align:center;color:#bbb;font-size:0.78rem;"><div style="font-size:1.8rem;margin-bottom:8px;">💬</div>No messages yet</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;">
+        <div id="seller-chat-empty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;text-align:center;padding:32px;">
+          <div style="font-size:2.5rem;margin-bottom:12px;">👈</div>
+          <div style="font-size:0.82rem;">Select a conversation to reply</div>
+        </div>
+        <div id="seller-chat-active" style="display:none;flex-direction:column;height:100%;">
+          <div id="seller-chat-header" style="padding:14px 16px;border-bottom:1px solid #f0f0ee;display:flex;align-items:center;gap:10px;">
+            <div id="seller-chat-avatar" style="width:32px;height:32px;border-radius:50%;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;flex-shrink:0;">?</div>
+            <div>
+              <div id="seller-chat-name" style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;"></div>
+              <div id="seller-chat-sub" style="font-size:0.72rem;color:#aaa;"></div>
+            </div>
+          </div>
+          <div id="seller-chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:300px;max-height:340px;"></div>
+          <div style="padding:12px 16px;border-top:1px solid #f0f0ee;display:flex;gap:8px;">
+            <input type="text" id="seller-chat-input" placeholder="Reply to buyer..." style="flex:1;padding:10px 14px;border:1px solid #e0e0dc;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;" onkeydown="if(event.key==='Enter')sellerSendMessage()">
+            <button onclick="sellerSendMessage()" style="padding:10px 18px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div class="tab-content" id="tab-analytics">
+    <div class="page-header">
+      <h1>Analytics ⭐</h1>
+      <p>Views, orders, revenue and performance data for your shop.</p>
+    </div>
+
+    <div id="analytics-lock" style="display:none;background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:48px 32px;text-align:center;margin-bottom:24px;">
+      <div style="font-size:2.5rem;margin-bottom:16px;">📊</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:8px;">Advanced Analytics is a Pro feature</h3>
+      <p style="font-size:0.875rem;color:#888;line-height:1.6;margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto;">Upgrade to Pro to unlock views, conversion rates, revenue charts and more.</p>
+      <a href="dashboard" style="display:inline-block;padding:11px 24px;background:#1a1a1a;color:#fff;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:600;text-decoration:none;">Upgrade to Pro →</a>
+    </div>
+
+    <div id="analytics-content">
+      <div class="metrics" style="margin-bottom:24px;" id="analytics-metrics">
+        <div class="metric"><div class="metric-label">Total Views</div><div class="metric-value" id="an-views">—</div><div class="metric-change" id="an-views-sub">Loading...</div></div>
+        <div class="metric"><div class="metric-label">Total Orders</div><div class="metric-value orange" id="an-orders">—</div><div class="metric-change" id="an-orders-sub">Loading...</div></div>
+        <div class="metric"><div class="metric-label">Revenue</div><div class="metric-value" id="an-revenue">—</div><div class="metric-change" id="an-rev-sub">After fees</div></div>
+        <div class="metric"><div class="metric-label">Conversion</div><div class="metric-value" id="an-conv">—</div><div class="metric-change">Views to sales</div></div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <div class="analytics-title">Top listings by views</div>
+          <div id="an-top-listings"><div style="font-size:0.78rem;color:#ccc;padding:8px 0;">Loading...</div></div>
+        </div>
+        <div class="analytics-card">
+          <div class="analytics-title">Promoted performance</div>
+          <div id="an-promoted"><div style="font-size:0.78rem;color:#ccc;padding:8px 0;">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROMOTED TAB -->
+  <div class="tab-content" id="tab-promoted">
+    <div class="page-header">
+      <h1>Promoted Listings</h1>
+      <p id="promoted-sub">Pro sellers get 10 free promoted slots. Additional promotions are $0.25/click.</p>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;">Your promoted listings</div>
+          <div style="font-size:0.75rem;color:#888;margin-top:3px;" id="free-slots-label">Loading...</div>
+        </div>
+        <button onclick="loadPromoted()" style="padding:7px 14px;background:#f0f0ee;border:none;border-radius:7px;font-size:0.75rem;cursor:pointer;color:#555;">↻ Refresh</button>
+      </div>
+      <div id="promoted-list"><div style="text-align:center;padding:32px;color:#bbb;font-size:0.875rem;">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Promote a listing</div>
+      <div style="font-size:0.82rem;color:#555;margin-bottom:14px;">Select a listing to promote. Pro sellers get 10 free slots — additional promotions are pay-per-click at $0.25/click.</div>
+      <select id="promote-select" style="width:100%;background:#fafaf9;border:1px solid #e0e0dc;border-radius:8px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;margin-bottom:14px;">
+        <option value="">Choose a listing to promote...</option>
+      </select>
+      <button onclick="promoteSelected()" style="padding:11px 22px;background:#e8734a;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:600;cursor:pointer;">⭐ Promote listing</button>
+    </div>
+  </div>
+
+  <!-- PROMOTIONS TAB -->
+  <div class="tab-content" id="tab-promo">
+    <div class="page-header">
+      <h1>Promotions ⭐</h1>
+      <p>Create discount codes and manage promotions for your shop.</p>
+    </div>
+
+    <!-- Pro lock for free users -->
+    <div id="promo-lock" style="display:none;background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:48px 32px;text-align:center;margin-bottom:24px;">
+      <div style="font-size:2.5rem;margin-bottom:16px;">🏷️</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:8px;">Discount Codes is a Pro feature</h3>
+      <p style="font-size:0.875rem;color:#888;line-height:1.6;margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto;">Upgrade to Pro to create discount codes and run promotions in your shop.</p>
+      <a href="dashboard" style="display:inline-block;padding:11px 24px;background:#1a1a1a;color:#fff;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:600;text-decoration:none;">Upgrade to Pro →</a>
+    </div>
+
+    <div id="promo-content">
+      <div class="card">
+        <div class="card-title">🏷️ Create a discount code</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Code</label>
+            <input type="text" id="promo-code" placeholder="e.g. SAVE10" style="text-transform:uppercase;">
+          </div>
+          <div class="form-group">
+            <label>Discount type</label>
+            <select id="promo-type">
+              <option value="percent">Percentage off</option>
+              <option value="fixed">Fixed amount off</option>
+              <option value="freeship">Free shipping</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" id="promo-amount" placeholder="e.g. 10 for 10% or $10 off" min="1">
+          </div>
+          <div class="form-group">
+            <label>Expiry date (optional)</label>
+            <input type="date" id="promo-expiry">
+          </div>
+          <div class="form-group">
+            <label>Max uses (optional)</label>
+            <input type="number" id="promo-uses" placeholder="Leave blank for unlimited" min="1">
+          </div>
+          <div class="form-group">
+            <label>Min order value (optional)</label>
+            <input type="number" id="promo-min" placeholder="e.g. 25 for $25 minimum" min="0" step="0.01">
+          </div>
+        </div>
+        <br>
+        <button class="btn-save btn-orange" onclick="savePromoCode()">Create Code</button>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">Your discount codes</div>
+        <div id="promo-list">
+          <div style="text-align:center;padding:32px;color:#bbb;font-size:0.875rem;">
+            <div style="font-size:2rem;margin-bottom:8px;">🏷️</div>
+            No codes yet — create your first one above.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Mobile bottom tab bar -->
+<div class="mobile-tabs">
+  <button class="mobile-tab active" onclick="switchTabMobile('overview', this)"><span class="mt-icon">🏠</span>Overview</button>
+  <button class="mobile-tab" onclick="switchTabMobile('listings', this)"><span class="mt-icon">📦</span>Listings</button>
+  <button class="mobile-tab" onclick="switchTabMobile('shop', this)"><span class="mt-icon">🏪</span>Shop</button>
+  <button class="mobile-tab" onclick="switchTabMobile('analytics', this)"><span class="mt-icon">📊</span>Analytics</button>
+  <button class="mobile-tab" onclick="switchTabMobile('promo', this)"><span class="mt-icon">🏷️</span>Promos</button>
+</div>
+
+<script type="module">
+  import { auth, db, API } from "/js/config.js";
+  import "/js/notifications.js";
+  import { onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { collection, addDoc, getDocs, getDoc, doc, deleteDoc, query, where, orderBy, serverTimestamp, setDoc, onSnapshot, updateDoc }
+                                                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ── Key dates ──────────────────────────────────────────
+  const LAUNCH_DATE = new Date('2026-07-21T17:00:00');
+  const isLaunched  = new Date() >= LAUNCH_DATE;
+  // ───────────────────────────────────────────────────────
+
+  const timeout = setTimeout(() => { window.location.href = 'login'; }, 20000);
+
+  onAuthStateChanged(auth, async user => {
+    clearTimeout(timeout);
+    if (!user) { window.location.href = 'login'; return; }
+
+    const DEV_EMAIL = 'austinmalick9@gmail.com';
+    const isDev     = user.email === DEV_EMAIL;
+
+    // For dev account skip backend call entirely — instant load
+    let access;
+    if (isDev) {
+      access = { isDev: true, isPro: true, earlyAccess: true, isLaunched: true, access: 'developer' };
+    } else {
+      // Check access server-side with 8 second timeout
+      try {
+        const token      = await user.getIdToken();
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), 8000);
+        const res        = await fetch(`${API}/api/auth/access`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          signal:  controller.signal
+        });
+        clearTimeout(timeoutId);
+        access = await res.json();
+      } catch (e) {
+        document.getElementById('loading').classList.add('hide');
+        document.getElementById('denied').classList.add('show');
+        document.querySelector('#denied h2').textContent = 'Server is starting up...';
+        document.querySelector('#denied p').textContent  = 'The backend is waking up. Wait 30 seconds and refresh the page.';
+        return;
+      }
+    }
+
+    const isPro     = access.isPro;
+    const hasAccess = access.isDev || access.earlyAccess || access.isLaunched;
+
+    // Lock if before July 7
+    if (!hasAccess) {
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('denied').classList.add('show');
+      document.querySelector('#denied p').textContent = 'The seller dashboard opens July 7, 2026 for Pro sellers. The full launch is July 21 at 5pm.';
+      return;
+    }
+
+    // Lock if not pro
+    if (!isPro) {
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('denied').classList.add('show');
+      document.querySelector('#denied p').textContent = 'The seller dashboard is available to Pro Seller subscribers. Upgrade from your dashboard to get access.';
+      return;
+    }
+
+    const name  = user.displayName || user.email.split('@')[0];
+    const first = name.split(' ')[0];
+    window._uid   = user.uid;
+    window._user  = user;
+    window._isDev = isDev;
+    window._isPro = isPro || isDev; // devs get pro photo limit
+
+    // Nav avatar
+    const avatarEl = document.getElementById('nav-avatar');
+    if (user.photoURL) {
+      avatarEl.innerHTML = `<img src="${user.photoURL}" alt="${name}">`;
+    } else {
+      avatarEl.textContent = name.charAt(0).toUpperCase();
+    }
+
+    document.getElementById('seller-heading').textContent       = `${first}'s Seller Dashboard`;
+    document.getElementById('shop-avatar-preview').textContent  = name.charAt(0).toUpperCase();
+
+    // Set plan-specific metrics and UI
+    if (isPro || isDev) {
+      document.getElementById('plan-badge').textContent     = isDev ? '⚡ Dev' : '⭐ Pro';
+      document.getElementById('fee-display').textContent    = '4%';
+      document.getElementById('fee-note').textContent       = 'vs 8% on free';
+      document.getElementById('fee-note').className         = 'metric-change up';
+      document.getElementById('listing-limit-note').textContent = 'Unlimited on Pro';
+      document.getElementById('url-note').textContent       = 'Custom Pro URL';
+    } else {
+      document.getElementById('plan-badge').textContent     = 'Free';
+      document.getElementById('plan-badge').style.background = '#f0f0ee';
+      document.getElementById('plan-badge').style.color      = '#888';
+      document.getElementById('fee-display').textContent    = '8%';
+      document.getElementById('fee-note').textContent       = 'Upgrade for 4%';
+      document.getElementById('listing-limit-note').textContent = '250 total / 25 active';
+      document.getElementById('url-note').textContent       = 'Numeric URL (free)';
+      // Free seller URL uses UID prefix
+      const freeId = user.uid.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
+      document.getElementById('shop-url-display').innerHTML =
+        `<a href="/shop/${freeId}" target="_blank" style="color:#1a1a1a;text-decoration:none;font-size:0.75rem;">sellnook.com/shop/${freeId}</a>`;
+      // Hide Pro-only tab labels
+      document.getElementById('tab-btn-analytics').textContent = 'Analytics 🔒';
+      document.getElementById('tab-btn-promo').textContent     = 'Promotions 🔒';
+      // Show lock screens on Pro tabs
+      document.getElementById('analytics-lock').style.display  = 'block';
+      document.getElementById('analytics-content').style.display = 'none';
+      document.getElementById('promo-lock').style.display      = 'block';
+      document.getElementById('promo-content').style.display   = 'none';
+    }
+
+    // Load shop profile from Firestore
+    try {
+      const userDocSnap = await getDoc(doc(db, 'users', user.uid));
+      if (userDocSnap.exists()) {
+        const data = userDocSnap.data();
+        if (data.shopName) {
+          document.getElementById('shop-name-input').value         = data.shopName;
+          document.getElementById('shop-name-preview').textContent = data.shopName;
+          document.getElementById('shop-avatar-preview').textContent = data.shopName.charAt(0).toUpperCase();
+        }
+        if (data.shopUrl) {
+          document.getElementById('shop-url-input').value           = data.shopUrl;
+          document.getElementById('shop-url-preview').textContent   = `sellnook.com/shop/${data.shopUrl}`;
+          document.getElementById('shop-url-display').innerHTML     = `<a href="/shop/${data.shopUrl}" target="_blank" style="color:#1a1a1a;text-decoration:none;font-size:0.75rem;">sellnook.com/shop/${data.shopUrl}</a>`;
+        }
+        if (data.shopBio) {
+          document.getElementById('shop-bio-input').value           = data.shopBio;
+          document.getElementById('shop-bio-preview').textContent   = data.shopBio;
+        }
+        if (data.shopCity)    document.getElementById('shop-city').value    = data.shopCity;
+        if (data.shopState)   document.getElementById('shop-state').value   = data.shopState;
+        if (data.shopZip)     document.getElementById('shop-zip').value     = data.shopZip;
+        if (data.shopCarrier) document.getElementById('shop-carrier').value = data.shopCarrier;
+      }
+    } catch (e) { console.error('Shop load error:', e); }
+
+    // Load listings from Firestore
+    await renderListings(user.uid);
+
+    // Load offers badge in background
+    setTimeout(() => loadSellerOffers(), 1000);
+
+    // Show main content and hide loader
+    document.querySelector('main').style.display = 'block';
+    const loader = document.getElementById('loading');
+    if (loader) {
+      loader.classList.add('hide');
+      setTimeout(() => loader.remove(), 400);
+    }
+
+  });
+
+  window.switchTabMobile = function(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.mobile-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+    if (tab === 'promo' && window._isPro) loadPromoCodes();
+  };
+
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'promo' && window._isPro) loadPromoCodes();
+    if (tab === 'orders') loadSellerOrders();
+    if (tab === 'analytics') loadAnalytics();
+    if (tab === 'promoted') loadPromoted();
+    if (tab === 'seller-offers') loadSellerOffers();
+  };
+
+  // ── Load seller offers ─────────────────────────────────
+  async function loadSellerOffers() {
+    const container = document.getElementById('seller-offers-list');
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#bbb;font-size:0.875rem;">Loading...</div>';
+    try {
+      const token = await window._user.getIdToken();
+      const res   = await fetch(`${API}/api/offers/seller`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data   = await res.json();
+      const offers = data.offers || [];
+
+      // Update badge
+      const badge = document.getElementById('offers-badge-nav');
+      if (offers.length) { badge.textContent = offers.length; badge.style.display = 'inline'; }
+
+      if (!offers.length) {
+        container.innerHTML = '<div style="text-align:center;padding:48px 20px;color:#bbb;"><div style="font-size:2.5rem;margin-bottom:12px;">💬</div><p style="font-size:0.875rem;">No pending offers.</p></div>';
+        return;
+      }
+
+      container.innerHTML = offers.map(o => {
+        const pct = Math.round((o.offerAmount / o.listingPrice) * 100);
+        const img = o.listingImage ? `<img src="${o.listingImage}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;">` : `<div style="width:52px;height:52px;border-radius:8px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📦</div>`;
+        const date = new Date(o.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        const expires = new Date(o.expiresAt);
+        const hoursLeft = Math.max(0, Math.round((expires - new Date()) / 3600000));
+
+        return `
+          <div style="padding:16px;border:1px solid #e8e8e5;border-radius:10px;margin-bottom:12px;">
+            <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
+              ${img}
+              <div style="flex:1;">
+                <div style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:4px;">${o.listingTitle}</div>
+                <div style="font-size:0.75rem;color:#aaa;margin-bottom:8px;">From buyer · ${date} · ${hoursLeft}h remaining</div>
+                <div style="display:flex;align-items:baseline;gap:12px;">
+                  <div>
+                    <div style="font-size:0.68rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;">Listed at</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;">$${parseFloat(o.listingPrice||0).toFixed(2)}</div>
+                  </div>
+                  <div>
+                    <div style="font-size:0.68rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;">Offer</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;color:#2d9e6b;">$${parseFloat(o.offerAmount||0).toFixed(2)} <span style="font-size:0.72rem;color:#aaa;">(${pct}% of list)</span></div>
+                  </div>
+                </div>
+                ${o.message ? `<div style="font-size:0.78rem;color:#888;font-style:italic;margin-top:8px;">"${o.message}"</div>` : ''}
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="respondOffer('${o.id}','accept')" style="flex:1;padding:9px;background:#2d9e6b;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;min-width:90px;">✓ Accept</button>
+              <button onclick="showCounterModal('${o.id}',${o.listingPrice},${o.offerAmount})" style="flex:1;padding:9px;background:#e8734a;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;min-width:90px;">↩ Counter</button>
+              <button onclick="respondOffer('${o.id}','decline')" style="flex:1;padding:9px;background:#f0f0ee;color:#888;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.8rem;cursor:pointer;min-width:90px;">✕ Decline</button>
+            </div>
+          </div>`;
+      }).join('');
+
+    } catch (e) {
+      container.innerHTML = '<div style="text-align:center;padding:24px;color:#e8734a;font-size:0.875rem;">Error loading offers.</div>';
+    }
+  }
+
+  window.respondOffer = async function(id, action) {
+    if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} this offer?`)) return;
+    try {
+      const token = await window._user.getIdToken();
+      await fetch(`${API}/api/offers/${id}/respond`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify({ action })
+      });
+      loadSellerOffers();
+      showToast(`✅ Offer ${action}ed`);
+    } catch (e) { showToast('Error responding to offer'); }
+  };
+
+  window.showCounterModal = function(offerId, listPrice, offerAmount) {
+    const suggested = ((parseFloat(listPrice) + parseFloat(offerAmount)) / 2).toFixed(2);
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:28px;width:100%;max-width:380px;">
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;">Counter offer</h3>
+        <p style="font-size:0.82rem;color:#888;margin-bottom:20px;">List price: $${parseFloat(listPrice).toFixed(2)} · Buyer offered: $${parseFloat(offerAmount).toFixed(2)}</p>
+        <label style="font-size:0.75rem;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">Your counter price</label>
+        <div style="display:flex;align-items:center;border:1px solid #e0e0dc;border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          <span style="padding:10px 12px;color:#888;border-right:1px solid #e0e0dc;">$</span>
+          <input id="counter-amt" type="number" value="${suggested}" step="0.01" style="flex:1;padding:10px 14px;border:none;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;background:#f0f0ee;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.875rem;cursor:pointer;color:#888;">Cancel</button>
+          <button onclick="submitCounter('${offerId}',this)" style="flex:1;padding:10px;background:#e8734a;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:600;cursor:pointer;">Send counter</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  };
+
+  window.submitCounter = async function(offerId, btn) {
+    const amount = document.getElementById('counter-amt').value;
+    if (!amount) return;
+    btn.disabled = true; btn.textContent = 'Sending...';
+    try {
+      const token = await window._user.getIdToken();
+      await fetch(`${API}/api/offers/${offerId}/respond`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify({ action: 'counter', counterAmount: amount })
+      });
+      btn.closest('[style*=fixed]').remove();
+      loadSellerOffers();
+      showToast('↩ Counter offer sent!');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = 'Send counter';
+      showToast('Error sending counter');
+    }
+  };
+
+  // ── Load analytics ─────────────────────────────────────
+  async function loadAnalytics() {
+    if (!window._isPro && !window._isDev) return;
+    try {
+      const q    = query(collection(db, 'listings'), where('sellerId', '==', window._uid));
+      const snap = await getDocs(q);
+      const listings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      const totalViews  = listings.reduce((s, l) => s + (l.views || 0), 0);
+      const totalSales  = listings.reduce((s, l) => s + (l.sales || 0), 0);
+      const revenue     = listings.reduce((s, l) => s + ((l.sales || 0) * (l.price || 0) * (window._isPro ? 0.96 : 0.92)), 0);
+      const convRate    = totalViews > 0 ? ((totalSales / totalViews) * 100).toFixed(1) + '%' : '—';
+
+      document.getElementById('an-views').textContent     = totalViews || '0';
+      document.getElementById('an-orders').textContent    = totalSales || '0';
+      document.getElementById('an-revenue').textContent   = '$' + revenue.toFixed(2);
+      document.getElementById('an-conv').textContent      = convRate;
+      document.getElementById('an-views-sub').textContent = `${listings.length} listings`;
+      document.getElementById('an-orders-sub').textContent = 'Total completed';
+
+      // Top listings
+      const sorted = [...listings].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+      document.getElementById('an-top-listings').innerHTML = sorted.length
+        ? sorted.map(l => `
+            <div class="bar-row">
+              <span class="bar-label" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.title}</span>
+              <div class="bar-track"><div class="bar-fill" style="width:${sorted[0].views ? Math.round((l.views||0)/sorted[0].views*100) : 0}%"></div></div>
+              <span class="bar-val">${l.views || 0}</span>
+            </div>`).join('')
+        : '<div style="font-size:0.78rem;color:#ccc;">No data yet</div>';
+
+      // Promoted performance
+      const promotedSnap = await getDocs(query(collection(db, 'promoted'), where('sellerId', '==', window._uid)));
+      const promotedData = promotedSnap.docs.map(d => d.data());
+      const totalClicks  = promotedData.reduce((s, p) => s + (p.clicks || 0), 0);
+      const totalSpend   = promotedData.reduce((s, p) => s + (p.spend || 0), 0);
+      document.getElementById('an-promoted').innerHTML = `
+        <div class="bar-row"><span class="bar-label">Active promoted</span><div class="bar-track"><div class="bar-fill orange" style="width:${Math.min(100, promotedData.filter(p=>p.active).length * 10)}%"></div></div><span class="bar-val">${promotedData.filter(p=>p.active).length}</span></div>
+        <div class="bar-row"><span class="bar-label">Total clicks</span><div class="bar-track"><div class="bar-fill orange" style="width:${Math.min(100, totalClicks)}%"></div></div><span class="bar-val">${totalClicks}</span></div>
+        <div class="bar-row"><span class="bar-label">Total spend</span><div class="bar-track"><div class="bar-fill orange" style="width:${Math.min(100, totalSpend * 10)}%"></div></div><span class="bar-val">$${totalSpend.toFixed(2)}</span></div>`;
+
+    } catch (e) { console.error('Analytics error:', e); }
+  }
+
+  // ── Load promoted listings ─────────────────────────────
+  window.loadPromoted = async function() {
+    try {
+      const token = await window._user.getIdToken();
+      const res   = await fetch(`${API}/api/promoted/seller`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data  = await res.json();
+      const promos = data.promoted || [];
+
+      const active = promos.filter(p => p.active);
+      const freeUsed = active.filter(p => p.isFreeSlot).length;
+      const freeLeft = window._isPro ? Math.max(0, 10 - freeUsed) : 0;
+
+      document.getElementById('free-slots-label').textContent =
+        window._isPro
+          ? `${freeLeft} free slot${freeLeft !== 1 ? 's' : ''} remaining of 10`
+          : 'Free sellers: $0.25/click';
+
+      const container = document.getElementById('promoted-list');
+      if (!promos.length) {
+        container.innerHTML = '<div style="text-align:center;padding:32px;color:#bbb;font-size:0.875rem;">No promoted listings yet.</div>';
+      } else {
+        container.innerHTML = promos.map(p => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0ee;font-size:0.82rem;">
+            <div>
+              <div style="font-weight:600;margin-bottom:3px;">${p.listingId}</div>
+              <div style="color:#888;">${p.isFreeSlot ? '⭐ Free slot' : '$0.25/click'} · ${p.clicks || 0} clicks · $${(p.spend||0).toFixed(2)} spent</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="background:${p.active ? '#e8f5ee' : '#f0f0ee'};color:${p.active ? '#2d9e6b' : '#888'};font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:50px;">${p.active ? 'Active' : 'Paused'}</span>
+              ${p.active ? `<button onclick="stopPromoted('${p.id}')" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:0.75rem;padding:4px;" title="Stop promoting">✕</button>` : ''}
+            </div>
+          </div>`).join('');
+      }
+
+      // Populate promote select with current listings
+      const listingsSnap = await getDocs(query(collection(db, 'listings'), where('sellerId', '==', window._uid), where('status', '==', 'active')));
+      const select = document.getElementById('promote-select');
+      select.innerHTML = '<option value="">Choose a listing to promote...</option>' +
+        listingsSnap.docs.map(d => {
+          const l = d.data();
+          const alreadyPromoted = promos.find(p => p.listingId === d.id && p.active);
+          return `<option value="${d.id}" ${alreadyPromoted ? 'disabled' : ''}>${l.title} — $${l.price} ${alreadyPromoted ? '(already promoted)' : ''}</option>`;
+        }).join('');
+
+    } catch (e) { console.error('Load promoted error:', e); }
+  };
+
+  window.promoteSelected = async function() {
+    const listingId = document.getElementById('promote-select').value;
+    if (!listingId) { showToast('⚠️ Please select a listing'); return; }
+    try {
+      const token = await window._user.getIdToken();
+      const res   = await fetch(`${API}/api/promoted/promote`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify({ listingId })
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Error promoting'); return; }
+      showToast(`✅ ${data.message}`);
+      loadPromoted();
+    } catch (e) { showToast('Error promoting listing'); }
+  };
+
+  window.stopPromoted = async function(id) {
+    if (!confirm('Stop promoting this listing?')) return;
+    try {
+      const token = await window._user.getIdToken();
+      await fetch(`${API}/api/promoted/${id}`, {
+        method:  'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      showToast('Promotion stopped');
+      loadPromoted();
+    } catch (e) { showToast('Error stopping promotion'); }
+  };
+
+  // ── Load seller orders ─────────────────────────────────
+  async function loadSellerOrders() {
+    const container = document.getElementById('seller-orders-list');
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#bbb;font-size:0.875rem;">Loading orders...</div>';
+
+    try {
+      const token = await window._user.getIdToken();
+      const res   = await fetch(`${API}/api/orders/seller`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data  = await res.json();
+      const orders = data.orders || [];
+
+      // Update badge
+      const badge = document.getElementById('orders-badge');
+      const pending = orders.filter(o => o.status === 'processing').length;
+      if (pending > 0) {
+        badge.textContent    = pending;
+        badge.style.display  = 'inline';
+      }
+
+      if (!orders.length) {
+        container.innerHTML = '<div style="text-align:center;padding:48px 20px;color:#bbb;"><div style="font-size:2.5rem;margin-bottom:12px;">📦</div><p style="font-size:0.875rem;line-height:1.6;">No orders yet.</p></div>';
+        return;
+      }
+
+      const statusColors = {
+        processing: '#2563eb', shipped: '#e8734a',
+        delivered: '#2d9e6b', cancelled: '#888', disputed: '#e05c5c'
+      };
+
+      container.innerHTML = orders.map(o => {
+        const date    = new Date(o.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+        const color   = statusColors[o.status] || '#888';
+        const imgHtml = o.itemImage
+          ? `<img src="${o.itemImage}" style="width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0;">`
+          : `<div style="width:44px;height:44px;border-radius:6px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📦</div>`;
+
+        return `
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #f0f0ee;">
+            ${imgHtml}
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${o.itemTitle}</div>
+              <div style="font-size:0.75rem;color:#aaa;">From ${o.buyerName || 'Buyer'} · ${date}</div>
+              <div style="font-size:0.75rem;color:#aaa;margin-top:2px;">${o.shippingAddress?.city || ''}, ${o.shippingAddress?.state || ''}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:6px;">$${parseFloat(o.sellerPayout || o.total || 0).toFixed(2)}</div>
+              <span style="background:${color}18;color:${color};font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:50px;">${o.status}</span>
+            </div>
+            ${o.status === 'processing' ? `
+              <button onclick="showShipModal('${o.id}')" style="padding:7px 14px;background:#1a1a1a;color:#fff;border:none;border-radius:7px;font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;flex-shrink:0;">Ship</button>
+            ` : `
+              <a href="orders?id=${o.id}" style="padding:7px 14px;background:#f0f0ee;color:#555;border-radius:7px;font-size:0.75rem;font-weight:500;text-decoration:none;flex-shrink:0;">View</a>
+            `}
+          </div>`;
+      }).join('') + `<div style="font-size:0.75rem;color:#bbb;text-align:center;padding-top:12px;">${orders.length} order${orders.length !== 1 ? 's' : ''} total</div>`;
+
+    } catch (e) {
+      console.error('Load orders error:', e);
+      container.innerHTML = '<div style="text-align:center;padding:24px;color:#e8734a;font-size:0.875rem;">Error loading orders. Please refresh.</div>';
+    }
+  }
+
+  // ── Ship order modal ───────────────────────────────────
+  window.showShipModal = function(orderId) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;';
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:28px;width:100%;max-width:400px;">
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;">Mark as shipped</h3>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-size:0.75rem;font-weight:500;color:#555;display:block;margin-bottom:6px;">Carrier</label>
+            <select id="ship-carrier" style="width:100%;background:#fafaf9;border:1px solid #e0e0dc;border-radius:8px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;">
+              <option value="USPS">USPS</option>
+              <option value="UPS">UPS</option>
+              <option value="FedEx">FedEx</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem;font-weight:500;color:#555;display:block;margin-bottom:6px;">Tracking number</label>
+            <input type="text" id="ship-tracking" placeholder="e.g. 9400111899223456789012" style="width:100%;background:#fafaf9;border:1px solid #e0e0dc;border-radius:8px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem;font-weight:500;color:#555;display:block;margin-bottom:6px;">Estimated delivery (optional)</label>
+            <input type="text" id="ship-eta" placeholder="e.g. March 25, 2026" style="width:100%;background:#fafaf9;border:1px solid #e0e0dc;border-radius:8px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+          <button onclick="this.closest('[style*=fixed]').remove()" style="padding:10px 20px;background:transparent;border:1px solid #e0e0dc;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.875rem;color:#888;cursor:pointer;">Cancel</button>
+          <button onclick="submitShip('${orderId}', this)" style="padding:10px 20px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:600;cursor:pointer;">Mark Shipped</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  };
+
+  window.submitShip = async function(orderId, btn) {
+    const carrier        = document.getElementById('ship-carrier').value;
+    const trackingNumber = document.getElementById('ship-tracking').value.trim();
+    const eta            = document.getElementById('ship-eta').value.trim();
+
+    if (!trackingNumber) { showToast('⚠️ Please enter a tracking number'); return; }
+
+    btn.disabled    = true;
+    btn.textContent = 'Shipping...';
+
+    try {
+      const token = await window._user.getIdToken();
+      const res   = await fetch(`${API}/api/orders/${orderId}/ship`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body:    JSON.stringify({ carrier, trackingNumber, estimatedDelivery: eta })
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || 'Error marking as shipped'); btn.disabled = false; return; }
+
+      btn.closest('[style*=fixed]').remove();
+      showToast('✅ Order marked as shipped! Buyer has been notified.');
+      loadSellerOrders();
+    } catch (e) {
+      showToast('Error marking order as shipped');
+      btn.disabled    = false;
+      btn.textContent = 'Mark Shipped';
+    }
+  };
+
+  // ── Cloudinary config ──────────────────────────────────
+  const CLOUDINARY_CLOUD  = 'djovt8sgz';
+  const CLOUDINARY_PRESET = 'sellnook_listings';
+  const CLOUDINARY_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
+
+  // ── Photo handling ─────────────────────────────────────
+  let uploadedPhotos = []; // array of { url, publicId }
+
+  window.handlePhotos = function(input) {
+    const maxPhotos = window._isPro ? 10 : 5;
+    const remaining = maxPhotos - uploadedPhotos.length;
+    if (remaining <= 0) { showToast(`⚠️ Max ${maxPhotos} photos allowed`); input.value = ''; return; }
+
+    const files = Array.from(input.files).slice(0, remaining);
+    if (!files.length) return;
+
+    showToast(`⬆️ Uploading ${files.length} photo${files.length > 1 ? 's' : ''}...`);
+
+    let completed = 0;
+    files.forEach(async file => {
+      if (!file.type.startsWith('image/')) { completed++; return; }
+
+      // Check file size — warn if over 10MB
+      if (file.size > 10 * 1024 * 1024) {
+        showToast(`⚠️ ${file.name} is too large. Max 10MB per photo.`);
+        completed++;
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('file',           file);
+        formData.append('upload_preset',  CLOUDINARY_PRESET);
+        formData.append('folder',         `sellnook/listings/${window._uid}`);
+
+        const res  = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.secure_url) {
+          uploadedPhotos.push({ url: data.secure_url, publicId: data.public_id });
+        } else {
+          showToast('⚠️ Photo upload failed. Try again.');
+        }
+      } catch (e) {
+        console.error('Upload error:', e);
+        showToast('⚠️ Upload failed. Check your connection.');
+      }
+
+      completed++;
+      if (completed === files.length) {
+        renderPhotoGrid();
+        showToast(`✅ ${completed} photo${completed > 1 ? 's' : ''} uploaded!`);
+      }
+    });
+
+    input.value = '';
+  };
+
+  function renderPhotoGrid() {
+    const maxPhotos = window._isPro ? 10 : 5;
+    const grid   = document.getElementById('photo-grid');
+    const addBtn = document.getElementById('photo-add-btn');
+    if (!grid) return;
+
+    grid.innerHTML = uploadedPhotos.map((photo, i) => `
+      <div class="photo-thumb ${i === 0 ? 'cover' : ''}">
+        <img src="${photo.url}" alt="Photo ${i+1}" loading="lazy">
+        <button class="photo-thumb-remove" onclick="removePhoto(${i})">✕</button>
+      </div>
+    `).join('');
+
+    if (addBtn) addBtn.disabled = uploadedPhotos.length >= maxPhotos;
+    const label = document.getElementById('photos-label');
+    if (label) label.textContent = `Photos (${uploadedPhotos.length}/${maxPhotos})`;
+  }
+
+  window.removePhoto = function(index) {
+    // Note: photo stays in Cloudinary storage but is removed from the listing
+    // Full deletion from Cloudinary requires a backend call — can be added later
+    uploadedPhotos.splice(index, 1);
+    renderPhotoGrid();
+  };
+
+  // ── Add listing to Firestore ───────────────────────────
+  window.addListing = async function() {
+    const title       = document.getElementById('listing-title').value.trim();
+    const priceRaw    = document.getElementById('listing-price').value;
+    const category    = document.getElementById('listing-category').value;
+    const condition   = document.getElementById('listing-condition').value;
+    const qty         = parseInt(document.getElementById('listing-qty').value) || 1;
+    const desc        = document.getElementById('listing-desc').value.trim();
+    const weight      = parseFloat(document.getElementById('listing-weight').value);
+    const length      = parseFloat(document.getElementById('listing-length').value);
+    const width       = parseFloat(document.getElementById('listing-width').value);
+    const height      = parseFloat(document.getElementById('listing-height').value);
+    const shipPrice   = parseFloat(document.getElementById('listing-shipping-price').value);
+    const processing  = document.getElementById('listing-processing').value;
+    const carrier     = document.getElementById('listing-carrier').value;
+    const freeShip    = document.getElementById('listing-free-shipping').value === 'true';
+    const user        = window._user;
+
+    // Validate all required fields
+    const errors = [];
+    if (!title)                        errors.push('Product title');
+    if (!priceRaw || parseFloat(priceRaw) <= 0) errors.push('Price');
+    if (!category)                     errors.push('Category');
+    if (!condition)                    errors.push('Condition');
+    if (!desc)                         errors.push('Description');
+    if (!qty || qty < 1)               errors.push('Quantity');
+    if (!weight || weight <= 0)        errors.push('Package weight');
+    if (!length || length <= 0)        errors.push('Package length');
+    if (!width  || width  <= 0)        errors.push('Package width');
+    if (!height || height <= 0)        errors.push('Package height');
+    if (!freeShip && (isNaN(shipPrice) || shipPrice < 0)) errors.push('Shipping price');
+    if (!processing)                   errors.push('Processing time');
+    if (!uploadedPhotos.length)        errors.push('At least 1 photo');
+
+    if (errors.length) {
+      alert(`Please fill in the following required fields:\n\n• ${errors.join('\n• ')}`);
+      return;
+    }
+
+    const price = parseFloat(priceRaw);
+
+    const btn = document.querySelector('.btn-save.btn-orange');
+    btn.disabled    = true;
+    btn.textContent = 'Saving...';
+
+    try {
+      const shopName = document.getElementById('shop-name-input').value || user.displayName || user.email.split('@')[0];
+      const isPro    = window._isPro;
+
+      const docRef = await addDoc(collection(db, 'listings'), {
+        title,
+        price,
+        category,
+        condition,
+        quantity:       qty,
+        description:    desc,
+        images:         uploadedPhotos.map(p => p.url),
+        imageIds:       uploadedPhotos.map(p => p.publicId),
+        weight,
+        dimensions: {
+          length,
+          width,
+          height,
+        },
+        shippingPrice:  freeShip ? 0 : shipPrice,
+        freeShipping:   freeShip,
+        carrier:        carrier || null,
+        processingTime: processing,
+        sellerId:       user.uid,
+        sellerName:     user.displayName || user.email.split('@')[0],
+        sellerEmail:    user.email,
+        shopName,
+        sellerPhoto:    user.photoURL || '',
+        isPro,
+        status:         'active',
+        visibleAt:      LAUNCH_DATE.toISOString(),
+        createdAt:      serverTimestamp(),
+        updatedAt:      serverTimestamp(),
+        sales:          0,
+        views:          0
+      });
+
+      // Generate clean product URL
+      try {
+        const token = await user.getIdToken();
+        await fetch(`${API}/api/product/generate-url`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ listingId: docRef.id, token })
+        });
+      } catch (e) { console.error('URL generation error:', e); }
+
+      // Reset form
+      ['listing-title','listing-price','listing-desc','listing-qty'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('listing-category').selectedIndex = 0;
+      uploadedPhotos = [];
+      renderPhotoGrid();
+
+      await renderListings(user.uid);
+      btn.disabled    = false;
+      btn.textContent = 'Save Listing';
+      showToast('✅ Listing saved! Goes live July 21.');
+
+    } catch (e) {
+      console.error('Listing save error:', e);
+      alert('Error saving listing. Please try again.');
+      btn.disabled    = false;
+      btn.textContent = 'Save Listing';
+    }
+  };
+
+  // ── Load listings from Firestore ───────────────────────
+  async function renderListings(uid) {
+    const container = document.getElementById('listings-list');
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:#bbb;font-size:0.875rem;">Loading your listings...</div>';
+
+    try {
+      const q    = query(
+        collection(db, 'listings'),
+        where('sellerId', '==', uid),
+        orderBy('createdAt', 'desc')
+      );
+      const snap = await getDocs(q);
+      const all  = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // Separate by status
+      const active   = all.filter(l => l.status === 'active');
+      const drafts   = all.filter(l => l.status === 'draft');
+      const archived = all.filter(l => l.status === 'archived');
+
+      document.getElementById('listing-count').textContent = active.length;
+
+      // Update tab counts
+      const draftBadge   = document.getElementById('draft-badge');
+      const archiveBadge = document.getElementById('archive-badge');
+      if (draftBadge)   { draftBadge.textContent = drafts.length; draftBadge.style.display = drafts.length ? 'inline' : 'none'; }
+      if (archiveBadge) { archiveBadge.textContent = archived.length; archiveBadge.style.display = archived.length ? 'inline' : 'none'; }
+
+      const isLive = new Date() >= new Date('2026-07-21T17:00:00');
+
+      function renderGroup(listings, showRestore = false) {
+        if (!listings.length) {
+          return `<div style="text-align:center;padding:48px 20px;color:#bbb;"><div style="font-size:2.5rem;margin-bottom:12px;">📦</div><p style="font-size:0.875rem;line-height:1.6;">Nothing here yet.</p></div>`;
+        }
+        return listings.map(l => {
+          const hasPhoto    = l.images && l.images.length > 0;
+          const thumb       = hasPhoto
+            ? `<img src="${l.images[0]}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #e0e0dc;flex-shrink:0;">`
+            : `<div style="width:48px;height:48px;background:#f0f0ee;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📦</div>`;
+          const statusLabel = l.status === 'draft' ? 'Draft' : l.status === 'archived' ? 'Archived' : isLive ? l.status : 'Scheduled';
+          const statusColor = l.status === 'draft' ? 'status-draft' : l.status === 'archived' ? 'status-draft' : isLive ? `status-${l.status}` : 'status-draft';
+
+          const actions = showRestore
+            ? `<button onclick="restoreListing('${l.id}')" style="background:#e8f5ee;border:none;cursor:pointer;color:#2d9e6b;font-size:0.72rem;padding:5px 10px;border-radius:5px;font-weight:600;" title="Restore">↩ Restore</button>
+               <button onclick="permanentDelete('${l.id}')" style="background:none;border:none;cursor:pointer;color:#e05c5c;font-size:0.75rem;padding:4px 6px;" title="Delete permanently">🗑️</button>`
+            : `<button onclick="saveDraft('${l.id}')" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:0.72rem;padding:4px 6px;" title="Save as draft">📝</button>
+               <button onclick="archiveListing('${l.id}')" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:0.75rem;padding:4px;" title="Archive">🗃️</button>`;
+
+          return `
+            <div class="listing-row">
+              ${thumb}
+              <div class="listing-info">
+                <div class="listing-name">${l.title}</div>
+                <div class="listing-meta">${l.category} · ${l.condition} · Qty: ${l.quantity} · ${l.images?.length || 0} photo${l.images?.length !== 1 ? 's' : ''}</div>
+                ${!isLive && l.status === 'active' ? `<div class="listing-meta" style="color:#e8734a;margin-top:2px;">Goes live: July 21, 2026 at 5pm</div>` : ''}
+              </div>
+              <div class="listing-price">$${parseFloat(l.price).toFixed(2)}</div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="listing-status ${statusColor}">${statusLabel}</span>
+                ${actions}
+              </div>
+            </div>`;
+        }).join('');
+      }
+
+      // Render based on active sub-tab
+      const activeSubTab = document.getElementById('listing-subtab-active')?.dataset.active || 'active';
+
+      if (activeSubTab === 'drafts') {
+        container.innerHTML = renderGroup(drafts, false) + (drafts.length ? `<div class="listing-count">${drafts.length} draft${drafts.length !== 1 ? 's' : ''}</div>` : '');
+      } else if (activeSubTab === 'archived') {
+        container.innerHTML = renderGroup(archived, true) + (archived.length ? `<div class="listing-count">${archived.length} archived — restore to make live again</div>` : '');
+      } else {
+        container.innerHTML = renderGroup(active, false) + (active.length ? `<div class="listing-count">${active.length} listing${active.length !== 1 ? 's' : ''} — unlimited on Pro</div>` : '');
+      }
+
+    } catch (e) {
+      console.error('Listings load error:', e);
+      const isIndexError = e.message && e.message.includes('index');
+      container.innerHTML = `<div style="text-align:center;padding:24px;color:#e8734a;font-size:0.875rem;">${isIndexError ? '⚠️ Firestore index required. Check the console for a link to create it.' : `⚠️ Error: ${e.message}`}</div>`;
+    }
+  }
+
+  // ── Archive listing (soft delete) ─────────────────────
+  window.archiveListing = async function(id) {
+    if (!confirm('Archive this listing? It will be hidden from buyers but you can restore it.')) return;
+    try {
+      await updateDoc(doc(db, 'listings', id), { status: 'archived', archivedAt: new Date().toISOString() });
+      await renderListings(window._uid);
+      showToast('🗃️ Listing archived — restore it anytime.');
+    } catch (e) { showToast('Error archiving listing.'); }
+  };
+
+  // ── Save as draft ──────────────────────────────────────
+  window.saveDraft = async function(id) {
+    if (!confirm('Save as draft? The listing will be hidden from buyers.')) return;
+    try {
+      await updateDoc(doc(db, 'listings', id), { status: 'draft' });
+      await renderListings(window._uid);
+      showToast('📝 Saved as draft.');
+    } catch (e) { showToast('Error saving draft.'); }
+  };
+
+  // ── Restore listing ────────────────────────────────────
+  window.restoreListing = async function(id) {
+    try {
+      await updateDoc(doc(db, 'listings', id), { status: 'active', archivedAt: null });
+      await renderListings(window._uid);
+      showToast('✅ Listing restored and live again!');
+    } catch (e) { showToast('Error restoring listing.'); }
+  };
+
+  // ── Permanent delete ───────────────────────────────────
+  window.permanentDelete = async function(id) {
+    if (!confirm('Permanently delete this listing? This cannot be undone.')) return;
+    try {
+      await deleteDoc(doc(db, 'listings', id));
+      await renderListings(window._uid);
+      showToast('🗑️ Listing permanently deleted.');
+    } catch (e) { showToast('Error deleting listing.'); }
+  };
+
+  // ── Switch listing sub-tab ─────────────────────────────
+  window.switchListingSubTab = function(tab, btn) {
+    document.querySelectorAll('.listing-subtab').forEach(b => {
+      b.style.background = 'transparent';
+      b.style.color = '#888';
+    });
+    btn.style.background = '#1a1a1a';
+    btn.style.color = '#fff';
+    document.getElementById('listing-subtab-active').dataset.active = tab;
+    renderListings(window._uid);
+  };
+
+  // ── Shop profile — save to Firestore ──────────────────
+  window.previewShop = function() {
+    const name = document.getElementById('shop-name-input').value || 'Your Shop Name';
+    const url  = document.getElementById('shop-url-input').value  || 'yourname';
+    const bio  = document.getElementById('shop-bio-input').value  || 'Your shop description will appear here.';
+    document.getElementById('shop-name-preview').textContent     = name;
+    document.getElementById('shop-url-preview').textContent      = `sellnook.com/shop/${url}`;
+    document.getElementById('shop-avatar-preview').textContent   = name.charAt(0).toUpperCase();
+    document.getElementById('shop-bio-preview').textContent      = bio;
+  };
+
+  window.saveShop = async function() {
+    const uid  = window._uid;
+    const name = document.getElementById('shop-name-input').value.trim();
+    const url  = document.getElementById('shop-url-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const bio  = document.getElementById('shop-bio-input').value.trim();
+    const city = document.getElementById('shop-city').value.trim();
+    const state= document.getElementById('shop-state').value.trim().toUpperCase();
+    const zip  = document.getElementById('shop-zip').value.trim();
+    const carrier = document.getElementById('shop-carrier').value;
+
+    if (!name) { alert('Please enter a shop name.'); return; }
+
+    try {
+      await setDoc(doc(db, 'users', uid), {
+        uid:       uid,
+        shopName:  name,
+        shopUrl:   url,
+        shopBio:   bio,
+        shopCity:  city,
+        shopState: state,
+        shopZip:   zip,
+        shopCarrier: carrier,
+        shipsFrom: city && state ? `${city}, ${state}` : null,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      if (url) {
+        document.getElementById('shop-url-display').innerHTML =
+          `<a href="/shop/${url}" target="_blank" style="color:#1a1a1a;text-decoration:none;font-size:0.75rem;">sellnook.com/shop/${url}</a>`;
+      }
+      showToast('✅ Shop profile saved!');
+    } catch (e) {
+      alert('Error saving shop profile.');
+    }
+  };
+
+  // ── Toast ──────────────────────────────────────────────
+  window.showToast = function(msg) {
+    let t = document.getElementById('sd-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'sd-toast';
+      t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:14px 24px;border-radius:10px;font-size:0.875rem;font-weight:500;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.35s;opacity:0;z-index:100;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.2);';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    t.style.opacity   = '1';
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => {
+      t.style.transform = 'translateX(-50%) translateY(80px)';
+      t.style.opacity   = '0';
+    }, 3000);
+  };
+
+  window.savePromoCode = async function() {
+    const code   = document.getElementById('promo-code').value.trim().toUpperCase();
+    const type   = document.getElementById('promo-type').value;
+    const amount = document.getElementById('promo-amount').value;
+    const expiry = document.getElementById('promo-expiry').value;
+    const uses   = document.getElementById('promo-uses').value;
+    const min    = document.getElementById('promo-min').value;
+
+    if (!code || !amount) { alert('Please fill in the code and amount.'); return; }
+
+    try {
+      await addDoc(collection(db, 'promoCodes'), {
+        code,
+        type,
+        amount:    parseFloat(amount),
+        expiry:    expiry || null,
+        maxUses:   uses   ? parseInt(uses) : null,
+        minOrder:  min    ? parseFloat(min) : null,
+        sellerId:  window._uid,
+        usedCount: 0,
+        active:    true,
+        createdAt: serverTimestamp()
+      });
+
+      ['promo-code','promo-amount','promo-expiry','promo-uses','promo-min'].forEach(id => document.getElementById(id).value = '');
+      showToast(`✅ Code "${code}" created!`);
+      loadPromoCodes();
+    } catch (e) {
+      alert('Error saving code. Please try again.');
+    }
+  };
+
+  async function loadPromoCodes() {
+    try {
+      const q    = query(collection(db, 'promoCodes'), where('sellerId', '==', window._uid), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      const list = document.getElementById('promo-list');
+
+      if (snap.empty) {
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:#bbb;font-size:0.875rem;"><div style="font-size:2rem;margin-bottom:8px;">🏷️</div>No codes yet — create your first one above.</div>';
+        return;
+      }
+
+      list.innerHTML = snap.docs.map(d => {
+        const c = d.data();
+        const discountText = c.type === 'percent' ? `${c.amount}% off`
+                           : c.type === 'fixed'   ? `$${c.amount} off`
+                           : 'Free shipping';
+        const expiryText   = c.expiry ? `Expires ${c.expiry}` : 'No expiry';
+        const usesText     = c.maxUses ? `${c.usedCount}/${c.maxUses} uses` : `${c.usedCount} uses`;
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0ee;font-size:0.82rem;gap:12px;">
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;">${c.code}</div>
+              <div style="color:#888;margin-top:2px;">${discountText} · ${expiryText} · ${usesText}${c.minOrder ? ` · Min $${c.minOrder}` : ''}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="padding:3px 10px;border-radius:50px;font-size:0.68rem;font-weight:700;background:${c.active ? '#e8f5ee' : '#f0f0ee'};color:${c.active ? '#2d9e6b' : '#aaa'};">${c.active ? 'Active' : 'Inactive'}</span>
+              <button onclick="deletePromoCode('${d.id}')" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:0.9rem;padding:4px;line-height:1;" title="Delete">🗑️</button>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (e) { console.error('Promo load error:', e); }
+  }
+
+  // ── Seller messaging ───────────────────────────────────
+  let sellerActiveThread = null;
+  let sellerChatUnsub    = null;
+
+  function loadSellerThreads(uid) {
+    const q = query(
+      collection(db, 'messages'),
+      where('sellerId', '==', uid),
+      orderBy('lastMessageAt', 'desc')
+    );
+
+    onSnapshot(q, snap => {
+      const threads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const list    = document.getElementById('seller-thread-list');
+
+      // Badge
+      const unread = threads.filter(t => t.lastSenderId !== uid && !t.readBy?.includes(uid)).length;
+      const badge  = document.getElementById('seller-msg-badge');
+      if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline-block'; }
+      else badge.style.display = 'none';
+
+      if (!threads.length) {
+        list.innerHTML = `<div style="padding:32px 16px;text-align:center;color:#bbb;font-size:0.78rem;"><div style="font-size:1.8rem;margin-bottom:8px;">💬</div>No messages yet</div>`;
+        return;
+      }
+
+      list.innerHTML = threads.map(t => {
+        const isUnread = t.lastSenderId !== uid && !t.readBy?.includes(uid);
+        return `
+          <div onclick="sellerOpenThread('${t.id}')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f0f0ee;transition:background 0.15s;${isUnread ? 'background:#fff8f5;' : ''}" onmouseover="this.style.background='#f0f0ee'" onmouseout="this.style.background='${isUnread ? '#fff8f5' : ''}'">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;flex-shrink:0;">${(t.buyerName || '?').charAt(0).toUpperCase()}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:0.82rem;font-weight:${isUnread ? '700' : '500'};color:#1a1a1a;">${t.buyerName || 'Buyer'}</div>
+                <div style="font-size:0.72rem;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.lastMessage || '...'}</div>
+              </div>
+              ${isUnread ? '<div style="width:8px;height:8px;background:#e8734a;border-radius:50%;flex-shrink:0;"></div>' : ''}
+            </div>
+          </div>`;
+      }).join('');
+    });
+  }
+
+  window.sellerOpenThread = async function(threadId) {
+    sellerActiveThread = threadId;
+    if (sellerChatUnsub) sellerChatUnsub();
+
+    document.getElementById('seller-chat-empty').style.display  = 'none';
+    document.getElementById('seller-chat-active').style.display = 'flex';
+
+    // Get thread info
+    try {
+      const snap = await getDocs(query(collection(db, 'messages'), where('__name__', '>=', threadId), where('__name__', '<=', threadId)));
+      if (!snap.empty) {
+        const data = snap.docs[0].data();
+        document.getElementById('seller-chat-avatar').textContent = (data.buyerName || '?').charAt(0).toUpperCase();
+        document.getElementById('seller-chat-name').textContent   = data.buyerName || 'Buyer';
+        document.getElementById('seller-chat-sub').textContent    = data.listingTitle || 'General inquiry';
+      }
+    } catch (e) { console.error(e); }
+
+    const uid    = window._uid;
+    const chatsQ = query(collection(db, 'messages', threadId, 'chats'), orderBy('sentAt', 'asc'));
+
+    sellerChatUnsub = onSnapshot(chatsQ, snap => {
+      const msgs   = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const chatEl = document.getElementById('seller-chat-messages');
+      chatEl.innerHTML = msgs.map(m => {
+        const isMine = m.senderId === uid;
+        const time   = m.sentAt?.toDate ? m.sentAt.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+        return `
+          <div style="display:flex;flex-direction:column;align-items:${isMine ? 'flex-end' : 'flex-start'};">
+            <div style="max-width:70%;padding:10px 14px;border-radius:${isMine ? '12px 12px 2px 12px' : '12px 12px 12px 2px'};background:${isMine ? '#e8734a' : '#f0f0ee'};color:${isMine ? '#fff' : '#1a1a1a'};font-size:0.875rem;line-height:1.5;">${m.text}</div>
+            <div style="font-size:0.65rem;color:#bbb;margin-top:3px;padding:0 4px;">${time}</div>
+          </div>`;
+      }).join('');
+      chatEl.scrollTop = chatEl.scrollHeight;
+    });
+  };
+
+  window.sellerSendMessage = async function() {
+    const input = document.getElementById('seller-chat-input');
+    const text  = input.value.trim();
+    if (!text || !sellerActiveThread) return;
+
+    const uid  = window._uid;
+    const name = window._user.displayName || window._user.email.split('@')[0];
+    input.value = '';
+
+    try {
+      await addDoc(collection(db, 'messages', sellerActiveThread, 'chats'), {
+        text,
+        senderId:   uid,
+        senderName: name,
+        sentAt:     serverTimestamp()
+      });
+      await updateDoc(doc(db, 'messages', sellerActiveThread), {
+        lastMessage:   text,
+        lastMessageAt: serverTimestamp(),
+        lastSenderId:  uid,
+        readBy:        [uid]
+      });
+    } catch (e) {
+      console.error('Send error:', e);
+      showToast('⚠️ Failed to send message');
+    }
+  };
+
+  window.deletePromoCode = async function(id) {
+    if (!confirm('Delete this discount code?')) return;
+    try {
+      await deleteDoc(doc(db, 'promoCodes', id));
+      loadPromoCodes();
+      showToast('🗑️ Discount code deleted.');
+    } catch (e) { showToast('Error deleting code.'); }
+  };
+
+  window.signOut = async () => {
+    await fbSignOut(auth);
+    window.location.href = 'login';
+  };
+</script>
+</body>
+</html>
+
+
+
+   
+ 
