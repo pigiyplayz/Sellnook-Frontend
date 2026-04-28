@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="./js/guard.js"></script>
   <!-- SEO & Open Graph -->
   <meta name="description" content="Sellnook is a marketplace for independent sellers launching July 21, 2026. Join the waitlist and be first to shop and sell.">
   <meta property="og:title" content="Sellnook — Simple selling, for everyone.">
@@ -13,6 +14,33 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://sellnook.com/">
   <link rel="icon" type="image/png" href="./assets/logo.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Structured Data for Search Engines & AI -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sellnook",
+    "url": "https://sellnook.com",
+    "logo": "https://sellnook.com/assets/logo.png",
+    "description": "The modern marketplace for independent sellers.",
+    "launchDate": "2026-07-21"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sellnook",
+    "url": "https://sellnook.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sellnook.com/browse?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 <title>Sellnook — Coming Soon</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -385,6 +413,41 @@
 </head>
 <body>
 
+<style>
+  /* Custom Loader UI */
+  .loader-wrapper {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease-out, visibility 0.5s;
+  }
+  .loader-wrapper.hide { opacity: 0; visibility: hidden; }
+  .logo-container { position: relative; width: 100px; height: 100px; margin-bottom: 24px; }
+  .logo-img-loader { width: 100%; height: 100%; animation: float 2s ease-in-out infinite; }
+  .pulse-ring {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 100px; height: 100px; border-radius: 50%; background: var(--primary);
+    opacity: 0; animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+  .loading-text { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+  @keyframes pulse-ring { 0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; } }
+</style>
+
+<div class="loader-wrapper" id="site-loader">
+    <div class="logo-container">
+        <div class="pulse-ring"></div>
+        <img src="./assets/logo.png" alt="Sellnook" class="logo-img-loader">
+    </div>
+    <div class="loading-text">Unboxing your experience</div>
+</div>
+
 <nav>
   <div class="nav-content">
     <a href="/" class="logo">
@@ -532,6 +595,14 @@
       console.error(e);
     }
   };
+
+  // Hide Loader on Window Load
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('site-loader');
+    setTimeout(() => {
+        loader.classList.add('hide');
+    }, 500); // Small buffer for smooth feel
+  });
 </script>
 </body>
 </html>
