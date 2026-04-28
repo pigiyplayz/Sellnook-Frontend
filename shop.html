@@ -151,15 +151,9 @@
 </div>
 
 <nav>
-<<<<<<< HEAD
   <a href="coming-soon" class="logo">sell<span>nook</span></a>
   <div class="nav-right">
     <a href="browse" class="nav-link">Browse</a>
-=======
-  <a href="coming-soon.html" class="logo">sell<span>nook</span></a>
-  <div class="nav-right">
-    <a href="browse.html" class="nav-link">Browse</a>
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
     <div class="avatar" id="nav-avatar">?</div>
   </div>
 </nav>
@@ -193,11 +187,7 @@
         </div>
       </div>
       <div class="shop-actions">
-<<<<<<< HEAD
         <a href="messages" class="btn-message">💬 Message</a>
-=======
-        <a href="messages.html" class="btn-message">💬 Message</a>
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
         <button class="btn-customize" id="btn-customize" onclick="openCustomize()">✏️ Customize</button>
       </div>
     </div>
@@ -224,11 +214,7 @@
     <div class="empty-icon">🏪</div>
     <h3>Shop not found</h3>
     <p>This shop doesn't exist or may have been removed.</p>
-<<<<<<< HEAD
     <a href="browse" class="btn-browse">Browse listings</a>
-=======
-    <a href="browse.html" class="btn-browse">Browse listings</a>
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
   </div>
 </div>
 
@@ -327,10 +313,7 @@
 
 <script type="module">
   import { auth, db, API } from "/js/config.js";
-<<<<<<< HEAD
   import "/js/notifications.js";
-=======
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { doc, getDoc, setDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -348,12 +331,8 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 
   function getIdentifier() {
     const params = new URLSearchParams(window.location.search);
-<<<<<<< HEAD
     const shopParam = params.get('shop');
     if (shopParam) return shopParam;
-=======
-    if (params.get('shop')) return params.get('shop');
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
 
     const path  = window.location.pathname;
     const clean = path.replace(/^\//, '').replace(/\.html$/, '').split('/')[0];
@@ -531,24 +510,15 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
           <div class="empty-icon">🏪</div>
           <h3>${isOwner ? 'Your shop is empty' : 'Nothing here yet'}</h3>
           <p>${isOwner ? 'Add listings from your seller dashboard to fill your shop.' : 'This shop hasn\'t added any items yet. Check back later!'}</p>
-<<<<<<< HEAD
           ${isOwner ? `<a href="seller-dashboard" class="btn-browse">Add listings →</a>` : `<a href="browse" class="btn-browse">Browse all shops</a>`}
-=======
-          ${isOwner ? `<a href="seller-dashboard.html" class="btn-browse">Add listings →</a>` : `<a href="browse.html" class="btn-browse">Browse all shops</a>`}
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
         </div>`;
       return;
     }
 
     grid.innerHTML = listings.map(l => {
       const productUrl = (l.shopIdentifier && l.itemIdentifier)
-<<<<<<< HEAD
         ? `product?shop=${l.shopIdentifier}&item=${l.itemIdentifier}`
         : `product?id=${l.id}`;
-=======
-        ? `product.html?shop=${l.shopIdentifier}&item=${l.itemIdentifier}`
-        : `product.html?id=${l.id}`;
->>>>>>> 581873bc236a7aa3be0ae187451335f814531da5
 
       return `
         <a href="${productUrl}" class="product-card">
