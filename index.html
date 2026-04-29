@@ -15,6 +15,7 @@
   <link rel="canonical" href="https://sellnook.com/">
   <link rel="icon" type="image/png" href="./assets/logo.png">
   <link rel="manifest" href="/manifest.json">
+  <script src="./js/loader.js"></script>
   
   <!-- Structured Data for Search Engines & AI -->
   <script type="application/ld+json">
@@ -61,6 +62,13 @@
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  /* Custom Selection Color */
+  ::selection {
+    background: var(--primary);
+    color: #fff;
   }
 
   /* Nav */
@@ -254,6 +262,102 @@
   }
   .btn-submit:hover { background: var(--primary); transform: scale(1.02); }
 
+  /* Comparison Section */
+  .why-section {
+    padding: 120px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .why-header {
+    margin-bottom: 60px;
+  }
+
+  .why-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    letter-spacing: -1.5px;
+    margin-bottom: 12px;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .advantage-card {
+    padding: 40px;
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    text-align: left;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .advantage-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  }
+
+  .advantage-icon {
+    font-size: 2.5rem;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .advantage-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .advantage-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .vs-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: #f0f0ee;
+    padding: 4px 10px;
+    border-radius: 50px;
+    color: var(--text-muted);
+  }
+
+  /* Comparison Table Mockup */
+  .comp-table-wrap {
+    margin-top: 80px;
+    background: #fbfbfd;
+    border-radius: 40px;
+    padding: 60px;
+    border: 1px solid var(--glass-border);
+  }
+
+  .comp-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--glass-border);
+    align-items: center;
+  }
+
+  .comp-row:last-child { border-bottom: none; }
+  .comp-row.header { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+  .check { color: #2d9e6b; font-weight: 700; }
+  .cross { color: #888; opacity: 0.5; }
+
   /* TIMELINE SECTION */
   .timeline-section {
     padding: 100px 24px;
@@ -413,41 +517,6 @@
 </head>
 <body>
 
-<style>
-  /* Custom Loader UI */
-  .loader-wrapper {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease-out, visibility 0.5s;
-  }
-  .loader-wrapper.hide { opacity: 0; visibility: hidden; }
-  .logo-container { position: relative; width: 100px; height: 100px; margin-bottom: 24px; }
-  .logo-img-loader { width: 100%; height: 100%; animation: float 2s ease-in-out infinite; }
-  .pulse-ring {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 100px; height: 100px; border-radius: 50%; background: var(--primary);
-    opacity: 0; animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
-  .loading-text { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-  @keyframes pulse-ring { 0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; } }
-</style>
-
-<div class="loader-wrapper" id="site-loader">
-    <div class="logo-container">
-        <div class="pulse-ring"></div>
-        <img src="./assets/logo.png" alt="Sellnook" class="logo-img-loader">
-    </div>
-    <div class="loading-text">Unboxing your experience</div>
-</div>
-
 <nav>
   <div class="nav-content">
     <a href="/" class="logo">
@@ -485,12 +554,71 @@
   </div>
 
   <div class="waitlist-container" id="waitlist-section">
-    <span class="form-label">Get notified when we launch.</span>
+    <span class="form-label">Join 2,500+ sellers waiting for the Nook.</span>
     <div class="form-row">
       <input type="email" id="email" placeholder="Enter your email address">
-      <button class="btn-submit" onclick="signup()">Notify me</button>
+      <button class="btn-submit" onclick="signup()">Get Early Access</button>
     </div>
     <div id="success" style="display:none; margin-top:16px; text-align:center; color:var(--primary); font-weight:600;">✓ You're on the list — talk soon.</div>
+  </div>
+</section>
+
+<!-- Why Switch Section -->
+<section class="why-section">
+  <div class="why-header">
+    <h2>Why the Nook?</h2>
+    <p style="color:var(--text-muted)">We built Sellnook because the big guys forgot about the creators.</p>
+  </div>
+  
+  <div class="why-grid">
+    <div class="advantage-card">
+      <span class="vs-badge">Better than Etsy</span>
+      <span class="advantage-icon">🎨</span>
+      <h3>Your Brand, Your Rules.</h3>
+      <p>Don't be just another search result. Every seller gets a unique "Nook" checkout and custom link that feels like a standalone boutique.</p>
+    </div>
+    
+    <div class="advantage-card">
+      <span class="vs-badge">Better than eBay</span>
+      <span class="advantage-icon">💰</span>
+      <h3>Keep your earnings.</h3>
+      <p>Stop paying 15-20% in fees. We charge a flat 4-8% so you can reinvest in your craft, not your platform.</p>
+    </div>
+    
+    <div class="advantage-card">
+      <span class="vs-badge">Killer Feature</span>
+      <span class="advantage-icon">🏗️</span>
+      <h3>Drag & Drop Builder.</h3>
+      <p>Design your Nook your way. Use our intuitive drag-and-drop editor to arrange your shop layout or choose from premium templates. Make it truly yours.</p>
+    </div>
+  </div>
+
+  <div class="comp-table-wrap">
+    <div class="comp-row header">
+      <div>The Difference</div>
+      <div>Sellnook</div>
+      <div>Others</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Transaction Fees</div>
+      <div>4% - 8%</div>
+      <div>12% - 15%</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Shop Customization</div>
+      <div class="check">✓ Drag & Drop Builder</div>
+      <div class="cross">✕ Basic Grid Only</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Custom Shop URLs</div>
+      <div>Included (Pro)</div>
+      <div class="cross">✕ Paid/Add-on</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Support</div>
+      <div>AI-Powered Messenger</div>
+      <div class="cross">✕ Hard to reach</div>
+    </div>
   </div>
 </section>
 
@@ -595,14 +723,6 @@
       console.error(e);
     }
   };
-
-  // Hide Loader on Window Load
-  window.addEventListener('load', () => {
-    const loader = document.getElementById('site-loader');
-    setTimeout(() => {
-        loader.classList.add('hide');
-    }, 500); // Small buffer for smooth feel
-  });
 </script>
 </body>
 </html>

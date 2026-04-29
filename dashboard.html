@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="./js/guard.js"></script>
 <link rel="icon" type="image/png" href="/assets/logo.png">
+<script src="./js/loader.js"></script>
 <title>Sellnook — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -13,9 +14,9 @@
   @keyframes up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
-  .loading.hide { opacity:0; pointer-events:none; }
-  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
+  .loading-old { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+  .loading-old.hide { opacity:0; pointer-events:none; }
+  .spinner-old { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
 
   /* Banners */
   .dev-banner { background:#1a1a1a; color:#e8734a; padding:8px 40px; font-size:0.75rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; display:none; align-items:center; gap:8px; }
@@ -51,13 +52,22 @@
 
   /* Sidebar */
   .sidebar { position:sticky; top:80px; }
-  .user-card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:20px; margin-bottom:12px; text-align:center; }
-  .user-card-avatar { width:56px; height:56px; border-radius:50%; background:#1a1a1a; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; margin:0 auto 12px; overflow:hidden; }
+  .user-card { 
+    background: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0,0,0,0.05); 
+    border-radius: 20px; 
+    padding: 24px; 
+    margin-bottom: 16px; 
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  }
+  .user-card-avatar { width:64px; height:64px; border-radius:50%; background: var(--text); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:700; margin:0 auto 16px; overflow:hidden; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
   .user-card-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-  .user-card-name { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:4px; }
-  .user-card-email { font-size:0.72rem; color:#aaa; margin-bottom:12px; word-break:break-all; }
-  .user-card-plan { display:inline-block; background:#f0f0ee; color:#888; font-size:0.68rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:3px 10px; border-radius:50px; }
-  .user-card-plan.pro { background:#fff4ee; color:#e8734a; }
+  .user-card-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:4px; letter-spacing: -0.3px; }
+  .user-card-email { font-size:0.75rem; color:#aaa; margin-bottom:16px; word-break:break-all; }
+  .user-card-plan { display:inline-block; background:#f0f0ee; color:#888; font-size:0.65rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; border-radius:50px; }
+  .user-card-plan.pro { background: linear-gradient(135deg, #e8734a, #f09373); color:#fff; box-shadow: 0 4px 10px rgba(232, 115, 74, 0.2); }
   .user-card-plan.dev { background:#1a1a1a; color:#e8734a; }
 
   .sidebar-nav { list-style:none; display:flex; flex-direction:column; gap:2px; }
@@ -80,8 +90,20 @@
   .section-head p { font-size:0.82rem; color:#888; margin-top:4px; }
 
   /* Cards */
-  .card { background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:24px; margin-bottom:16px; }
-  .card-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:16px; }
+  .card { 
+    background:#fff; 
+    border: 1px solid #f0f0ee; 
+    border-radius: 24px; 
+    padding: 32px; 
+    margin-bottom: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.02);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.04);
+  }
+  .card-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:20px; letter-spacing: -0.5px; }
 
   /* Empty state */
   .empty { text-align:center; padding:52px 20px; color:#bbb; }
@@ -203,7 +225,7 @@
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div class="spinner"></div></div>
+<!-- Global Loader handled by js/loader.js -->
 
 <!-- Dev banner -->
 <div class="dev-banner" id="dev-banner">⚡ Developer Mode — Full access enabled</div>
@@ -575,12 +597,9 @@ import { onAuthStateChanged, signOut as fbSignOut, sendEmailVerification } from 
       console.warn('Access check timed out, loading dashboard with defaults');
     }
 
-    // Hide loader
-    const loader = document.getElementById('loading');
-    if (loader) {
-      loader.classList.add('hide');
-      setTimeout(() => loader.remove(), 400);
-    }
+    // Hide loader is handled by js/loader.js automatically on window.load
+    // but we call it here to be safe and fast
+    if (window.hideLoader) window.hideLoader();
 
     const name   = user.displayName || user.email.split('@')[0];
     const first  = name.split(' ')[0];

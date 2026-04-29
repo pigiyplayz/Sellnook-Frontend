@@ -24,6 +24,7 @@
   <meta name="twitter:description" content="Shop unique items from independent sellers on Sellnook. Find handmade goods, fashion, books, electronics, and more.">
   <meta name="twitter:image" content="https://sellnook.com/og-image.png">
 <link rel="icon" type="image/png" href="/assets/logo.png">
+<script src="./js/loader.js"></script>
 <title>Sellnook — Browse</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -130,7 +131,7 @@
 </head>
 <body>
 
-<div class="loading" id="loading"><div class="spinner"></div></div>
+<!-- Global Loader handled by js/loader.js -->
 
 
 <!-- Locked -->
@@ -313,9 +314,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 
     await loadListings(access.isDev);
 
-    document.getElementById('page-content').style.display = 'block';
-    document.getElementById('loading').classList.add('hide');
-    setTimeout(() => document.getElementById('loading')?.remove(), 400);
+    if (window.hideLoader) window.hideLoader();
   });
 
   // ── Cart badge ─────────────────────────────────────────

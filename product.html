@@ -24,6 +24,7 @@
   <meta name="twitter:description" content="Shop unique items on Sellnook marketplace." id="tw-desc">
   <meta name="twitter:image" content="https://sellnook.com/og-image.png" id="tw-image">
 <link rel="icon" type="image/png" href="/assets/logo.png">
+<script src="./js/loader.js"></script>
 <title>Sellnook — Product</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -88,8 +89,8 @@
   .product-rating { display:flex; align-items:center; gap:8px; margin-bottom:20px; font-size:0.82rem; color:#888; }
   .stars { color:#e8734a; font-size:0.9rem; letter-spacing:1px; }
   .rating-sep { color:#e0e0dc; }
-  .product-price { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:700; letter-spacing:-1px; margin-bottom:6px; }
-  .product-price-note { font-size:0.78rem; color:#888; margin-bottom:24px; }
+  .product-price { font-family:'Syne',sans-serif; font-size:2.8rem; font-weight:700; letter-spacing:-1.5px; margin-bottom:4px; color: var(--primary); }
+  .product-price-note { font-size:0.82rem; color:#888; margin-bottom:28px; font-weight: 500; }
   .divider { height:1px; background:#e8e8e5; margin:20px 0; }
 
   /* Shipping calc */
@@ -119,15 +120,67 @@
   .qty-num { width:40px; text-align:center; font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; border-left:1px solid #e0e0dc; border-right:1px solid #e0e0dc; height:36px; display:flex; align-items:center; justify-content:center; }
 
   /* Buttons */
-  .btn-cart { width:100%; padding:14px; background:#1a1a1a; color:#fff; border:none; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; transition:background 0.15s; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; }
-  .btn-cart:hover { background:#333; }
-  .payment-row { display:flex; gap:8px; margin-bottom:16px; }
-  .btn-stripe { flex:1; padding:12px; background:#635bff; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.15s; display:flex; align-items:center; justify-content:center; gap:6px; }
-  .btn-stripe:hover { background:#7c75ff; }
-  .btn-paypal { flex:1; padding:12px; background:#009cde; color:#fff; border:none; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.15s; display:flex; align-items:center; justify-content:center; gap:6px; }
-  .btn-paypal:hover { background:#00b4ff; }
-  .trust-row { display:flex; justify-content:center; gap:20px; margin-top:4px; }
-  .trust-item { font-size:0.72rem; color:#bbb; display:flex; align-items:center; gap:4px; }
+  .btn-cart { 
+    width:100%; 
+    padding:16px; 
+    background: #1a1a1a; 
+    color:#fff; 
+    border:none; 
+    border-radius:14px; 
+    font-family:'Syne',sans-serif; 
+    font-size:1rem; 
+    font-weight:700; 
+    cursor:pointer; 
+    transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+    margin-bottom:12px; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    gap:10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .btn-cart:hover { 
+    background:#333; 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+  .btn-buy-now {
+    width:100%;
+    padding:16px;
+    background: var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    font-family:'Syne',sans-serif;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    margin-bottom:12px;
+    transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display:block;
+    box-shadow: 0 4px 12px rgba(232, 115, 74, 0.2);
+  }
+  .btn-buy-now:hover {
+    background: #f07d55;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(232, 115, 74, 0.3);
+  }
+  .payment-row { display:flex; gap:12px; margin-bottom:20px; }
+  .btn-stripe { flex:1; padding:12px; background:#f8f9fb; color:#635bff; border:1px solid #e6ebf1; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-stripe:hover { background:#635bff; color: #fff; }
+  .btn-paypal { flex:1; padding:12px; background:#f8f9fb; color:#009cde; border:1px solid #e6ebf1; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-paypal:hover { background:#009cde; color: #fff; }
+  
+  .trust-row { 
+    display:flex; 
+    justify-content:center; 
+    gap:16px; 
+    margin-top:8px; 
+    padding: 12px;
+    background: #fbfbfd;
+    border-radius: 12px;
+  }
+  .trust-item { font-size:0.75rem; color:#888; display:flex; align-items:center; gap:6px; font-weight: 500; }
 
   /* Share */
   .share-row { display:flex; align-items:center; gap:10px; margin-top:16px; }
@@ -185,7 +238,7 @@
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div class="spinner"></div></div>
+<!-- Global Loader handled by js/loader.js -->
 
 <!-- Locked -->
 <div class="locked" id="locked">
@@ -279,8 +332,8 @@
       </div>
 
       <!-- Cart & payment -->
-      <button class="btn-cart" id="btn-cart" onclick="addToCart()" style="margin-bottom:10px;">🛒 Add to cart</button>
-      <button style="width:100%;padding:13px;background:#e8734a;color:#fff;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:10px;transition:background 0.15s;display:block;" onclick="buyNow()" onmouseover="this.style.background='#f07d55'" onmouseout="this.style.background='#e8734a'">⚡ Buy now</button>
+      <button class="btn-cart" id="btn-cart" onclick="addToCart()">🛒 Add to cart</button>
+      <button class="btn-buy-now" onclick="buyNow()">⚡ Buy now</button>
 
       <!-- Wishlist + Offer row -->
       <div style="display:flex;gap:8px;margin-bottom:10px;">
@@ -598,11 +651,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 
     // Show page
     document.getElementById('product-page').style.display = 'block';
-    const loader = document.getElementById('loading');
-    if (loader) {
-      loader.classList.add('hide');
-      setTimeout(() => loader.remove(), 400);
-    }
+    if (window.hideLoader) window.hideLoader();
   }
 
   async function loadReviews(listingId) {
@@ -656,6 +705,11 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
   }
 
   function showNotFound() {
+    const isItemBase = window.location.pathname === '/shop/item' || window.location.pathname === '/product.html';
+    if (!isItemBase) {
+      window.location.href = '/shop/item';
+      return;
+    }
     document.getElementById('loading').classList.add('hide');
     document.getElementById('not-found').style.display = 'block';
   }
