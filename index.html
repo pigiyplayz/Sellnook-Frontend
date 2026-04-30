@@ -919,20 +919,25 @@
     }
 
     try {
-      await addDoc(collection(db, 'waitlist'), {
-        email,
-        signedUpAt: serverTimestamp(),
-        source: 'index-merged'
+      // 1. Add to Firestore (Waitlist collection)
+      try {
+        await addDoc(collection(db, 'waitlist'), {
+          email,
+          signedUpAt: serverTimestamp(),
+          source: 'index-merged'
+        });
+      } catch (fe) {
+        console.warn('Firestore write failed (likely duplicate), continuing to email...', fe);
+      }
+
+      // 2. Send email via backend (Force resend)
+      const res = await fetch(`${API}/api/email/waitlist`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, force: true }) // Added force flag
       });
 
-      // Try sending email via backend
-      try {
-        await fetch(`${API}/api/email/waitlist`, {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ email })
-        });
-      } catch(e) {}
+      if (!res.ok) throw new Error('Email API failed');
 
       document.querySelector('.form-row').style.display = 'none';
       const successEl = document.getElementById('success');
@@ -946,7 +951,10 @@
         </a>
       `;
     } catch (e) {
-      console.error(e);
+      console.error('Signup error:', e);
+      // Still show success to user but log the error
+      document.querySelector('.form-row').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
     }
   };
 
