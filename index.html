@@ -942,7 +942,14 @@
         <a href="https://twitter.com/intent/tweet?text=Just%20joined%20the%20waitlist%20for%20@sellnook!%20The%20modern%20marketplace%20for%20independent%20sellers.%20Check%20it%20out%20at%20sellnook.com" 
            target="_blank" 
            style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#1a1a1a; color:#fff; border-radius:10px; text-decoration:none; font-size:0.8rem; font-weight:700;">
-        
+           Share on X
+        </a>
+      `;
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Viewport Reveal Logic
   const observerOptions = { threshold: 0.1 };
   const observer = new IntersectionObserver((entries) => {
@@ -969,12 +976,8 @@
     });
   });
 
-  // Share on X
-        </a>
-      `;
-    } catch (e) {
-      console.error(e);
-    }
+  window.scrollToWaitlist = () => {
+    document.getElementById('waitlist-section').scrollIntoView({ behavior: 'smooth' });
   };
 </script>
 </body>
