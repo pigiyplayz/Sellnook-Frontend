@@ -6,6 +6,42 @@
 const loaderHTML = `
 <div class="loader-wrapper" id="site-loader">
     <style>
+        :root {
+            --primary: #e8734a;
+            --primary-dark: #d65d35;
+            --bg: #fafaf9;
+            --text: #1a1a1a;
+            --text-muted: #888;
+        }
+
+        /* Global Theme Injection */
+        body { position: relative; background-color: var(--bg) !important; }
+        
+        /* Mesh Gradient Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -10;
+            background: radial-gradient(at 0% 0%, rgba(232, 115, 74, 0.08) 0px, transparent 50%),
+                        radial-gradient(at 100% 0%, rgba(232, 115, 74, 0.05) 0px, transparent 50%),
+                        radial-gradient(at 100% 100%, rgba(232, 115, 74, 0.08) 0px, transparent 50%),
+                        radial-gradient(at 0% 100%, rgba(232, 115, 74, 0.05) 0px, transparent 50%);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* Grain Texture */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
         .loader-wrapper {
             position: fixed;
             top: 0; left: 0;

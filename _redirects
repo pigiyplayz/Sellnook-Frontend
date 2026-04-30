@@ -1,3 +1,6 @@
+# 0. Core Redirects
+/coming-soon  /  301
+
 # 1. Assets and specific files
 /js/*    /js/:splat    200
 /css/*   /css/:splat   200
