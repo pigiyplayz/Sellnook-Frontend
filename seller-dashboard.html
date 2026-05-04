@@ -947,12 +947,12 @@
       document.getElementById('listing-limit-note').textContent = '250 total';
       document.getElementById('url-note').textContent       = 'Numeric URL (free)';
       // Free seller URL uses UID prefix
+      // Free seller URL uses UID prefix
       const freeId = user.uid.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
       document.getElementById('shop-url-display').innerHTML =
         `<a href="/shop/${freeId}" target="_blank" style="color:#1a1a1a;text-decoration:none;font-size:0.75rem;">sellnook.com/shop/${freeId}</a>`;
-      // Hide Pro-only tab labels
-      document.getElementById('tab-btn-analytics').textContent = 'Analytics 🔒';
-      document.getElementById('tab-btn-promo').textContent     = 'Promotions 🔒';
+      
+      // Hide Pro-only tab content (lock screens handled in HTML)
       // Show lock screens on Pro tabs
       document.getElementById('analytics-lock').style.display  = 'block';
       document.getElementById('analytics-content').style.display = 'none';
