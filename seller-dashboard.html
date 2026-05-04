@@ -885,7 +885,7 @@
         clearTimeout(timeoutId);
         access = await res.json();
       } catch (e) {
-        document.getElementById('loading').classList.add('hide');
+        if (window.hideLoader) window.hideLoader();
         document.getElementById('denied').classList.add('show');
         document.querySelector('#denied h2').textContent = 'Server is starting up...';
         document.querySelector('#denied p').textContent  = 'The backend is waking up. Wait 30 seconds and refresh the page.';
@@ -947,7 +947,6 @@
       document.getElementById('listing-limit-note').textContent = '250 total';
       document.getElementById('url-note').textContent       = 'Numeric URL (free)';
       // Free seller URL uses UID prefix
-      // Free seller URL uses UID prefix
       const freeId = user.uid.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
       document.getElementById('shop-url-display').innerHTML =
         `<a href="/shop/${freeId}" target="_blank" style="color:#1a1a1a;text-decoration:none;font-size:0.75rem;">sellnook.com/shop/${freeId}</a>`;
@@ -994,11 +993,7 @@
 
     // Show main content and hide loader
     document.querySelector('main').style.display = 'block';
-    const loader = document.getElementById('loading');
-    if (loader) {
-      loader.classList.add('hide');
-      setTimeout(() => loader.remove(), 400);
-    }
+    if (window.hideLoader) window.hideLoader();
 
   });
 
@@ -1653,6 +1648,8 @@
         if (!listings.length) {
           return `<div style="text-align:center;padding:48px 20px;color:#bbb;"><div style="font-size:2.5rem;margin-bottom:12px;">📦</div><p style="font-size:0.875rem;line-height:1.6;">Nothing here yet.</p></div>`;
         }
+        return listings.map(l => {
+          const hasPhoto    = l.images && l.images.length > 0;
           const isFeatured  = l.featured === true;
           const thumb       = hasPhoto
             ? `<div style="position:relative; flex-shrink:0;">
