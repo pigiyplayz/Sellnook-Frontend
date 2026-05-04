@@ -3,71 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sellnook — Uh oh</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; display:flex; flex-direction:column; }
-  @keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes float { 0%,100% { transform:translateY(0) rotate(-3deg); } 50% { transform:translateY(-16px) rotate(3deg); } }
-  @keyframes wiggle { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-8deg); } 75% { transform:rotate(8deg); } }
-  @keyframes blink { 0%,90%,100% { opacity:1; } 95% { opacity:0; } }
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+  <script src="./js/loader.js"></script>
+  <title>Sellnook — Uh oh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; display:flex; flex-direction:column; }
+    @keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes float { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-12px) rotate(2deg); } }
+    
+    nav { border-bottom:1px solid rgba(0,0,0,0.05); padding:0 40px; height:64px; display:flex; align-items:center; background:rgba(255,255,255,0.8); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; justify-content:center; }
+    .nav-content { width:100%; max-width:1100px; display:flex; align-items:center; justify-content:space-between; }
+    .logo { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:700; color:#1a1a1a; text-decoration:none; display:flex; align-items:center; gap:8px; }
+    .logo span { color:#e8734a; }
+    .logo img { height:32px; width:auto; }
 
-  nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; background:#fafaf9; }
-  .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
-  .logo span { color:#e8734a; }
+    .page { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:64px 24px; animation:up 0.8s cubic-bezier(0.16,1,0.3,1) both; }
 
-  .page { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:48px 24px 64px; animation:up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+    /* 404 number */
+    .four-oh-four { font-family:'Syne',sans-serif; font-size:clamp(6rem,20vw,12rem); font-weight:700; letter-spacing:-8px; color:#f0f0ee; line-height:0.9; position:relative; display:inline-block; user-select:none; margin-bottom:24px; }
+    .four-oh-four .zero { color:#e8734a; display:inline-block; animation:float 4s ease-in-out infinite; }
 
-  /* Big emoji */
-  .big-emoji { font-size:5.5rem; animation:float 3.5s ease-in-out infinite; display:block; margin-bottom:8px; cursor:pointer; }
-  .big-emoji:hover { animation:wiggle 0.4s ease-in-out; }
+    /* Headline */
+    h1 { font-family:'Syne',sans-serif; font-size:clamp(1.5rem,5vw,2.5rem); font-weight:700; letter-spacing:-1px; margin-bottom:12px; }
 
-  /* 404 number */
-  .four-oh-four { font-family:'Syne',sans-serif; font-size:clamp(5rem,18vw,9rem); font-weight:700; letter-spacing:-6px; color:#f0f0ee; line-height:1; position:relative; display:inline-block; user-select:none; }
-  .four-oh-four .zero { color:#e8734a; display:inline-block; animation:blink 4s infinite; }
+    /* Excuse */
+    .excuse { font-size:1rem; color:#888; line-height:1.6; max-width:480px; margin-bottom:40px; font-weight:400; }
 
-  /* Headline */
-  h1 { font-family:'Syne',sans-serif; font-size:clamp(1.3rem,4vw,1.9rem); font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; margin-top:4px; }
+    /* Suggestions */
+    .suggestions { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:48px; max-width:600px; }
+    .suggestion { padding:10px 20px; background:#fff; border:1px solid #e8e8e5; border-radius:12px; font-size:0.875rem; color:#1a1a1a; text-decoration:none; transition:all 0.2s; font-weight:500; box-shadow:0 2px 8px rgba(0,0,0,0.02); }
+    .suggestion:hover { border-color:#e8734a; transform:translateY(-2px); box-shadow:0 8px 20px rgba(232,115,74,0.05); }
 
-  /* Rotating excuses */
-  .excuse-box { min-height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:28px; }
-  .excuse { font-size:0.95rem; color:#888; line-height:1.7; max-width:420px; font-weight:300; font-style:italic; }
+    /* Main button */
+    .btn-home { display:inline-flex; align-items:center; gap:10px; padding:14px 32px; background:#1a1a1a; color:#fff; border-radius:12px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; text-decoration:none; transition:all 0.2s; margin-bottom:24px; }
+    .btn-home:hover { background:#e8734a; transform:translateY(-2px); box-shadow:0 10px 25px rgba(232,115,74,0.2); }
 
-  /* Suggestions */
-  .suggestions { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:36px; }
-  .suggestion { padding:9px 18px; background:#fff; border:1px solid #e0e0dc; border-radius:50px; font-size:0.82rem; color:#555; text-decoration:none; transition:all 0.15s; font-weight:500; }
-  .suggestion:hover { border-color:#1a1a1a; color:#1a1a1a; }
+    .footer-note { margin-top:40px; font-size:0.8rem; color:#aaa; font-weight:300; }
+    .footer-note a { color:#e8734a; text-decoration:none; font-weight:500; }
 
-  /* Main button */
-  .btn-home { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; background:#1a1a1a; color:#fff; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; text-decoration:none; transition:background 0.15s; margin-bottom:16px; }
-  .btn-home:hover { background:#333; }
-
-  /* Easter egg button */
-  .egg-btn { background:none; border:none; font-size:0.72rem; color:#ccc; cursor:pointer; font-family:'Inter',sans-serif; transition:color 0.15s; margin-top:4px; }
-  .egg-btn:hover { color:#888; }
-
-  /* Confetti */
-  .confetti { position:fixed; pointer-events:none; top:0; left:0; width:100%; height:100%; z-index:100; }
-  .c { position:absolute; width:8px; height:8px; border-radius:2px; animation:fall linear forwards; }
-  @keyframes fall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
-
-  .footer-note { margin-top:40px; font-size:0.75rem; color:#ccc; }
-  .footer-note a { color:#ccc; }
-
-  @media (max-width:480px) { nav { padding:0 20px; } }
-</style>
+    @media (max-width:768px) {
+      nav { padding:0 24px; }
+      .page { padding:48px 20px; }
+      .four-oh-four { letter-spacing:-4px; }
+    }
+  </style>
 </head>
 <body>
 
 <nav>
-  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <div class="nav-content">
+    <a href="coming-soon" class="logo">
+      <img src="./assets/logo.png" alt="Sellnook">
+      sell<span>nook</span>
+    </a>
+  </div>
 </nav>
 
 <div class="page">
-
-  <span class="big-emoji" id="emoji" onclick="cycleEmoji()">📦</span>
-
   <div class="four-oh-four">4<span class="zero">0</span>4</div>
 
   <h1 id="headline">You found the void.</h1>
@@ -132,33 +126,12 @@
   document.getElementById('excuse').textContent   = excuses[excuseIndex];
   document.getElementById('headline').textContent = headlines[headlineIndex];
 
-  // Rotate excuse every 4 seconds
-  setInterval(() => {
-    excuseIndex = (excuseIndex + 1) % excuses.length;
-    const el = document.getElementById('excuse');
-    el.style.opacity = 0;
-    el.style.transition = 'opacity 0.3s';
-    setTimeout(() => {
-      el.textContent = excuses[excuseIndex];
-      el.style.opacity = 1;
-    }, 300);
-  }, 4000);
-
-  // Emoji cycle
-  const emojis = ['📦', '🫥', '👻', '🕳️', '🌀', '❓', '📭', '🙈', '💀', '🛸'];
-  let emojiIndex = 0;
-  window.cycleEmoji = function() {
-    emojiIndex = (emojiIndex + 1) % emojis.length;
-    document.getElementById('emoji').textContent = emojis[emojiIndex];
-  };
-
   // Confetti easter egg
   window.celebrate = function() {
     const canvas  = document.getElementById('confetti');
     const colors  = ['#e8734a','#1a1a1a','#fbbf24','#2d9e6b','#e05c5c','#7c3aed'];
     const pieces  = 120;
-    const frags   = [];
-
+    
     for (let i = 0; i < pieces; i++) {
       const div = document.createElement('div');
       div.className = 'c';
@@ -172,19 +145,17 @@
         width:${6 + Math.random()*8}px;
         height:${6 + Math.random()*8}px;
         border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        position:fixed;
+        pointer-events:none;
+        z-index:100;
       `;
       document.body.appendChild(div);
-      frags.push(div);
+      setTimeout(() => div.remove(), 4000);
     }
 
-    // Change button text
     const btn = document.querySelector('.egg-btn');
     btn.textContent = '🎉 ok fine you can press it';
-
-    setTimeout(() => {
-      frags.forEach(d => d.remove());
-      btn.textContent = '👆 do not press this again';
-    }, 4000);
+    setTimeout(() => btn.textContent = '👆 do not press this again', 4000);
   };
 </script>
 
