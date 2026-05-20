@@ -17,7 +17,7 @@ const ALWAYS_ALLOWED = [
     '/terms.html',
     '/privacy.html',
     '/404.html',
-    '/coming-soon.html'
+    "/"
 ];
 
 const PRO_ALLOWED = [

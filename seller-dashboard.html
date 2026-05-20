@@ -215,7 +215,7 @@
 </div>
 
 <nav style="backdrop-filter:blur(10px); background:rgba(250,250,249,0.8); border-bottom:1px solid rgba(0,0,0,0.05);">
-  <a href="coming-soon" class="logo">sell<span>nook</span></a>
+  <a href="/" class="logo">sell<span>nook</span></a>
   <div class="nav-center">
     <button class="nav-tab active" onclick="switchTab('overview')">Overview</button>
     <button class="nav-tab" onclick="switchTab('orders')">Orders</button>
@@ -590,35 +590,49 @@
     </div>
 
     <div class="builder-layout">
+      <style>
+        .draggable-comp { padding:10px 14px; background:#fff; border:1px solid #e0e0dc; border-radius:8px; font-size:0.875rem; cursor:grab; font-weight:500; transition:box-shadow 0.2s, transform 0.2s; display:flex; align-items:center; gap:8px; }
+        .draggable-comp:active { cursor:grabbing; }
+        .draggable-comp.dragging { opacity:0.5; }
+        .tpl-btn { padding:8px 12px; background:#f0f0ee; border:none; border-radius:6px; font-size:0.8rem; cursor:pointer; transition:background 0.2s; text-align:left; font-family:'Inter',sans-serif; }
+        .tpl-btn:hover { background:#e8e8e5; }
+        .builder-preview-window { display:flex; flex-direction:column; }
+      </style>
       <div class="builder-sidebar">
         <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:20px;">Layout Components</h3>
         
-        <div class="builder-block" onclick="toggleBuilderComp('banner')">
-          <div class="builder-block-label">🖼️ Shop Banner</div>
-          <div class="toggle-switch on" id="tog-banner"></div>
-        </div>
-        
-        <div class="builder-block" onclick="toggleBuilderComp('stats')">
-          <div class="builder-block-label">📊 Stats Bar</div>
-          <div class="toggle-switch on" id="tog-stats"></div>
-        </div>
-
-        <div class="builder-block" onclick="toggleBuilderComp('categories')">
-          <div class="builder-block-label">📁 Categories</div>
-          <div class="toggle-switch on" id="tog-categories"></div>
+        <div style="margin-bottom:24px;">
+          <h4 style="font-size:0.75rem; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Active Layout</h4>
+          <div id="active-comps" class="dnd-zone" ondrop="dropComp(event)" ondragover="allowDropComp(event)" style="min-height:60px; background:#fafaf9; border:2px dashed #e8e8e5; border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:8px;">
+            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-banner" data-comp="banner">🖼️ Shop Banner</div>
+            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-stats" data-comp="stats">📊 Stats Bar</div>
+            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-categories" data-comp="categories">📁 Categories</div>
+            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-featured" data-comp="featured">⭐ Featured Grid</div>
+          </div>
         </div>
 
-        <div class="builder-block" onclick="toggleBuilderComp('featured')">
-          <div class="builder-block-label">⭐ Featured Grid</div>
-          <div class="toggle-switch on" id="tog-featured"></div>
+        <div style="margin-bottom:32px;">
+          <h4 style="font-size:0.75rem; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Available Components</h4>
+          <div id="avail-comps" class="dnd-zone" ondrop="dropComp(event)" ondragover="allowDropComp(event)" style="min-height:60px; background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:8px;">
+            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-reviews" data-comp="reviews">💬 Recent Reviews</div>
+          </div>
         </div>
 
-        <div class="builder-block" onclick="toggleBuilderComp('reviews')">
-          <div class="builder-block-label">💬 Recent Reviews</div>
-          <div class="toggle-switch" id="tog-reviews"></div>
+        <div style="margin-bottom:32px;">
+          <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:12px;">Templates</h3>
+          <div id="templates-list" style="display:flex; flex-direction:column; gap:8px;">
+            <button class="tpl-btn" onclick="applyTemplate('basic', 0)">Default Shop</button>
+            <button class="tpl-btn" onclick="applyTemplate('basic', 1)">Portfolio Style</button>
+            <button class="tpl-btn" onclick="applyTemplate('basic', 2)">Review Heavy</button>
+            
+            <h4 style="font-size:0.75rem; color:#888; margin-top:16px; margin-bottom:4px; text-transform:uppercase; letter-spacing:1px;">Community Templates</h4>
+            <div id="comm-tpls" style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:0.75rem; color:#aaa;">Loading...</span>
+            </div>
+          </div>
         </div>
 
-        <div style="margin-top:32px;">
+        <div>
           <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:12px;">Shop Theme</h3>
           <select id="builder-theme" onchange="updateBuilderTheme()" style="background:#fafaf9; border:1px solid #e0e0dc; width:100%; padding:10px; border-radius:8px; font-size:0.875rem;">
             <option value="modern">Modern Minimal</option>
@@ -2049,18 +2063,125 @@
 
   // ── Nook Builder Logic ───────────────────────────────
 
-  window.toggleBuilderComp = function(comp) {
-    const tog = document.getElementById(`tog-${comp}`);
-    const preview = document.getElementById(`p-comp-${comp}`);
+  let draggedComp = null;
+  window.dragStartComp = function(e) {
+    draggedComp = e.target;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
+  };
+  window.dragEndComp = function(e) {
+    e.target.classList.remove('dragging');
+    draggedComp = null;
+    updatePreviewOrder();
+  };
+  window.allowDropComp = function(e) {
+    e.preventDefault();
+    const zone = e.target.closest('.dnd-zone');
+    if (zone && draggedComp) {
+      const afterElement = getDragAfterElement(zone, e.clientY);
+      if (afterElement == null) {
+        zone.appendChild(draggedComp);
+      } else {
+        zone.insertBefore(draggedComp, afterElement);
+      }
+    }
+  };
+  window.dropComp = function(e) {
+    e.preventDefault();
+    updatePreviewOrder();
+  };
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.draggable-comp:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  window.updatePreviewOrder = function() {
+    const active = Array.from(document.getElementById('active-comps').children).map(c => c.dataset.comp);
+    const win = document.getElementById('builder-preview-window');
+    win.style.display = 'flex';
+    win.style.flexDirection = 'column';
     
-    if (tog.classList.contains('on')) {
-      tog.classList.remove('on');
-      preview.style.display = 'none';
-      showToast(`${comp.charAt(0).toUpperCase() + comp.slice(1)} hidden`);
-    } else {
-      tog.classList.add('on');
-      preview.style.display = comp === 'stats' ? 'flex' : 'block';
-      showToast(`${comp.charAt(0).toUpperCase() + comp.slice(1)} added to layout`);
+    // Header always first
+    const header = win.querySelector('.p-header');
+    if (header) header.style.order = 0;
+    
+    const comps = ['banner', 'stats', 'categories', 'featured', 'reviews'];
+    comps.forEach(c => {
+      const el = document.getElementById('p-comp-' + c);
+      if(el) {
+        const index = active.indexOf(c);
+        if(index > -1) {
+          el.style.display = c === 'stats' ? 'flex' : 'block';
+          el.style.order = index + 1;
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    });
+  };
+
+  const basicTpls = [
+    { name: "Default Shop", layout: { theme: 'modern', order: ['banner', 'stats', 'categories', 'featured', 'reviews'] } },
+    { name: "Portfolio Style", layout: { theme: 'glass', order: ['banner', 'featured', 'categories'] } },
+    { name: "Review Heavy", layout: { theme: 'noir', order: ['reviews', 'banner', 'stats', 'featured'] } }
+  ];
+
+  window.applyTemplate = function(type, index) {
+    const tpl = type === 'basic' ? basicTpls[index] : window._commTpls[index];
+    if (!tpl) return;
+    const layout = tpl.layout;
+    document.getElementById('builder-theme').value = layout.theme || 'modern';
+    updateBuilderTheme();
+    
+    const allLabels = {
+      banner: '🖼️ Shop Banner', stats: '📊 Stats Bar', categories: '📁 Categories',
+      featured: '⭐ Featured Grid', reviews: '💬 Recent Reviews'
+    };
+    
+    const activeZone = document.getElementById('active-comps');
+    const availZone = document.getElementById('avail-comps');
+    activeZone.innerHTML = '';
+    availZone.innerHTML = '';
+    
+    const order = layout.order || [];
+    order.forEach(c => {
+      if(allLabels[c]) {
+        activeZone.innerHTML += `<div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" data-comp="${c}">${allLabels[c]}</div>`;
+        delete allLabels[c];
+      }
+    });
+    Object.keys(allLabels).forEach(c => {
+      availZone.innerHTML += `<div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" data-comp="${c}">${allLabels[c]}</div>`;
+    });
+    
+    updatePreviewOrder();
+    showToast('Applied ' + tpl.name);
+  };
+
+  window.loadCommunityTemplates = async function() {
+    try {
+      const q = query(collection(db, 'communityTemplates'), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      const ct = document.getElementById('comm-tpls');
+      if (snap.empty) {
+        ct.innerHTML = '<span style="font-size:0.75rem; color:#aaa;">No community templates yet.</span>';
+      } else {
+        window._commTpls = snap.docs.map(d => d.data());
+        ct.innerHTML = window._commTpls.map((t, i) => 
+          `<button class="tpl-btn" onclick="applyTemplate('community', ${i})">${t.name}</button>`
+        ).join('');
+      }
+    } catch (e) {
+      document.getElementById('comm-tpls').innerHTML = '<span style="font-size:0.75rem; color:#aaa;">Failed to load</span>';
     }
   };
 
@@ -2071,30 +2192,64 @@
     win.style.background = theme === 'noir' ? '#121212' : '#fafaf9';
     win.style.color = theme === 'noir' ? '#fff' : '#1a1a1a';
     
-    // Apply specific theme styles
     if (theme === 'glass') {
       win.style.background = 'rgba(255,255,255,0.7)';
       win.style.backdropFilter = 'blur(10px)';
-      const items = win.querySelectorAll('.p-item, .builder-block');
+      const items = win.querySelectorAll('.p-item, .draggable-comp');
       items.forEach(i => i.style.background = 'rgba(255,255,255,0.8)');
     } else {
       win.style.backdropFilter = 'none';
+      const items = win.querySelectorAll('.p-item, .draggable-comp');
+      items.forEach(i => i.style.background = '#fff');
     }
-    
     showToast(`Applied ${theme} theme preview`);
   };
 
-  window.saveNookLayout = function() {
-    const btn = event.target;
+  window.saveNookLayout = async function() {
+    const btn = document.querySelector('.btn-save');
+    if (!btn) return;
+    const og = btn.innerHTML;
+    btn.innerHTML = 'Publishing...';
     btn.disabled = true;
-    btn.textContent = 'Publishing...';
-    
-    setTimeout(() => {
+
+    try {
+      const activeComps = Array.from(document.getElementById('active-comps').children).map(c => c.dataset.comp);
+      const layout = {
+        order: activeComps,
+        theme: document.getElementById('builder-theme').value
+      };
+
+      await updateDoc(doc(db, 'shops', window._uid), { layout });
+      
+      const wantToPublish = confirm("Layout saved! Would you like to publish this to Community Templates for others to use?");
+      if (wantToPublish) {
+        const tplName = prompt("Enter a name for your template:", "My Cool Shop");
+        if (tplName) {
+           await addDoc(collection(db, 'communityTemplates'), {
+             name: tplName,
+             layout: layout,
+             sellerId: window._uid,
+             createdAt: serverTimestamp()
+           });
+           showToast('Published to Community Templates!');
+           loadCommunityTemplates();
+        }
+      } else {
+        showToast('🚀 Your Nook layout has been published to live shop!');
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Error saving layout.');
+    } finally {
+      btn.innerHTML = og;
       btn.disabled = false;
-      btn.textContent = 'Publish Layout';
-      showToast('🚀 Your Nook layout has been published to live shop!');
-    }, 1500);
+    }
   };
+
+  setTimeout(() => {
+    if(window.loadCommunityTemplates) loadCommunityTemplates();
+    if(window.updatePreviewOrder) updatePreviewOrder();
+  }, 1000);
 
 </script>
 </body>
