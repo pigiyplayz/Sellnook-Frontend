@@ -3,161 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="./assets/logo.png">
-  <script src="./js/loader.js"></script>
-  <title>Sellnook — Uh oh</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <script src="/js/loader.js"></script>
+  <title>Sellnook — Page Not Found</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; display:flex; flex-direction:column; }
-    @keyframes up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes float { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-12px) rotate(2deg); } }
+    body { font-family:'Inter',sans-serif; background:#121212; color:#f0f0ee; min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes glow { 0%, 100% { opacity:0.5; transform:scale(1); } 50% { opacity:0.8; transform:scale(1.05); } }
     
-    nav { border-bottom:1px solid rgba(0,0,0,0.05); padding:0 40px; height:64px; display:flex; align-items:center; background:rgba(255,255,255,0.8); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; justify-content:center; }
+    nav { border-bottom:1px solid rgba(255,255,255,0.05); padding:0 40px; height:64px; display:flex; align-items:center; background:rgba(18,18,18,0.7); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; justify-content:center; }
     .nav-content { width:100%; max-width:1100px; display:flex; align-items:center; justify-content:space-between; }
-    .logo { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:700; color:#1a1a1a; text-decoration:none; display:flex; align-items:center; gap:8px; }
+    .logo { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:700; color:#fff; text-decoration:none; display:flex; align-items:center; gap:8px; }
     .logo span { color:#e8734a; }
     .logo img { height:32px; width:auto; }
 
-    .page { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:64px 24px; animation:up 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+    /* Background aesthetic */
+    .bg-glow { position:absolute; top:-20%; left:50%; transform:translateX(-50%); width:60vw; height:60vw; background:radial-gradient(circle, rgba(232,115,74,0.15) 0%, rgba(18,18,18,0) 70%); border-radius:50%; z-index:-1; pointer-events:none; animation:glow 8s ease-in-out infinite; }
+
+    .page { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:64px 24px; animation:fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both; position:relative; z-index:1; }
 
     /* 404 number */
-    .four-oh-four { font-family:'Syne',sans-serif; font-size:clamp(6rem,20vw,12rem); font-weight:700; letter-spacing:-8px; color:#f0f0ee; line-height:0.9; position:relative; display:inline-block; user-select:none; margin-bottom:24px; }
-    .four-oh-four .zero { color:#e8734a; display:inline-block; animation:float 4s ease-in-out infinite; }
+    .four-oh-four { font-family:'Syne',sans-serif; font-size:clamp(5rem,15vw,10rem); font-weight:700; letter-spacing:-4px; color:rgba(255,255,255,0.05); line-height:1; position:relative; display:inline-block; user-select:none; margin-bottom:16px; background:linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 
     /* Headline */
-    h1 { font-family:'Syne',sans-serif; font-size:clamp(1.5rem,5vw,2.5rem); font-weight:700; letter-spacing:-1px; margin-bottom:12px; }
+    h1 { font-family:'Syne',sans-serif; font-size:clamp(1.5rem,4vw,2.5rem); font-weight:700; letter-spacing:-0.5px; margin-bottom:16px; color:#fff; }
 
-    /* Excuse */
-    .excuse { font-size:1rem; color:#888; line-height:1.6; max-width:480px; margin-bottom:40px; font-weight:400; }
+    /* Description */
+    .description { font-size:1rem; color:rgba(255,255,255,0.6); line-height:1.6; max-width:480px; margin-bottom:48px; font-weight:400; }
 
-    /* Suggestions */
-    .suggestions { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:48px; max-width:600px; }
-    .suggestion { padding:10px 20px; background:#fff; border:1px solid #e8e8e5; border-radius:12px; font-size:0.875rem; color:#1a1a1a; text-decoration:none; transition:all 0.2s; font-weight:500; box-shadow:0 2px 8px rgba(0,0,0,0.02); }
-    .suggestion:hover { border-color:#e8734a; transform:translateY(-2px); box-shadow:0 8px 20px rgba(232,115,74,0.05); }
+    /* Navigation Card */
+    .nav-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:32px; max-width:600px; width:100%; backdrop-filter:blur(10px); display:flex; flex-direction:column; gap:24px; box-shadow:0 24px 48px rgba(0,0,0,0.2); }
+    
+    .nav-card-title { font-size:0.875rem; font-weight:600; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+
+    .suggestions { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .suggestion { display:flex; align-items:center; padding:14px 20px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; font-size:0.9rem; color:#fff; text-decoration:none; transition:all 0.2s; font-weight:500; text-align:left; }
+    .suggestion:hover { background:rgba(232,115,74,0.1); border-color:rgba(232,115,74,0.3); transform:translateY(-2px); }
+    .suggestion-icon { margin-right:12px; color:rgba(255,255,255,0.5); font-size:1.1rem; }
 
     /* Main button */
-    .btn-home { display:inline-flex; align-items:center; gap:10px; padding:14px 32px; background:#1a1a1a; color:#fff; border-radius:12px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; text-decoration:none; transition:all 0.2s; margin-bottom:24px; }
-    .btn-home:hover { background:#e8734a; transform:translateY(-2px); box-shadow:0 10px 25px rgba(232,115,74,0.2); }
+    .btn-home { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:16px 32px; background:#e8734a; color:#fff; border-radius:10px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; text-decoration:none; transition:all 0.2s; width:100%; margin-top:8px; }
+    .btn-home:hover { background:#f07d55; transform:translateY(-2px); box-shadow:0 12px 24px rgba(232,115,74,0.25); }
 
-    .footer-note { margin-top:40px; font-size:0.8rem; color:#aaa; font-weight:300; }
-    .footer-note a { color:#e8734a; text-decoration:none; font-weight:500; }
+    .footer-note { margin-top:48px; font-size:0.8rem; color:rgba(255,255,255,0.4); font-weight:300; }
+    .footer-note a { color:rgba(255,255,255,0.8); text-decoration:none; font-weight:500; border-bottom:1px solid rgba(255,255,255,0.2); transition:all 0.2s; }
+    .footer-note a:hover { color:#e8734a; border-bottom-color:#e8734a; }
 
     @media (max-width:768px) {
       nav { padding:0 24px; }
       .page { padding:48px 20px; }
-      .four-oh-four { letter-spacing:-4px; }
+      .suggestions { grid-template-columns:1fr; }
+      .four-oh-four { letter-spacing:-2px; }
+      .nav-card { padding:24px; }
     }
   </style>
 </head>
 <body>
 
+<div class="bg-glow"></div>
+
 <nav>
   <div class="nav-content">
-    <a href="coming-soon" class="logo">
-      <img src="./assets/logo.png" alt="Sellnook">
+    <a href="/coming-soon.html" class="logo">
+      <img src="/assets/logo.png" alt="Sellnook">
       sell<span>nook</span>
     </a>
   </div>
 </nav>
 
 <div class="page">
-  <div class="four-oh-four">4<span class="zero">0</span>4</div>
+  <div class="four-oh-four">404</div>
 
-  <h1 id="headline">You found the void.</h1>
+  <h1>Page Not Found</h1>
 
-  <div class="excuse-box">
-    <p class="excuse" id="excuse">Loading a completely valid excuse...</p>
-  </div>
-
-  <div class="suggestions">
-    <a href="coming-soon" class="suggestion">🏠 Home</a>
-    <a href="dashboard" class="suggestion">📊 Dashboard</a>
-    <a href="browse" class="suggestion">🛍️ Browse</a>
-    <a href="seller-dashboard" class="suggestion">📦 Sell</a>
-    <a href="buyer-handbook" class="suggestion">📖 Buyer Handbook</a>
-    <a href="seller-handbook" class="suggestion">📋 Seller Handbook</a>
-  </div>
-
-  <a href="coming-soon" class="btn-home">← Get me out of here</a>
-  <button class="egg-btn" onclick="celebrate()">👆 do not press this</button>
-
-  <p class="footer-note">
-    If you're 100% sure this page should exist, <a href="mailto:support@sellnook.com">tell us</a> and we'll feel bad about it.
+  <p class="description">
+    The page you are looking for has been moved, removed, renamed, or might never have existed.
   </p>
 
-</div>
-
-<canvas class="confetti" id="confetti"></canvas>
-
-<script>
-  // Rotating excuses
-  const excuses = [
-    "The page was listed for sale but someone already bought it.",
-    "Our intern typed the URL. We've had a word with them.",
-    "This page is on backorder. Estimated restock: never.",
-    "The seller shipped it to the wrong address. Classic.",
-    "This URL does not spark joy. We've let it go.",
-    "404 means we have exactly 404 things to fix. This is one of them.",
-    "The page exists, but only in our hearts.",
-    "Turns out 'page not found' is just a vibe.",
-    "We searched the whole warehouse. Nothing.",
-    "Have you tried turning the URL off and on again?",
-    "The page was recalled due to quality issues.",
-    "Delivery failed: recipient (the page) does not exist.",
-    "This page took one look at your request and left.",
-    "It's not you, it's us. Actually it might be you.",
-    "Processing your request... just kidding. There's nothing here."
-  ];
-
-  const headlines = [
-    "You found the void.",
-    "Absolutely nothing here.",
-    "Impressive. You broke the internet.",
-    "Plot twist: no page.",
-    "This wasn't in the listing.",
-    "Gone. Vanished. Poof.",
-    "404: page left the chat.",
-  ];
-
-  let excuseIndex = Math.floor(Math.random() * excuses.length);
-  let headlineIndex = Math.floor(Math.random() * headlines.length);
-
-  document.getElementById('excuse').textContent   = excuses[excuseIndex];
-  document.getElementById('headline').textContent = headlines[headlineIndex];
-
-  // Confetti easter egg
-  window.celebrate = function() {
-    const canvas  = document.getElementById('confetti');
-    const colors  = ['#e8734a','#1a1a1a','#fbbf24','#2d9e6b','#e05c5c','#7c3aed'];
-    const pieces  = 120;
+  <div class="nav-card">
+    <div class="nav-card-title">Helpful Links</div>
+    <div class="suggestions">
+      <a href="/dashboard.html" class="suggestion">
+        <span class="suggestion-icon">📊</span>
+        Dashboard
+      </a>
+      <a href="/browse.html" class="suggestion">
+        <span class="suggestion-icon">🛍️</span>
+        Marketplace
+      </a>
+      <a href="/seller-dashboard.html" class="suggestion">
+        <span class="suggestion-icon">📦</span>
+        Seller Hub
+      </a>
+      <a href="/buyer-handbook.html" class="suggestion">
+        <span class="suggestion-icon">📖</span>
+        Help Center
+      </a>
+    </div>
     
-    for (let i = 0; i < pieces; i++) {
-      const div = document.createElement('div');
-      div.className = 'c';
-      div.style.cssText = `
-        left:${Math.random()*100}%;
-        top:${-8 - Math.random()*40}px;
-        background:${colors[Math.floor(Math.random()*colors.length)]};
-        animation-duration:${1.5 + Math.random()*2}s;
-        animation-delay:${Math.random()*0.8}s;
-        transform:rotate(${Math.random()*360}deg);
-        width:${6 + Math.random()*8}px;
-        height:${6 + Math.random()*8}px;
-        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
-        position:fixed;
-        pointer-events:none;
-        z-index:100;
-      `;
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 4000);
-    }
+    <a href="/coming-soon.html" class="btn-home">Return to Home</a>
+  </div>
 
-    const btn = document.querySelector('.egg-btn');
-    btn.textContent = '🎉 ok fine you can press it';
-    setTimeout(() => btn.textContent = '👆 do not press this again', 4000);
-  };
-</script>
+  <p class="footer-note">
+    Need assistance? <a href="mailto:support@sellnook.com">Contact Support</a>
+  </p>
+</div>
 
 </body>
 </html>
