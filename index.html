@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" src="./js/guard.js"></script>
+  <!-- SEO & Open Graph -->
+  <meta name="description" content="Sellnook is a marketplace for independent sellers launching July 21, 2026. Join the waitlist and be first to shop and sell.">
+  <meta property="og:title" content="Sellnook — Simple selling, for everyone.">
+  <meta property="og:description" content="The modern marketplace for independent sellers. Launching July 21, 2026.">
+  <meta property="og:image" content="https://sellnook.com/assets/spark.png">
+  <meta property="og:url" content="https://sellnook.com/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://sellnook.com/">
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+  <link rel="manifest" href="/manifest.json">
+  <script src="./js/loader.js"></script>
+  
+  <!-- Structured Data for Search Engines & AI -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sellnook",
+    "url": "https://sellnook.com",
+    "logo": "https://sellnook.com/assets/logo.png",
+    "description": "The modern marketplace for independent sellers.",
+    "launchDate": "2026-07-21"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sellnook",
+    "url": "https://sellnook.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://sellnook.com/browse?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+<title>Sellnook — Coming Soon</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #e8734a;
+    --primary-dark: #d65d35;
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #88888b;
+    --glass: rgba(0, 0, 0, 0.03);
+    --glass-border: rgba(0, 0, 0, 0.08);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.5;
+    position: relative;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Custom Selection Color */
+  ::selection {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  /* Nav */
+  nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .nav-content {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
+    align-items: center;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--primary); }
+
+  .nav-logo-img {
+    height: 36px;
+    width: auto;
+    margin-right: 12px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.05));
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .logo:hover .nav-logo-img {
+    transform: translateY(-2px) scale(1.08);
+  }
+
+  .nav-btns { display: flex; gap: 12px; align-items: center; }
+
+  .btn-nav-outline {
+    font-size: 0.85rem;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .btn-nav-outline:hover { 
+    background: var(--glass);
+    border-color: var(--glass-border);
+  }
+
+  .btn-nav-solid {
+    background: var(--text);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-nav-solid:hover { background: var(--primary); transform: translateY(-2px); }
+
+  /* Hero */
+  .hero {
+    padding: 80px 24px 40px 24px;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Magnetic Button Effect */
+  .magnetic {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-block;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 10vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: -3px;
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+  .hero p.sub {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 50px;
+    line-height: 1.6;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Countdown */
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+  .time-block {
+    background: #fbfbfd;
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: 20px;
+    min-width: 100px;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .time-block:hover { transform: scale(1.05); border-color: var(--primary); }
+  .time-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .time-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Form */
+  .waitlist-container {
+    background: #fbfbfd;
+    border: 1px solid var(--glass-border);
+    padding: 32px;
+    border-radius: 24px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .form-label {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: block;
+    text-align: center;
+  }
+  .form-row { 
+    display: flex; 
+    gap: 12px; 
+    background: #fff;
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+  }
+  input[type="email"] {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    outline: none;
+  }
+  .btn-submit {
+    background: var(--text);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0 24px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: 48px;
+  }
+  .btn-submit:hover { background: var(--primary); transform: scale(1.02); }
+
+  /* Comparison Section */
+  .why-section {
+    padding: 120px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .why-header {
+    margin-bottom: 60px;
+  }
+
+  .why-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    letter-spacing: -1.5px;
+    margin-bottom: 12px;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .advantage-card {
+    padding: 40px;
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    text-align: left;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .advantage-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: 0 30px 60px rgba(232, 115, 74, 0.1);
+  }
+
+  .advantage-icon {
+    font-size: 2.5rem;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .advantage-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .advantage-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .vs-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: #f0f0ee;
+    padding: 4px 10px;
+    border-radius: 50px;
+    color: var(--text-muted);
+  }
+
+  /* Comparison Table Mockup */
+  .comp-table-wrap {
+    margin-top: 80px;
+    background: #fbfbfd;
+    border-radius: 40px;
+    padding: 60px;
+    border: 1px solid var(--glass-border);
+  }
+
+  .comp-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--glass-border);
+    align-items: center;
+  }
+
+  .comp-row:last-child { border-bottom: none; }
+  .comp-row.header { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+  .check { color: #2d9e6b; font-weight: 700; }
+  .cross { color: #888; opacity: 0.5; }
+
+  /* Phase label */
+  .phase-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+  }
+  .phase-coming { background: #f0f0ee; color: #aaa; }
+  .phase-early  { background: #fff4ee; color: #e8734a; }
+  .phase-live   { background: #e8f5ee; color: #2d9e6b; }
+
+  /* Access box */
+  .access-box {
+    display: none;
+    background: #fbfbfd;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    margin: 20px auto 0;
+    max-width: 480px;
+    text-align: center;
+    animation: reveal 0.6s ease both;
+  }
+  .access-box.show { display: block; }
+  .access-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .access-box p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom:24px; }
+  .btn-dashboard {
+    display: inline-block;
+    padding: 14px 28px;
+    background: var(--text);
+    color: #fff;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-dashboard:hover { background: var(--primary); transform: translateY(-2px); }
+  .btn-dashboard.orange { background: var(--primary); }
+
+  /* User Nav */
+  .user-nav {
+    display: none;
+    align-items: center;
+    gap: 12px;
+  }
+  .user-nav.show { display: flex; }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--text);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    overflow: hidden;
+  }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .btn-signout {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .btn-signout:hover { color: var(--text); }
+
+  .timeline-section {
+    padding: 100px 24px;
+    background: var(--bg);
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .timeline-header {
+    text-align: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 80px;
+    color: var(--text);
+  }
+
+  .timeline {
+    position: relative;
+  }
+
+  /* The vertical line */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: var(--glass-border);
+    transform: translateX(-50%);
+  }
+
+  .timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 80px;
+    position: relative;
+  }
+
+  .timeline-item:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Center Dot */
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 10px rgba(232, 115, 74, 0.4);
+    z-index: 2;
+  }
+
+  .timeline-content, .timeline-image {
+    width: 45%;
+  }
+
+  .timeline-image img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    object-fit: cover;
+    aspect-ratio: 4/3;
+    transition: transform 0.3s;
+  }
+  
+  .timeline-image img:hover {
+    transform: scale(1.02);
+  }
+
+  /* Evens and Odds for alternating layout */
+  .timeline-item:nth-child(odd) .timeline-content { 
+    order: 1; 
+    text-align: right; 
+  }
+  .timeline-item:nth-child(odd) .timeline-image { 
+    order: 2; 
+  }
+  
+  .timeline-item:nth-child(even) .timeline-content { 
+    order: 2; 
+    text-align: left; 
+  }
+  .timeline-item:nth-child(even) .timeline-image { 
+    order: 1; 
+  }
+
+  .timeline-content h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+
+  .timeline-content p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  /* Footer Section using the texture */
+  .footer-container {
+    position: relative;
+    background-image: url('./assets/texture.png');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 24px;
+    border-top: 1px solid var(--glass-border);
+  }
+  
+  .footer-overlay {
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 0;
+  }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 2;
+  }
+  footer p { margin-bottom: 12px; font-weight: 500; font-family: 'Syne', sans-serif; font-size: 1.2rem; }
+  footer a { color: var(--text-muted); text-decoration: none; margin: 0 12px; transition: color 0.2s; }
+  footer a:hover { color: var(--primary); }
+
+  @media (max-width: 768px) {
+    .timeline-header { font-size: 1.8rem; margin-bottom: 60px; }
+    .timeline::before { left: 0; }
+    .timeline-item { flex-direction: column !important; align-items: flex-start; margin-bottom: 80px; }
+    .timeline-item::before { left: 0; top: 0; transform: translate(-50%, 0); margin-top: 24px; }
+    .timeline-content, .timeline-image { width: 100%; order: unset !important; text-align: left !important; padding-left: 32px; }
+    .timeline-image { margin-bottom: 16px; margin-top: 24px; }
+    .timeline-content h3 { font-size: 1.6rem; }
+    .hero h1 { font-size: 3.2rem; }
+    .countdown { gap: 12px; }
+    .time-block { padding: 16px 12px; min-width: 75px; }
+    .time-num { font-size: 1.6rem; }
+    .form-row { flex-direction: column; background: transparent; border: none; padding: 0; }
+    input[type="email"] { background: #fbfbfd; border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 10px; }
+    .btn-submit { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-content">
+    <a href="/" class="logo">
+      <img src="./assets/logo.png" alt="Sellnook Icon" class="nav-logo-img">
+      sell<span>nook</span>
+    </a>
+    <div class="nav-btns" id="auth-btns">
+      <a href="login" class="btn-nav-outline">Log in</a>
+      <a href="#waitlist-section" class="btn-nav-solid magnetic">Join waitlist</a>
+    </div>
+    <div class="user-nav" id="user-nav">
+      <a href="dashboard" class="user-avatar" id="nav-avatar" style="text-decoration:none;">?</a>
+      <button class="btn-nav-outline" onclick="doSignOut()" style="margin-left:8px; font-size:0.75rem;">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+
+<section class="hero reveal">
+  <div class="phase-label phase-coming" id="phase-label">🔒 Coming Soon</div>
+  <h1 id="hero-heading">Simple selling,<br>for everyone.</h1>
+  <p class="sub" id="hero-sub">The modern marketplace for independent sellers. Launching July 21, 2026.</p>
+
+  <div class="countdown" id="countdown-wrap">
+    <div class="time-block">
+      <span class="time-num" id="days">000</span>
+      <span class="time-label">Days</span>
+    </div>
+    <div class="time-block">
+      <span class="time-num" id="hours">00</span>
+      <span class="time-label">Hrs</span>
+    </div>
+    <div class="time-block">
+      <span class="time-num" id="minutes">00</span>
+      <span class="time-label">Min</span>
+    </div>
+    <div class="time-block">
+      <span class="time-num" id="seconds">00</span>
+      <span class="time-label">Sec</span>
+    </div>
+  </div>
+
+  <section class="waitlist-section reveal" id="waitlist-section">
+    <span class="form-label">Join 2,500+ sellers waiting for the Nook.</span>
+    <div class="form-row">
+      <input type="email" id="email" placeholder="Enter your email address">
+      <button class="btn-submit magnetic" onclick="signup()">Get Early Access</button>
+    </div>
+    <div id="success" style="display:none; margin-top:16px; text-align:center; color:var(--primary); font-weight:600;">✓ You're on the list — talk soon.</div>
+  </section>
+
+  <!-- Access Box (shown based on phase + login state) -->
+  <div class="access-box" id="access-box">
+    <h3 id="access-title">You're in early!</h3>
+    <p id="access-desc">Your account is ready. Explore your dashboard and get set up before launch.</p>
+    <a href="dashboard" class="btn-dashboard orange magnetic" id="access-btn">Go to Dashboard →</a>
+  </div>
+</section>
+
+<!-- Why Switch Section -->
+<section class="features-section reveal">
+  <div class="why-header">
+    <h2>Why the Nook?</h2>
+    <p style="color:var(--text-muted)">We built Sellnook because the big guys forgot about the creators.</p>
+  </div>
+  
+  <div class="why-grid">
+    <div class="advantage-card">
+      <span class="vs-badge">Better than Etsy</span>
+      <span class="advantage-icon">🎨</span>
+      <h3>Your Brand, Your Rules.</h3>
+      <p>Don't be just another search result. Every seller gets a unique "Nook" checkout and custom link that feels like a standalone boutique.</p>
+    </div>
+    
+    <div class="advantage-card">
+      <span class="vs-badge">Better than eBay</span>
+      <span class="advantage-icon">💰</span>
+      <h3>Keep your earnings.</h3>
+      <p>Stop paying 15-20% in fees. We charge a flat 4-8% so you can reinvest in your craft, not your platform.</p>
+    </div>
+    
+    <div class="advantage-card">
+      <span class="vs-badge">Killer Feature</span>
+      <span class="advantage-icon">🏗️</span>
+      <h3>Drag & Drop Builder.</h3>
+      <p>Design your Nook your way. Use our intuitive drag-and-drop editor to arrange your shop layout or choose from premium templates. Make it truly yours.</p>
+    </div>
+  </div>
+
+  <div class="comp-table-wrap">
+    <div class="comp-row header">
+      <div>The Difference</div>
+      <div>Sellnook</div>
+      <div>Others</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Transaction Fees</div>
+      <div>4% - 8%</div>
+      <div>12% - 15%</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Shop Customization</div>
+      <div class="check">✓ Drag & Drop Builder</div>
+      <div class="cross">✕ Basic Grid Only</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Custom Shop URLs</div>
+      <div>Included (Pro)</div>
+      <div class="cross">✕ Paid/Add-on</div>
+    </div>
+    <div class="comp-row">
+      <div style="text-align:left; font-weight:600;">Support</div>
+      <div>AI-Powered Messenger</div>
+      <div class="cross">✕ Hard to reach</div>
+    </div>
+  </div>
+</section>
+
+<!-- Timeline Section -->
+<section class="timeline-section reveal">
+  <h2 class="timeline-header">Your Journey to Success</h2>
+  
+  <div class="timeline">
+    <!-- Step 1 -->
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <h3>The Spark.</h3>
+        <p>Every great shop starts with an idea. On Sellnook, we give independent creators the spotlight they deserve.</p>
+      </div>
+      <div class="timeline-image">
+        <img src="./assets/spark.png" alt="The Spark" />
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="timeline-item">
+      <div class="timeline-image">
+        <img src="./assets/setup.png" alt="Instant Setup" />
+      </div>
+      <div class="timeline-content">
+        <h3>Instant Setup.</h3>
+        <p>Launch your storefront in minutes. No technical skills required—just upload your beautiful items and you're live.</p>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <h3>Global Reach.</h3>
+        <p>Connect with buyers from down the street to across the globe. We instantly handle secure payments and integrated shipping.</p>
+      </div>
+      <div class="timeline-image">
+        <img src="./assets/connection.png" alt="Global Connection" />
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="timeline-item">
+      <div class="timeline-image">
+        <img src="./assets/reward.png" alt="The Reward" />
+      </div>
+      <div class="timeline-content">
+        <h3>Keep What's Yours.</h3>
+        <p>We charge just 8% for the free plan and 4% for the pro plan. No hidden fees or surprise commissions. Enjoy the reward you've earned.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer-container">
+  <div class="footer-overlay"></div>
+  <footer>
+    <p>Sellnook &copy; 2026</p>
+    <div>
+      <a href="buyer-handbook">Buyer Handbook</a> &middot; 
+      <a href="seller-handbook">Seller Handbook</a> &middot; 
+      <a href="terms">Terms</a> &middot; 
+      <a href="privacy">Privacy</a>
+    </div>
+  </footer>
+</div>
+
+<script type="module">
+  import { auth, db, API } from "./js/config.js";
+  import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  // Countdown
+  const target = new Date('2026-07-21T17:00:00');
+  function pad(n, len = 2) { return String(n).padStart(len, '0'); }
+
+  function tick() {
+    const diff = Math.max(0, target - new Date());
+    const days = pad(Math.floor(diff / 86400000), 3);
+    const hrs  = pad(Math.floor((diff % 86400000) / 3600000));
+    const min  = pad(Math.floor((diff % 3600000) / 60000));
+    const sec  = pad(Math.floor((diff % 60000) / 1000));
+
+    document.getElementById('days').textContent    = days;
+    document.getElementById('hours').textContent   = hrs;
+    document.getElementById('minutes').textContent = min;
+    document.getElementById('seconds').textContent = sec;
+
+    // Auto update heading when launch time hits
+    if (new Date() >= target) {
+      const label = document.getElementById('phase-label');
+      if (label) {
+        label.className = 'phase-label phase-live';
+        label.textContent = '🟢 We\'re Live!';
+      }
+      document.getElementById('hero-heading').innerHTML = 'We\'re live.<br>Let\'s go.';
+      document.getElementById('hero-sub').textContent = 'Sellnook is officially open. Start buying and selling now.';
+    }
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  // Auth & Access State
+  onAuthStateChanged(auth, async user => {
+    const authBtns  = document.getElementById('auth-btns');
+    const userNav   = document.getElementById('user-nav');
+    const waitlist  = document.getElementById('waitlist-section');
+    const accessBox = document.getElementById('access-box');
+    const phaseLabel = document.getElementById('phase-label');
+
+    if (user) {
+      authBtns.style.display = 'none';
+      userNav.classList.add('show');
+      
+      const av = document.getElementById('nav-avatar');
+      if (user.photoURL) av.innerHTML = `<img src="${user.photoURL}" alt="">`;
+      else av.textContent = (user.displayName || user.email)[0].toUpperCase();
+
+      // Check access levels
+      let access = { access: 'coming_soon', isDev: false, isPro: false, isLaunched: false, earlyAccess: false };
+      try {
+        const token = await user.getIdToken();
+        const res   = await fetch(`${API}/api/auth/access`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+        });
+        access = await res.json();
+      } catch (e) {
+        console.error('Access check failed:', e);
+      }
+
+      waitlist.style.display = 'none';
+      accessBox.classList.add('show');
+
+      if (access.isDev || access.isLaunched) {
+        document.getElementById('access-title').textContent = access.isDev ? '⚡ Developer Access' : '🎉 We\'re Live!';
+        document.getElementById('access-desc').textContent  = access.isDev
+          ? 'You have full developer access to all features before launch.'
+          : 'Sellnook is officially open. Head to your dashboard to start buying and selling.';
+        phaseLabel.className = 'phase-label ' + (access.isDev ? 'phase-early' : 'phase-live');
+        phaseLabel.textContent = access.isDev ? '⚡ Developer Mode' : '🟢 Live';
+      } else if (access.earlyAccess) {
+        document.getElementById('access-title').textContent = '🚀 Early Access is Open!';
+        document.getElementById('access-desc').textContent  = 'You\'re in early! Explore your dashboard and get set up before launch on July 21.';
+        phaseLabel.className = 'phase-label phase-early';
+        phaseLabel.textContent = '🔓 Early Access';
+      } else {
+        document.getElementById('access-title').textContent = 'You\'re on the list!';
+        document.getElementById('access-desc').textContent  = 'Your account is ready. Early access opens July 7 — the full launch is July 21.';
+      }
+    } else {
+      authBtns.style.display = 'flex';
+      userNav.classList.remove('show');
+      waitlist.style.display = 'block';
+      accessBox.classList.remove('show');
+      phaseLabel.className = 'phase-label phase-coming';
+      phaseLabel.textContent = '🔒 Coming Soon';
+    }
+  });
+
+  window.doSignOut = async () => {
+    await signOut(auth);
+    location.reload();
+  };
+
+  // Waitlist Signup
+  window.signup = async function() {
+    const input = document.getElementById('email');
+    const email = input.value.trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = 'var(--primary)';
+      setTimeout(() => input.style.borderColor = '', 1500);
+      return;
+    }
+
+    try {
+      // 1. Add to Firestore (Waitlist collection)
+      try {
+        await addDoc(collection(db, 'waitlist'), {
+          email,
+          signedUpAt: serverTimestamp(),
+          source: 'index-merged'
+        });
+      } catch (fe) {
+        console.warn('Firestore write failed (likely duplicate), continuing to email...', fe);
+      }
+
+      // 2. Send email via backend (Force resend)
+      const res = await fetch(`${API}/api/email/waitlist`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, force: true }) // Added force flag
+      });
+
+      if (!res.ok) throw new Error('Email API failed');
+
+      document.querySelector('.form-row').style.display = 'none';
+      const successEl = document.getElementById('success');
+      successEl.style.display = 'block';
+      successEl.innerHTML = `
+        <div style="margin-bottom: 12px;">✓ You're on the list — talk soon.</div>
+        <a href="https://twitter.com/intent/tweet?text=Just%20joined%20the%20waitlist%20for%20@sellnook!%20The%20modern%20marketplace%20for%20independent%20sellers.%20Check%20it%20out%20at%20sellnook.com" 
+           target="_blank" 
+           style="display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:#1a1a1a; color:#fff; border-radius:10px; text-decoration:none; font-size:0.8rem; font-weight:700;">
+           Share on X
+        </a>
+      `;
+    } catch (e) {
+      console.error('Signup error:', e);
+      // Still show success to user but log the error
+      document.querySelector('.form-row').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+    }
+  };
+
+  // Viewport Reveal Logic
+  const observerOptions = { threshold: 0.1 };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Magnetic Button Physics
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const { left, top, width, height } = btn.getBoundingClientRect();
+      const x = e.clientX - left - width / 2;
+      const y = e.clientY - top - height / 2;
+      btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = `translate(0, 0)`;
+    });
+  });
+
+  window.scrollToWaitlist = () => {
+    document.getElementById('waitlist-section').scrollIntoView({ behavior: 'smooth' });
+  };
+</script>
+</body>
+</html>

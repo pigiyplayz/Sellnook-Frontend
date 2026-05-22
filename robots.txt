@@ -1,0 +1,27 @@
+# General Search Engines
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /seller-dashboard
+Disallow: /messages
+Disallow: /orders
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-confirmation
+Disallow: /profile-setup
+
+# AI Crawlers
+User-agent: GPTBot
+Allow: /index
+Allow: /buyer-handbook
+Allow: /seller-handbook
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: AnthropicAI
+Allow: /
+
+Sitemap: https://sellnook.com/sitemap.xml
