@@ -218,10 +218,10 @@
   <a href="/" class="logo">sell<span>nook</span></a>
   <div class="nav-center">
     <button class="nav-tab active" onclick="switchTab('overview')">Overview</button>
-    <button class="nav-tab" onclick="switchTab('orders')">Orders</button>
+    <button class="nav-tab" onclick="switchTab('orders')">Orders<span id="orders-badge" style="display:none;background:#e8734a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:50px;margin-left:6px;font-weight:700;"></span></button>
     <button class="nav-tab" onclick="switchTab('listings')">Listings</button>
-    <button class="nav-tab" onclick="switchTab('messages')">Messages</button>
-    <button class="nav-tab" onclick="switchTab('builder')" style="color:#e8734a; font-weight:700;">Nook Builder ✨</button>
+    <button class="nav-tab" onclick="switchTab('messages')">Messages<span id="seller-msg-badge" style="display:none;background:#e8734a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:50px;margin-left:6px;font-weight:700;"></span></button>
+    <button class="nav-tab" onclick="switchTab('offers')">Offers<span id="offers-badge-nav" style="display:none;background:#e8734a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:50px;margin-left:6px;font-weight:700;"></span></button> <button class="nav-tab" onclick="switchTab('builder')" style="color:#e8734a; font-weight:700;">Nook Builder ✨</button>
     
     <div style="position:relative; display:inline-block;" onmouseover="this.querySelector('.nav-dropdown').style.display='block'" onmouseout="this.querySelector('.nav-dropdown').style.display='none'">
       <button class="nav-tab">Merchant Tools ▾</button>
@@ -319,7 +319,7 @@
         <p style="font-size: 0.875rem; color: rgba(255,255,255,0.6); line-height: 1.6; max-width: 400px; margin-bottom: 20px;">
           Launching July 2026. Design your shop layout with a powerful visual editor. No code, just creativity.
         </p>
-        <button class="btn-save btn-orange" onclick="switchTab('builder')">See the vision →</button>
+        <button class="btn-save btn-orange" onclick="switchTab('offers')">Offers<span id="offers-badge-nav" style="display:none;background:#e8734a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:50px;margin-left:6px;font-weight:700;"></span></button> <button class="nav-tab" onclick="switchTab('builder')">See the vision →</button>
       </div>
       <div style="position: absolute; right: -20px; bottom: -20px; font-size: 8rem; opacity: 0.1; pointer-events: none;">🏗️</div>
     </div>
@@ -1029,6 +1029,7 @@
     if (tab === 'analytics') loadAnalytics();
     if (tab === 'promoted') loadPromoted();
     if (tab === 'seller-offers') loadSellerOffers();
+  if (tab === 'builder') initNookBuilder();
   };
 
   // ── Load seller offers ─────────────────────────────────
@@ -2219,7 +2220,7 @@
         theme: document.getElementById('builder-theme').value
       };
 
-      await updateDoc(doc(db, 'shops', window._uid), { layout });
+      await updateDoc(doc(db, 'users', window._uid), { layout });
       
       const wantToPublish = confirm("Layout saved! Would you like to publish this to Community Templates for others to use?");
       if (wantToPublish) {

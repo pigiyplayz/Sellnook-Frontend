@@ -704,12 +704,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
     }
   }
 
-  function showNotFound() {
-    const isItemBase = window.location.pathname === '/shop/item' || window.location.pathname === '/product.html';
-    if (!isItemBase) {
-      window.location.href = '/shop/item';
-      return;
-    }
+function showNotFound() {
     document.getElementById('loading').classList.add('hide');
     document.getElementById('not-found').style.display = 'block';
   }

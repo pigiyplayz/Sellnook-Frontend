@@ -5,15 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sellnook — Complete Your Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="./js/loader.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; padding:48px 24px 80px; }
 
-  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
-  .loading.hide { opacity:0; pointer-events:none; }
-  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+          @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
 
   .wrap { max-width:520px; margin:0 auto; animation:up 0.6s cubic-bezier(0.16,1,0.3,1) both; }
 
@@ -93,8 +90,6 @@
 </style>
 </head>
 <body>
-
-<div class="loading" id="loading"><div class="spinner"></div></div>
 
 <div class="wrap">
   <a href="dashboard" class="logo">sell<span>nook</span></a>
@@ -334,9 +329,8 @@
       if (saved.address.country) document.getElementById('addr-country').value = saved.address.country;
     }
 
-    document.getElementById('loading').classList.add('hide');
-    setTimeout(() => document.getElementById('loading').remove(), 400);
-  });
+    if (window.hideLoader) window.hideLoader();
+    });
 
   // Step 1 — save address
   window.saveAddress = function() {
@@ -420,6 +414,4 @@
 </script>
 </body>
 </html>
-
-
 

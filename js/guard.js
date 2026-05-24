@@ -1,5 +1,5 @@
 import { auth, API } from "./config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 /**
  * Sellnook Page Guard
@@ -16,8 +16,7 @@ const ALWAYS_ALLOWED = [
     '/dashboard.html',
     '/terms.html',
     '/privacy.html',
-    '/404.html',
-    "/"
+    '/404.html'
 ];
 
 const PRO_ALLOWED = [

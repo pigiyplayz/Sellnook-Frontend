@@ -5,15 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sellnook — Import Listings</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="./js/loader.js"></script>
 <style>
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Inter',sans-serif; background:#fafaf9; color:#1a1a1a; min-height:100vh; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  @keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-  .loading { position:fixed; inset:0; background:#fafaf9; display:flex; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
-  .loading.hide { opacity:0; pointer-events:none; }
-  .spinner { width:28px; height:28px; border:2.5px solid #e0e0dc; border-top-color:#1a1a1a; border-radius:50%; animation:spin 0.7s linear infinite; }
-
+    @keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+      
   nav { border-bottom:1px solid #e8e8e5; padding:0 40px; height:60px; display:flex; align-items:center; justify-content:space-between; background:#fafaf9; position:sticky; top:0; z-index:10; }
   .logo { font-family:'Syne',sans-serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; text-decoration:none; }
   .logo span { color:#e8734a; }
@@ -77,8 +74,6 @@
 </style>
 </head>
 <body>
-
-<div class="loading" id="loading"><div class="spinner"></div></div>
 
 <nav>
   <a href="/" class="logo">sell<span>nook</span></a>
@@ -183,9 +178,8 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
     clearTimeout(timeout);
     if (!user) { window.location.href = 'login'; return; }
     currentUser = user;
-    document.getElementById('loading').classList.add('hide');
-    setTimeout(() => document.getElementById('loading')?.remove(), 400);
-  });
+    if (window.hideLoader) window.hideLoader();
+    });
 
   // ── Source selection ───────────────────────────────────
   window.selectSource = function(source, el) {
@@ -486,6 +480,4 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
 </script>
 </body>
 </html>
-
-
 

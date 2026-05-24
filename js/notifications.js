@@ -6,8 +6,8 @@ import { auth, db } from "./config.js";
 import { 
   collection, query, where, orderBy, onSnapshot, 
   updateDoc, doc, limit, getDocs 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 class NotificationSystem {
   constructor() {
@@ -61,7 +61,7 @@ class NotificationSystem {
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
         </svg>
-        <div id="notif-badge" style="display:none; position:absolute; top:-4px; right:-4px; background:#e8734a; color:#fff; font-size:10px; font-weight:700; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #fafaf9;">0</div>
+        <div id="notif-badge" style="display:none; position:absolute; top:-4px; right:-4px; background:#e8734a; color:#fff; font-size:10px; font-weight:700; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center; border:2px solid #fafaf9;">0</div>
       </div>
       <div id="notif-dropdown" style="display:none; position:absolute; top:40px; right:0; width:320px; background:#fff; border:1px solid #e8e8e5; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:100; overflow:hidden;">
         <div style="padding:16px; border-bottom:1px solid #e8e8e5; display:flex; justify-content:space-between; align-items:center;">

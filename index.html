@@ -50,7 +50,7 @@
   :root {
     --primary: #e8734a;
     --primary-dark: #d65d35;
-    --bg: #ffffff;
+    --bg: #fafaf9;
     --text: #1a1a1a;
     --text-muted: #88888b;
     --glass: rgba(0, 0, 0, 0.03);
@@ -70,10 +70,10 @@
     content: "";
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.03;
     pointer-events: none;
-    z-index: 9999;
+    z-index: -1;
   }
 
   /* Custom Selection Color */
