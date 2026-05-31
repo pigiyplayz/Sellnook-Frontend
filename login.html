@@ -148,14 +148,25 @@
 <script type="module">
   import { auth, db, API } from "/js/config.js";
 
-  import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { doc, setDoc, serverTimestamp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const provider = new GoogleAuthProvider();
 
-  // Redirect if already logged in
-  onAuthStateChanged(auth, user => {
-    if (user) window.location.href = 'dashboard';
+  // Handle redirect result when returning from Google sign-in
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // Check if this is a redirect result
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          await saveUserToFirestore(result.user);
+        }
+      } catch (e) {
+        console.error('Redirect result error:', e);
+      }
+      window.location.href = 'dashboard';
+    }
   });
 
   async function saveUserToFirestore(user) {
@@ -184,9 +195,7 @@
 
   window.loginWithGoogle = async function() {
     try {
-      const result = await signInWithPopup(auth, provider);
-      await saveUserToFirestore(result.user);
-      window.location.href = 'dashboard';
+      await signInWithRedirect(auth, provider);
     } catch (e) {
       showError(e.message);
     }
