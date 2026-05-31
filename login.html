@@ -153,18 +153,22 @@
 
   const provider = new GoogleAuthProvider();
 
-  // Handle redirect result when returning from Google sign-in
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      // Check if this is a redirect result
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          await saveUserToFirestore(result.user);
-        }
-      } catch (e) {
-        console.error('Redirect result error:', e);
+  // Handle redirect result on page load
+  (async () => {
+    try {
+      const result = await getRedirectResult(auth);
+      if (result) {
+        await saveUserToFirestore(result.user);
+        window.location.href = 'dashboard';
       }
+    } catch (e) {
+      console.error('Redirect result error:', e);
+    }
+  })();
+
+  // Monitor auth state for regular login
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
       window.location.href = 'dashboard';
     }
   });
