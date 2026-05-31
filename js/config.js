@@ -4,7 +4,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.2/firebas
 
 const firebaseConfig = {
     apiKey:            "AIzaSyCmhcl9MM-JmXq5ps82oVQu_9v5E5QVXn8",
-    authDomain:        "sellnook-1.firebaseauth.work",
+    authDomain:        "sellnook-1.firebaseapp.com",
     projectId:         "sellnook-1",
     storageBucket:     "sellnook-1.firebasestorage.app",
     messagingSenderId: "567018222611",
