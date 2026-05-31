@@ -148,7 +148,7 @@
 <script type="module">
   import { auth, db, API } from "/js/config.js";
 
-  import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, browserPopupRedirectResolver } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { doc, setDoc, serverTimestamp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const provider = new GoogleAuthProvider();
@@ -199,7 +199,7 @@
 
   window.loginWithGoogle = async function() {
     try {
-      await signInWithRedirect(auth, provider);
+      await signInWithRedirect(auth, provider, browserPopupRedirectResolver);
     } catch (e) {
       showError(e.message);
     }
