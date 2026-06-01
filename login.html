@@ -148,48 +148,36 @@
 <script type="module">
   import { auth, db, API } from "/js/config.js";
 
-  import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, browserPopupRedirectResolver, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, sendPasswordResetEmail, onAuthStateChanged, browserPopupRedirectResolver, setPersistence, browserLocalPersistence, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { doc, setDoc, serverTimestamp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const provider = new GoogleAuthProvider();
+  const ADMIN_EMAIL = 'austinmalick9@gmail.com';
 
-  // Handle redirect result on page load
-  window.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const result = await getRedirectResult(auth);
-      if (result) {
-        const user = result.user;
-        console.log("Redirect login successful:", user);
-        
-        // Admin validation
-        const adminEmail = 'austinmalick9@gmail.com';
-        if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
-          await saveUserToFirestore(user);
-          window.location.href = 'dashboard';
-        } else {
-          console.error('Access Denied: Admin Only');
-          alert('Access Denied: This site is currently restricted to admin access only.');
-          await auth.signOut();
-          window.location.href = '/';
-        }
-      }
-    } catch (e) {
-      console.error('Redirect result error:', e);
-    }
-  });
-
-  // Monitor auth state for regular login
-  onAuthStateChanged(auth, (user) => {
+  // Single source of truth for handling auth states
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
-      // Admin validation
-      const adminEmail = 'austinmalick9@gmail.com';
-      if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
-        window.location.href = 'dashboard';
+      console.log("Firebase session found for:", user.email);
+      
+      // Ensure email matches admin criteria safely
+      if (user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        console.log("Admin verified. Redirecting to dashboard...");
+        
+        // Save user to Firestore
+        await saveUserToFirestore(user);
+        
+        // CRUCIAL: Use window.location.replace to prevent back-button loops
+        window.location.replace('dashboard');
       } else {
-        console.error('Access Denied: Admin Only');
-        alert('Access Denied: This site is currently restricted to admin access only.');
-        auth.signOut();
+        console.warn("Access Denied: Non-admin account detected.");
+        alert("Access Denied: This site is currently restricted to admin access only.");
+        
+        // Silently kick unapproved sessions off your domain
+        await signOut(auth);
+        window.location.replace('/');
       }
+    } else {
+      console.log("No active user session found. Standing by on login page.");
     }
   });
 
