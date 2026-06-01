@@ -156,7 +156,7 @@
 <!-- Firebase SDKs -->
 <script type="module">
   import { auth, db, API } from "/js/config.js";
-import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, sendEmailVerification, onAuthStateChanged, browserPopupRedirectResolver } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, sendEmailVerification, onAuthStateChanged, browserPopupRedirectResolver, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const provider = new GoogleAuthProvider();
 
@@ -198,6 +198,8 @@ import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, 
       return;
     }
     try {
+      // Explicitly force the token to save locally so Cross-Domain redirects don't drop it
+      await setPersistence(auth, browserLocalPersistence);
       await signInWithRedirect(auth, provider, browserPopupRedirectResolver);
     } catch (e) {
       showError(e.message);
