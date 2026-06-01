@@ -161,8 +161,17 @@
         const user = result.user;
         console.log("Redirect login successful:", user);
         
-        await saveUserToFirestore(user);
-        window.location.href = 'dashboard';
+        // Admin validation
+        const adminEmail = 'austinmalick9@gmail.com';
+        if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
+          await saveUserToFirestore(user);
+          window.location.href = 'dashboard';
+        } else {
+          console.error('Access Denied: Admin Only');
+          alert('Access Denied: This site is currently restricted to admin access only.');
+          await auth.signOut();
+          window.location.href = '/';
+        }
       }
     } catch (e) {
       console.error('Redirect result error:', e);
@@ -172,7 +181,15 @@
   // Monitor auth state for regular login
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      window.location.href = 'dashboard';
+      // Admin validation
+      const adminEmail = 'austinmalick9@gmail.com';
+      if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
+        window.location.href = 'dashboard';
+      } else {
+        console.error('Access Denied: Admin Only');
+        alert('Access Denied: This site is currently restricted to admin access only.');
+        auth.signOut();
+      }
     }
   });
 

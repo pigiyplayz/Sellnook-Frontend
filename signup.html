@@ -168,16 +168,25 @@ import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, 
         const user = result.user;
         console.log("Redirect login successful:", user);
         
-        // Save user to Firestore
-        await setDoc(doc(db, 'users', user.uid), {
-          uid: user.uid,
-          name: user.displayName || '',
-          email: user.email,
-          photoURL: user.photoURL || '',
-          lastLogin: serverTimestamp()
-        }, { merge: true });
-        
-        window.location.href = 'dashboard';
+        // Admin validation
+        const adminEmail = 'austinmalick9@gmail.com';
+        if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
+          // Save user to Firestore
+          await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            name: user.displayName || '',
+            email: user.email,
+            photoURL: user.photoURL || '',
+            lastLogin: serverTimestamp()
+          }, { merge: true });
+          
+          window.location.href = 'dashboard';
+        } else {
+          console.error('Access Denied: Admin Only');
+          alert('Access Denied: This site is currently restricted to admin access only.');
+          await auth.signOut();
+          window.location.href = '/';
+        }
       }
     } catch (e) {
       console.error('Redirect result error:', e);
@@ -187,7 +196,15 @@ import { createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, 
   // Monitor auth state for regular login/signup
   onAuthStateChanged(auth, (user) => {
     if (user && user.emailVerified) {
-      window.location.href = 'dashboard';
+      // Admin validation
+      const adminEmail = 'austinmalick9@gmail.com';
+      if (user.email.toLowerCase() === adminEmail.toLowerCase()) {
+        window.location.href = 'dashboard';
+      } else {
+        console.error('Access Denied: Admin Only');
+        alert('Access Denied: This site is currently restricted to admin access only.');
+        auth.signOut();
+      }
     }
   });
 
