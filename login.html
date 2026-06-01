@@ -154,17 +154,20 @@
   const provider = new GoogleAuthProvider();
 
   // Handle redirect result on page load
-  (async () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     try {
       const result = await getRedirectResult(auth);
       if (result) {
-        await saveUserToFirestore(result.user);
+        const user = result.user;
+        console.log("Redirect login successful:", user);
+        
+        await saveUserToFirestore(user);
         window.location.href = 'dashboard';
       }
     } catch (e) {
       console.error('Redirect result error:', e);
     }
-  })();
+  });
 
   // Monitor auth state for regular login
   onAuthStateChanged(auth, (user) => {
