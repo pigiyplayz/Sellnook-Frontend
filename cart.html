@@ -137,9 +137,9 @@
 <script type="module">
   import { auth, db, API } from "/js/config.js";
   import "/js/notifications.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
   import { doc, getDoc, collection, where, query, getDocs }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
   const timeout = setTimeout(() => window.location.href = 'login', 20000);
 
@@ -276,14 +276,14 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
     document.getElementById(`qty-${listingId}`).textContent = newQty;
     const cartItem = cart.find(c => c.listingId === listingId);
     if (cartItem) cartItem.quantity = newQty;
-    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
+    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
     updateSummary();
   };
 
   window.removeItem = function(listingId) {
     cartDetails = cartDetails.filter(i => i.listing.id !== listingId);
     cart        = cart.filter(c => c.listingId !== listingId);
-    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
+    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
     document.getElementById(`item-${listingId}`)?.remove();
     if (!cartDetails.length) { showEmptyCart(); return; }
     updateSummary();
@@ -374,7 +374,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/f
     const existing = cart.find(c => c.listingId === listingId);
     if (existing) existing.quantity += quantity;
     else cart.push({ listingId, quantity });
-    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
+    localStorage.setItem(`sellnook_cart_${currentUser.uid}`, JSON.stringify(cart)); try { const { updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js"); await updateDoc(doc(db, "users", currentUser.uid), { cart: cart }); } catch(e) { console.error("Sync error:", e); }
   };
 
   // ── Toast ──────────────────────────────────────────────

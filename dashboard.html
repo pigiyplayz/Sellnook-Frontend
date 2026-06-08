@@ -570,8 +570,8 @@
 <script type="module">
   import { auth, db, API } from "/js/config.js";
   import "/js/notifications.js";
-import { onAuthStateChanged, signOut as fbSignOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, getDocs, getDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { onAuthStateChanged, signOut as fbSignOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, getDocs, getDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
   const timeout = setTimeout(() => window.location.href = 'login', 20000);
 

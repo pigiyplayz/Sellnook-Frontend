@@ -16,7 +16,8 @@ const ALWAYS_ALLOWED = [
     '/dashboard.html',
     '/terms.html',
     '/privacy.html',
-    '/404.html'
+    '/404.html',
+    '/seller-dashboard.html'
 ];
 
 const PRO_ALLOWED = [
