@@ -48,46 +48,14 @@ async function checkAccess() {
             return;
         }
 
-        try {
-            // Fetch access levels from backend
-            const token = await user.getIdToken();
-            const res = await fetch(`${API}/api/auth/access`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            if (!res.ok) throw new Error("Access check failed");
-            
-            const access = await res.json(); // Expected: { isDev: boolean, isPro: boolean }
-
-            // 3. Dev has access to EVERYTHING (including admin)
-            if (access.isDev || user.email === 'austinmalick9@gmail.com') {
-                return;
-            }
-
-            // 4. Pro has access to Free pages + Seller Dashboard
-            if (access.isPro) {
-                if (PRO_ALLOWED.some(p => cleanPath.endsWith(p))) {
-                    return;
-                } else {
-                    console.log("Pro Restricted: Redirecting to home");
-                    window.location.href = '/';
-                    return;
-                }
-            }
-
-            // 5. Free users (or unknown) are blocked from anything not in ALWAYS_ALLOWED
-            console.log("Free Restricted: Redirecting to home");
-            window.location.href = '/';
-
-        } catch (e) {
-            console.error("Guard Error:", e);
-            // If API fails, better safe than sorry: redirect to home
-            window.location.href = '/';
+        // 3. Admin bypass - Admin always gets access instantly without hitting the backend
+        if (user.email && user.email.toLowerCase() === 'austinmalick9@gmail.com') {
+            return;
         }
+
+        // 4. Right now, ONLY the admin can access restricted pages. Everyone else gets kicked to home/not-ready.
+        console.warn("Non-admin tried to access restricted page. Redirecting to home.");
+        window.location.href = '/';
     });
 }
 
