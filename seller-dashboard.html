@@ -182,8 +182,9 @@
   .canvas-phone-notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:100px; height:24px; background:#1a1a1a; border-radius:0 0 16px 16px; z-index:10; }
   .preview-window { background:#fafaf9; width:320px; min-height:620px; border-radius:44px; border:10px solid #111; position:relative; overflow:hidden; box-shadow:0 32px 64px rgba(0,0,0,0.5), inset 0 0 0 2px #333; display:flex; flex-direction:column; }
   .preview-window-scroll { overflow-y:auto; flex:1; padding-bottom:32px; }
-  .preview-window-scroll::-webkit-scrollbar { display:none; }
-  .preview-window.drag-over { outline:3px dashed #e8734a; outline-offset:4px; }
+  .preview-window-scroll::-webkit-scrollbar { width:6px; }
+  .preview-window-scroll::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.15); border-radius:10px; }
+  .preview-window.drag-over { outline:3px dashed #3b82f6; outline-offset:4px; }
   .canvas-label { font-size:0.75rem; color:rgba(255,255,255,0.4); text-align:center; letter-spacing:1px; text-transform:uppercase; }
   .canvas-hint { font-size:0.75rem; color:rgba(255,255,255,0.5); text-align:center; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.05); padding:8px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); }
 
@@ -203,10 +204,10 @@
   .p-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#1a1a1a; }
   .p-url-text { font-size:0.62rem; color:#e8734a; margin-top:3px; }
   .p-bio-text { font-size:0.65rem; color:#888; margin-top:6px; line-height:1.5; max-width:200px; margin-left:auto; margin-right:auto; }
-  .p-comp-block { flex-shrink:0; cursor:grab; }
+  .p-comp-block { flex-shrink:0; cursor:grab; transition: margin 0.2s, transform 0.2s; }
   .p-comp-block:active { cursor:grabbing; }
-  .p-comp-block.drag-over-top { border-top:2px solid #e8734a; }
-  .p-comp-block.drag-over-bottom { border-bottom:2px solid #e8734a; }
+  .p-comp-block.drag-over-top { border-top:4px solid #3b82f6; margin-top:8px; }
+  .p-comp-block.drag-over-bottom { border-bottom:4px solid #3b82f6; margin-bottom:8px; }
   .p-stats { display:flex; justify-content:space-around; padding:10px; background:#fff; border-bottom:1px solid #f0f0ee; font-size:0.6rem; color:#888; }
   .p-stats strong { color:#1a1a1a; font-size:0.75rem; display:block; margin-bottom:2px; }
   .p-section-title { font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; padding:10px 14px 6px; color:#1a1a1a; background:#fff; }
@@ -2077,7 +2078,7 @@
   ];
 
   // Current active layout order
-  let _canvasOrder = ['banner', 'stats', 'categories', 'featured'];
+  let _canvasOrder = [];
   let _canvasTheme = 'modern';
 
   // Dragging state
