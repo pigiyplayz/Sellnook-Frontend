@@ -173,32 +173,56 @@
   @media (min-width:601px) { .mobile-tabs { display:none; } }
 
   /* Nook Builder Specific Styles */
-  .builder-layout { display:grid; grid-template-columns:300px 1fr; gap:24px; min-height:600px; }
-  .builder-sidebar { background:#fff; border:1px solid #e8e8e5; border-radius:16px; padding:24px; position:sticky; top:84px; height:fit-content; }
-  .builder-canvas { background:#e8e8e5; border-radius:16px; padding:32px; border:1px solid #d8d8d5; display:flex; justify-content:center; }
-  .preview-window { background:#fafaf9; width:360px; min-height:600px; border-radius:32px; border:8px solid #1a1a1a; position:relative; overflow-y:auto; box-shadow:0 24px 48px rgba(0,0,0,0.1); padding-bottom:40px; }
-  .preview-window::-webkit-scrollbar { width:4px; }
-  .preview-window::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.1); border-radius:10px; }
-  
-  .builder-block { background:#fff; border:1px solid #f0f0ee; border-radius:12px; padding:12px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:all 0.15s; }
-  .builder-block:hover { border-color:var(--primary); }
-  .builder-block.active { border-color:var(--primary); background:#fff4ee; }
-  .builder-block-label { font-size:0.82rem; font-weight:600; display:flex; align-items:center; gap:8px; }
-  
-  .toggle-switch { width:34px; height:20px; background:#e0e0dc; border-radius:20px; position:relative; transition:all 0.2s; cursor:pointer; }
-  .toggle-switch::after { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:all 0.2s; }
-  .toggle-switch.on { background:#e8734a; }
-  .toggle-switch.on::after { left:16px; }
+  .builder-layout { display:grid; grid-template-columns:320px 1fr; gap:28px; align-items:start; }
+  .builder-sidebar { background:#fff; border:1px solid #e8e8e5; border-radius:16px; padding:24px; position:sticky; top:84px; max-height:calc(100vh - 120px); overflow-y:auto; }
+  .builder-sidebar::-webkit-scrollbar { width:4px; }
+  .builder-sidebar::-webkit-scrollbar-thumb { background:#e0e0dc; border-radius:4px; }
+  .builder-canvas { background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:20px; padding:40px 20px; display:flex; flex-direction:column; align-items:center; gap:16px; min-height:700px; }
+  .canvas-phone-wrap { position:relative; }
+  .canvas-phone-notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:100px; height:24px; background:#1a1a1a; border-radius:0 0 16px 16px; z-index:10; }
+  .preview-window { background:#fafaf9; width:320px; min-height:620px; border-radius:44px; border:10px solid #111; position:relative; overflow:hidden; box-shadow:0 32px 64px rgba(0,0,0,0.5), inset 0 0 0 2px #333; display:flex; flex-direction:column; }
+  .preview-window-scroll { overflow-y:auto; flex:1; padding-bottom:32px; }
+  .preview-window-scroll::-webkit-scrollbar { display:none; }
+  .preview-window.drag-over { outline:3px dashed #e8734a; outline-offset:4px; }
+  .canvas-label { font-size:0.75rem; color:rgba(255,255,255,0.4); text-align:center; letter-spacing:1px; text-transform:uppercase; }
+  .canvas-hint { font-size:0.75rem; color:rgba(255,255,255,0.5); text-align:center; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.05); padding:8px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); }
 
-  /* Preview Components */
-  .p-banner { height:80px; background:#1a1a1a; margin-bottom:0; }
-  .p-header { padding:24px 16px; text-align:center; background:#fff; border-bottom:1px solid #f0f0ee; margin-bottom:12px; }
-  .p-avatar { width:60px; height:60px; border-radius:50%; background:#e8734a; margin:-50px auto 10px; border:3px solid #fff; }
-  .p-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; }
-  .p-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:16px; }
-  .p-item { aspect-ratio:1; background:#fff; border-radius:10px; border:1px solid #f0f0ee; }
-  .p-stats { display:flex; justify-content:space-around; padding:12px; border-bottom:1px solid #f0f0ee; font-size:0.65rem; color:#888; }
-  .p-section-title { font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; padding:0 16px; margin-bottom:8px; }
+  /* Sidebar Component Pills */
+  .comp-pill { padding:10px 14px; background:#fff; border:1.5px solid #e0e0dc; border-radius:10px; font-size:0.82rem; cursor:grab; font-weight:500; transition:all 0.2s; display:flex; align-items:center; gap:8px; user-select:none; }
+  .comp-pill:hover { border-color:#e8734a; background:#fff8f5; transform:translateX(2px); }
+  .comp-pill:active { cursor:grabbing; opacity:0.7; }
+  .comp-pill.in-use { background:#f0f0ee; color:#aaa; border-color:#e8e8e5; cursor:default; font-style:italic; }
+  .comp-pill .pill-drag { color:#ccc; margin-left:auto; font-size:0.7rem; }
+  .tpl-btn { padding:9px 14px; background:#f8f8f8; border:1px solid #e8e8e5; border-radius:8px; font-size:0.8rem; cursor:pointer; transition:all 0.2s; text-align:left; font-family:'Inter',sans-serif; width:100%; display:flex; align-items:center; gap:8px; color:#1a1a1a; font-weight:500; }
+  .tpl-btn:hover { background:#fff4ee; border-color:#e8734a; color:#e8734a; }
+
+  /* Canvas preview components */
+  .p-banner { height:90px; background:linear-gradient(135deg, #1a1a1a, #2d2d2d); flex-shrink:0; cursor:grab; }
+  .p-header { padding:24px 16px 16px; text-align:center; background:#fff; border-bottom:1px solid #f0f0ee; flex-shrink:0; }
+  .p-avatar { width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg,#e8734a,#f09373); margin:-50px auto 10px; border:3px solid #fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:1.3rem; color:#fff; }
+  .p-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#1a1a1a; }
+  .p-url-text { font-size:0.62rem; color:#e8734a; margin-top:3px; }
+  .p-bio-text { font-size:0.65rem; color:#888; margin-top:6px; line-height:1.5; max-width:200px; margin-left:auto; margin-right:auto; }
+  .p-comp-block { flex-shrink:0; cursor:grab; }
+  .p-comp-block:active { cursor:grabbing; }
+  .p-comp-block.drag-over-top { border-top:2px solid #e8734a; }
+  .p-comp-block.drag-over-bottom { border-bottom:2px solid #e8734a; }
+  .p-stats { display:flex; justify-content:space-around; padding:10px; background:#fff; border-bottom:1px solid #f0f0ee; font-size:0.6rem; color:#888; }
+  .p-stats strong { color:#1a1a1a; font-size:0.75rem; display:block; margin-bottom:2px; }
+  .p-section-title { font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; padding:10px 14px 6px; color:#1a1a1a; background:#fff; }
+  .p-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:8px 14px 14px; background:#fff; }
+  .p-item { border-radius:10px; border:1px solid #f0f0ee; overflow:hidden; }
+  .p-item-img { aspect-ratio:1; background:linear-gradient(135deg, #f0f0ee, #e8e8e5); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+  .p-item-info { padding:6px 8px; background:#fff; }
+  .p-item-title { font-size:0.6rem; font-weight:600; color:#1a1a1a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .p-item-price { font-size:0.65rem; font-weight:700; color:#e8734a; }
+  .p-cats { display:flex; gap:6px; overflow-x:auto; padding:8px 14px; background:#fff; }
+  .p-cats::-webkit-scrollbar { display:none; }
+  .p-cat-pill { padding:4px 10px; background:#f0f0ee; border-radius:50px; font-size:0.6rem; white-space:nowrap; font-weight:500; color:#555; flex-shrink:0; }
+  .p-review-block { padding:8px 14px 14px; background:#fff; }
+  .p-review-item { background:#fafaf9; border:1px solid #f0f0ee; border-radius:8px; padding:8px 10px; font-size:0.6rem; color:#555; line-height:1.5; margin-bottom:6px; }
+  .p-review-stars { color:#e8734a; font-size:0.65rem; margin-bottom:3px; }
+  .p-review-author { font-size:0.58rem; color:#aaa; margin-top:3px; }
 
 </style>
 </head>
@@ -533,8 +557,13 @@
           <input type="text" id="shop-name-input" placeholder="e.g. Jane's Ceramics" oninput="previewShop()">
         </div>
         <div class="form-group full">
-          <label>Custom URL — sellnook.com/<span style="color:#e8734a;">yourname</span></label>
+          <label>Shop URL — sellnook.com/shop/<span style="color:#e8734a;">yourname</span> <span style="color:#bbb;font-weight:400;">(Pro only)</span></label>
           <input type="text" id="shop-url-input" placeholder="yourname" oninput="previewShop()">
+        </div>
+        <div class="form-group full">
+          <label>Custom Domain <span style="color:#bbb;font-weight:400;">(e.g. shop.mybrand.com)</span></label>
+          <input type="text" id="shop-custom-domain" placeholder="shop.mybrand.com">
+          <div style="font-size:0.72rem;color:#aaa;margin-top:5px;">Point your domain's CNAME to <code style="background:#f0f0ee;padding:2px 5px;border-radius:4px;">shops.sellnook.com</code> then enter it here.</div>
         </div>
         <div class="form-group full">
           <label>Shop bio</label>
@@ -581,108 +610,71 @@
 
   <!-- NOOK BUILDER TAB -->
   <div class="tab-content" id="tab-builder">
-    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
       <div>
         <h1>Nook Builder ✨</h1>
-        <p>Real-time visual editor for your shopfront.</p>
+        <p>Drag components from the sidebar onto your phone preview. Reorder by dragging within the canvas.</p>
       </div>
-      <button class="btn-save btn-orange" onclick="saveNookLayout()">Publish Layout</button>
+      <button class="btn-save btn-orange" id="publish-layout-btn" onclick="saveNookLayout()">Publish Layout</button>
     </div>
 
     <div class="builder-layout">
-      <style>
-        .draggable-comp { padding:10px 14px; background:#fff; border:1px solid #e0e0dc; border-radius:8px; font-size:0.875rem; cursor:grab; font-weight:500; transition:box-shadow 0.2s, transform 0.2s; display:flex; align-items:center; gap:8px; }
-        .draggable-comp:active { cursor:grabbing; }
-        .draggable-comp.dragging { opacity:0.5; }
-        .tpl-btn { padding:8px 12px; background:#f0f0ee; border:none; border-radius:6px; font-size:0.8rem; cursor:pointer; transition:background 0.2s; text-align:left; font-family:'Inter',sans-serif; }
-        .tpl-btn:hover { background:#e8e8e5; }
-        .builder-preview-window { display:flex; flex-direction:column; }
-      </style>
+      <!-- SIDEBAR -->
       <div class="builder-sidebar">
-        <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:20px;">Layout Components</h3>
-        
-        <div style="margin-bottom:24px;">
-          <h4 style="font-size:0.75rem; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Active Layout</h4>
-          <div id="active-comps" class="dnd-zone" ondrop="dropComp(event)" ondragover="allowDropComp(event)" style="min-height:60px; background:#fafaf9; border:2px dashed #e8e8e5; border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:8px;">
-            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-banner" data-comp="banner">🖼️ Shop Banner</div>
-            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-stats" data-comp="stats">📊 Stats Bar</div>
-            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-categories" data-comp="categories">📁 Categories</div>
-            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-featured" data-comp="featured">⭐ Featured Grid</div>
-          </div>
+        <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:6px;">Components</h3>
+        <p style="font-size:0.75rem; color:#aaa; margin-bottom:16px;">Drag onto the phone canvas →</p>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:28px;" id="comp-palette">
+          <div class="comp-pill" draggable="true" ondragstart="pillarDragStart(event)" data-comp="banner">🖼️ Shop Banner <span class="pill-drag">⠿</span></div>
+          <div class="comp-pill" draggable="true" ondragstart="pillarDragStart(event)" data-comp="stats">📊 Stats Bar <span class="pill-drag">⠿</span></div>
+          <div class="comp-pill" draggable="true" ondragstart="pillarDragStart(event)" data-comp="categories">📁 Categories <span class="pill-drag">⠿</span></div>
+          <div class="comp-pill" draggable="true" ondragstart="pillarDragStart(event)" data-comp="featured">⭐ Featured Grid <span class="pill-drag">⠿</span></div>
+          <div class="comp-pill" draggable="true" ondragstart="pillarDragStart(event)" data-comp="reviews">💬 Recent Reviews <span class="pill-drag">⠿</span></div>
         </div>
 
-        <div style="margin-bottom:32px;">
-          <h4 style="font-size:0.75rem; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Available Components</h4>
-          <div id="avail-comps" class="dnd-zone" ondrop="dropComp(event)" ondragover="allowDropComp(event)" style="min-height:60px; background:#fff; border:1px solid #e8e8e5; border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:8px;">
-            <div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" id="comp-reviews" data-comp="reviews">💬 Recent Reviews</div>
-          </div>
+        <div style="height:1px;background:#f0f0ee;margin-bottom:24px;"></div>
+
+        <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:12px;">Templates</h3>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:28px;">
+          <button class="tpl-btn" onclick="applyTemplate('basic', 0)">🏪 Default Shop</button>
+          <button class="tpl-btn" onclick="applyTemplate('basic', 1)">🖼️ Portfolio Style</button>
+          <button class="tpl-btn" onclick="applyTemplate('basic', 2)">⭐ Review Heavy</button>
         </div>
 
-        <div style="margin-bottom:32px;">
-          <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:12px;">Templates</h3>
-          <div id="templates-list" style="display:flex; flex-direction:column; gap:8px;">
-            <button class="tpl-btn" onclick="applyTemplate('basic', 0)">Default Shop</button>
-            <button class="tpl-btn" onclick="applyTemplate('basic', 1)">Portfolio Style</button>
-            <button class="tpl-btn" onclick="applyTemplate('basic', 2)">Review Heavy</button>
-            
-            <h4 style="font-size:0.75rem; color:#888; margin-top:16px; margin-bottom:4px; text-transform:uppercase; letter-spacing:1px;">Community Templates</h4>
-            <div id="comm-tpls" style="display:flex; flex-direction:column; gap:8px;">
-              <span style="font-size:0.75rem; color:#aaa;">Loading...</span>
-            </div>
-          </div>
+        <h4 style="font-size:0.72rem; color:#aaa; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Community Templates</h4>
+        <div id="comm-tpls" style="display:flex; flex-direction:column; gap:8px; margin-bottom:28px;">
+          <span style="font-size:0.75rem; color:#aaa;">Loading...</span>
         </div>
 
-        <div>
-          <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:12px;">Shop Theme</h3>
-          <select id="builder-theme" onchange="updateBuilderTheme()" style="background:#fafaf9; border:1px solid #e0e0dc; width:100%; padding:10px; border-radius:8px; font-size:0.875rem;">
-            <option value="modern">Modern Minimal</option>
-            <option value="glass">Glassmorphism Pro</option>
-            <option value="noir">Midnight Noir</option>
-          </select>
+        <div style="height:1px;background:#f0f0ee;margin-bottom:24px;"></div>
+
+        <h3 style="font-family:'Syne',sans-serif; font-size:0.9rem; margin-bottom:12px;">Shop Theme</h3>
+        <select id="builder-theme" onchange="updateBuilderTheme()" style="background:#fafaf9; border:1px solid #e0e0dc; width:100%; padding:10px; border-radius:8px; font-size:0.875rem; margin-bottom:12px;">
+          <option value="modern">Modern Minimal</option>
+          <option value="glass">Glassmorphism Pro</option>
+          <option value="noir">Midnight Noir</option>
+        </select>
+
+        <div style="font-size:0.72rem; color:#aaa; margin-top:8px; padding:10px; background:#fafaf9; border-radius:8px; border:1px solid #f0f0ee;">
+          <strong style="color:#555;">Tip:</strong> Drag components directly onto the phone, then drag to reorder inside it. Double click a component to remove it. Hit Publish to go live.
         </div>
       </div>
 
+      <!-- CANVAS -->
       <div class="builder-canvas">
-        <div class="preview-window" id="builder-preview-window">
-          <div class="p-banner" id="p-comp-banner"></div>
-          <div class="p-header">
-            <div class="p-avatar"></div>
-            <div class="p-name">Your Nook</div>
-            <div style="font-size:0.7rem; color:#aaa; margin-top:4px;">sellnook.com/your-shop</div>
-          </div>
-          
-          <div class="p-stats" id="p-comp-stats">
-            <div><strong>12</strong> listings</div>
-            <div><strong>4.9★</strong> rating</div>
-            <div><strong>24</strong> sales</div>
-          </div>
-
-          <div id="p-comp-categories" style="padding:16px 16px 0;">
-             <div class="p-section-title">Categories</div>
-             <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">
-               <div style="padding:6px 12px; background:#fff; border:1px solid #f0f0ee; border-radius:50px; font-size:0.6rem; white-space:nowrap;">Ceramics</div>
-               <div style="padding:6px 12px; background:#fff; border:1px solid #f0f0ee; border-radius:50px; font-size:0.6rem; white-space:nowrap;">Prints</div>
-               <div style="padding:6px 12px; background:#fff; border:1px solid #f0f0ee; border-radius:50px; font-size:0.6rem; white-space:nowrap;">Books</div>
-             </div>
-          </div>
-
-          <div id="p-comp-featured">
-            <div class="p-section-title" style="margin-top:20px;">Featured items</div>
-            <div class="p-grid">
-              <div class="p-item"></div>
-              <div class="p-item"></div>
-              <div class="p-item"></div>
-              <div class="p-item"></div>
-            </div>
-          </div>
-
-          <div id="p-comp-reviews" style="display:none; padding:16px;">
-            <div class="p-section-title">Latest Reviews</div>
-            <div style="background:#fff; border:1px solid #f0f0ee; border-radius:10px; padding:12px; font-size:0.65rem; color:#555;">
-              "Beautiful packaging and super fast shipping. Love the nook experience!"
+        <div class="canvas-label">Live Preview</div>
+        <div class="canvas-phone-wrap">
+          <div class="canvas-phone-notch"></div>
+          <div class="preview-window" id="builder-preview-window"
+               ondragover="canvasDragOver(event)"
+               ondrop="canvasDrop(event)"
+               ondragleave="canvasDragLeave(event)">
+            <div class="preview-window-scroll" id="canvas-scroll">
+              <!-- Components rendered by JS -->
             </div>
           </div>
         </div>
+        <div class="canvas-hint">⬆ Drag components here &nbsp;·&nbsp; Drag within to reorder</div>
       </div>
     </div>
   </div>
@@ -978,6 +970,7 @@
       const userDocSnap = await getDoc(doc(db, 'users', user.uid));
       if (userDocSnap.exists()) {
         const data = userDocSnap.data();
+        window._shopData = data;
         if (data.shopName) {
           document.getElementById('shop-name-input').value         = data.shopName;
           document.getElementById('shop-name-preview').textContent = data.shopName;
@@ -996,6 +989,8 @@
         if (data.shopState)   document.getElementById('shop-state').value   = data.shopState;
         if (data.shopZip)     document.getElementById('shop-zip').value     = data.shopZip;
         if (data.shopCarrier) document.getElementById('shop-carrier').value = data.shopCarrier;
+        if (data.customDomain) document.getElementById('shop-custom-domain').value = data.customDomain;
+        if (data.layout) window._savedLayout = data.layout;
       }
     } catch (e) { console.error('Shop load error:', e); }
 
@@ -1796,29 +1791,34 @@
     const state= document.getElementById('shop-state').value.trim().toUpperCase();
     const zip  = document.getElementById('shop-zip').value.trim();
     const carrier = document.getElementById('shop-carrier').value;
+    const customDomain = document.getElementById('shop-custom-domain').value.trim().toLowerCase();
 
     if (!name) { alert('Please enter a shop name.'); return; }
 
     try {
       await setDoc(doc(db, 'users', uid), {
-        uid:       uid,
-        shopName:  name,
-        shopUrl:   url,
-        shopBio:   bio,
-        shopCity:  city,
-        shopState: state,
-        shopZip:   zip,
-        shopCarrier: carrier,
-        shipsFrom: city && state ? `${city}, ${state}` : null,
-        updatedAt: serverTimestamp()
+        uid:          uid,
+        shopName:     name,
+        shopUrl:      url,
+        shopBio:      bio,
+        shopCity:     city,
+        shopState:    state,
+        shopZip:      zip,
+        shopCarrier:  carrier,
+        customDomain: customDomain || null,
+        shipsFrom:    city && state ? `${city}, ${state}` : null,
+        updatedAt:    serverTimestamp()
       }, { merge: true });
 
       if (url) {
         document.getElementById('shop-url-display').innerHTML =
           `<a href="/shop/${url}" target="_blank" style="color:#1a1a1a;text-decoration:none;font-size:0.75rem;">sellnook.com/shop/${url}</a>`;
       }
+      window._shopData = { ...window._shopData, shopName: name, shopUrl: url, shopBio: bio, customDomain };
+      if (window.initBuilderPreview) initBuilderPreview();
       showToast('✅ Shop profile saved!');
     } catch (e) {
+      console.error(e);
       alert('Error saving shop profile.');
     }
   };
@@ -2064,108 +2064,249 @@
 
   // ── Nook Builder Logic ───────────────────────────────
 
-  let draggedComp = null;
-  window.dragStartComp = function(e) {
-    draggedComp = e.target;
-    e.target.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', '');
+  const FAKE_LISTINGS = [
+    { emoji: '🏺', title: 'Ceramic Vase', price: '$42.00' },
+    { emoji: '🖼️', title: 'Art Print', price: '$18.00' },
+    { emoji: '📚', title: 'Handmade Journal', price: '$24.00' },
+    { emoji: '🕯️', title: 'Soy Candle', price: '$16.00' },
+  ];
+  const FAKE_CATS = ['Ceramics', 'Prints', 'Books', 'Candles'];
+  const FAKE_REVIEWS = [
+    { text: '"Beautiful packaging, super fast shipping!"', author: 'Sarah M. — ★★★★★' },
+    { text: '"Exactly as described. Will buy again!"',     author: 'Jordan K. — ★★★★★' },
+  ];
+
+  // Current active layout order
+  let _canvasOrder = ['banner', 'stats', 'categories', 'featured'];
+  let _canvasTheme = 'modern';
+
+  // Dragging state
+  let _pillarDragComp = null;   // dragging from sidebar
+  let _canvasDragEl   = null;   // dragging within canvas
+
+  // Render HTML for a given component key
+  function renderCompHTML(comp, shopData) {
+    const name = shopData?.shopName || window._user?.displayName || 'Your Shop';
+    const url  = shopData?.shopUrl  ? `sellnook.com/shop/${shopData.shopUrl}` : 'sellnook.com/shop/yourshop';
+    const bio  = shopData?.shopBio  || '';
+    const initial = name.charAt(0).toUpperCase();
+
+    switch(comp) {
+      case 'banner':
+        return `<div class="p-banner p-comp-block" data-comp="banner" draggable="true" ondragstart="canvasItemDragStart(event)" ondragend="canvasItemDragEnd(event)" ondblclick="removeCanvasComp('banner')"></div>`;
+      case 'header':
+        return `<div class="p-header p-comp-block" data-comp="header">
+          <div class="p-avatar">${initial}</div>
+          <div class="p-name">${name}</div>
+          <div class="p-url-text">${url}</div>
+          ${bio ? `<div class="p-bio-text">${bio.length > 80 ? bio.slice(0,80)+'…' : bio}</div>` : ''}
+        </div>`;
+      case 'stats':
+        return `<div class="p-stats p-comp-block" data-comp="stats" draggable="true" ondragstart="canvasItemDragStart(event)" ondragend="canvasItemDragEnd(event)" ondblclick="removeCanvasComp('stats')">
+          <div><strong>12</strong><br>Listings</div>
+          <div><strong>4.9★</strong><br>Rating</div>
+          <div><strong>24</strong><br>Sales</div>
+        </div>`;
+      case 'categories':
+        return `<div class="p-comp-block" data-comp="categories" draggable="true" ondragstart="canvasItemDragStart(event)" ondragend="canvasItemDragEnd(event)" ondblclick="removeCanvasComp('categories')">
+          <div class="p-section-title">Categories</div>
+          <div class="p-cats">${FAKE_CATS.map(c => `<div class="p-cat-pill">${c}</div>`).join('')}</div>
+        </div>`;
+      case 'featured':
+        return `<div class="p-comp-block" data-comp="featured" draggable="true" ondragstart="canvasItemDragStart(event)" ondragend="canvasItemDragEnd(event)" ondblclick="removeCanvasComp('featured')">
+          <div class="p-section-title">Featured Items</div>
+          <div class="p-grid">${FAKE_LISTINGS.map(l => `
+            <div class="p-item">
+              <div class="p-item-img">${l.emoji}</div>
+              <div class="p-item-info">
+                <div class="p-item-title">${l.title}</div>
+                <div class="p-item-price">${l.price}</div>
+              </div>
+            </div>`).join('')}</div>
+        </div>`;
+      case 'reviews':
+        return `<div class="p-comp-block" data-comp="reviews" draggable="true" ondragstart="canvasItemDragStart(event)" ondragend="canvasItemDragEnd(event)" ondblclick="removeCanvasComp('reviews')">
+          <div class="p-section-title">Reviews</div>
+          <div class="p-review-block">${FAKE_REVIEWS.map(r => `
+            <div class="p-review-item">
+              <div class="p-review-stars">★★★★★</div>
+              ${r.text}
+              <div class="p-review-author">${r.author}</div>
+            </div>`).join('')}</div>
+        </div>`;
+      default: return '';
+    }
+  }
+
+  window.initBuilderPreview = function() {
+    const shopData = window._shopData || {};
+    const scroll = document.getElementById('canvas-scroll');
+    if (!scroll) return;
+
+    // Restore saved layout if available
+    if (window._savedLayout && !_canvasOrder._initialized) {
+      _canvasOrder = window._savedLayout.order || _canvasOrder;
+      _canvasTheme = window._savedLayout.theme || _canvasTheme;
+      document.getElementById('builder-theme').value = _canvasTheme;
+      _canvasOrder._initialized = true;
+    }
+
+    // Rebuild canvas
+    scroll.innerHTML = '';
+    // Header is always first and not moveable
+    scroll.innerHTML += renderCompHTML('header', shopData);
+    _canvasOrder.forEach(comp => {
+      scroll.innerHTML += renderCompHTML(comp, shopData);
+    });
+
+    updatePillStates();
+    applyThemeToCanvas();
   };
-  window.dragEndComp = function(e) {
-    e.target.classList.remove('dragging');
-    draggedComp = null;
-    updatePreviewOrder();
-  };
-  window.allowDropComp = function(e) {
-    e.preventDefault();
-    const zone = e.target.closest('.dnd-zone');
-    if (zone && draggedComp) {
-      const afterElement = getDragAfterElement(zone, e.clientY);
-      if (afterElement == null) {
-        zone.appendChild(draggedComp);
+
+  function updatePillStates() {
+    const allComps = ['banner','stats','categories','featured','reviews'];
+    allComps.forEach(c => {
+      const pill = document.querySelector(`#comp-palette [data-comp="${c}"]`);
+      if (!pill) return;
+      if (_canvasOrder.includes(c)) {
+        pill.classList.add('in-use');
+        pill.setAttribute('draggable', 'false');
       } else {
-        zone.insertBefore(draggedComp, afterElement);
+        pill.classList.remove('in-use');
+        pill.setAttribute('draggable', 'true');
+      }
+    });
+  }
+
+  // ── Drag from sidebar pill onto canvas ─────────────────
+  window.pillarDragStart = function(e) {
+    const comp = e.currentTarget.dataset.comp;
+    if (_canvasOrder.includes(comp)) { e.preventDefault(); return; }
+    _pillarDragComp = comp;
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('text/plain', comp);
+  };
+
+  window.canvasDragOver = function(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = _pillarDragComp ? 'copy' : 'move';
+    document.getElementById('builder-preview-window').classList.add('drag-over');
+
+    if (_canvasDragEl) {
+      const scroll = document.getElementById('canvas-scroll');
+      const afterEl = getCanvasAfterElement(scroll, e.clientY);
+      const blocks = [...scroll.querySelectorAll('.p-comp-block[data-comp]:not([data-comp="header"])')].filter(b => b !== _canvasDragEl);
+      blocks.forEach(b => { b.classList.remove('drag-over-top','drag-over-bottom'); });
+      if (afterEl && afterEl !== _canvasDragEl && afterEl.dataset.comp !== 'header') {
+        afterEl.classList.add('drag-over-top');
       }
     }
   };
-  window.dropComp = function(e) {
-    e.preventDefault();
-    updatePreviewOrder();
+
+  window.canvasDragLeave = function(e) {
+    if (!e.relatedTarget || !e.currentTarget.contains(e.relatedTarget)) {
+      document.getElementById('builder-preview-window').classList.remove('drag-over');
+    }
   };
-  function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.draggable-comp:not(.dragging)')];
-    return draggableElements.reduce((closest, child) => {
+
+  window.canvasDrop = function(e) {
+    e.preventDefault();
+    document.getElementById('builder-preview-window').classList.remove('drag-over');
+    const scroll = document.getElementById('canvas-scroll');
+
+    // Clear indicators
+    scroll.querySelectorAll('.drag-over-top,.drag-over-bottom').forEach(b => {
+      b.classList.remove('drag-over-top','drag-over-bottom');
+    });
+
+    if (_pillarDragComp) {
+      // Add new component from sidebar
+      const comp = _pillarDragComp;
+      _pillarDragComp = null;
+      if (!_canvasOrder.includes(comp)) {
+        const afterEl = getCanvasAfterElement(scroll, e.clientY);
+        const blocks = [...scroll.querySelectorAll('.p-comp-block[data-comp]:not([data-comp="header"])')]
+          .map(b => b.dataset.comp);
+        let insertIdx = blocks.length;
+        if (afterEl && afterEl.dataset.comp !== 'header') {
+          insertIdx = blocks.indexOf(afterEl.dataset.comp);
+          if (insertIdx < 0) insertIdx = blocks.length;
+        }
+        _canvasOrder.splice(insertIdx, 0, comp);
+        initBuilderPreview();
+        showToast(`Added ${comp}`);
+      }
+    } else if (_canvasDragEl) {
+      // Reorder within canvas
+      const dragged = _canvasDragEl;
+      _canvasDragEl = null;
+      dragged.style.opacity = '1';
+
+      const afterEl = getCanvasAfterElement(scroll, e.clientY);
+      if (afterEl && afterEl !== dragged && afterEl.dataset.comp !== 'header') {
+        scroll.insertBefore(dragged, afterEl);
+      } else if (!afterEl) {
+        scroll.appendChild(dragged);
+      }
+
+      // Rebuild _canvasOrder from DOM
+      _canvasOrder = [...scroll.querySelectorAll('.p-comp-block[data-comp]')]
+        .map(b => b.dataset.comp)
+        .filter(c => c !== 'header');
+      showToast('Layout reordered');
+    }
+  };
+
+  // ── Drag within canvas to reorder ─────────────────────
+  window.canvasItemDragStart = function(e) {
+    _canvasDragEl = e.currentTarget;
+    _pillarDragComp = null;
+    e.currentTarget.style.opacity = '0.4';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
+    e.stopPropagation();
+  };
+
+  window.canvasItemDragEnd = function(e) {
+    if (e.currentTarget) e.currentTarget.style.opacity = '1';
+    _canvasDragEl = null;
+    document.getElementById('canvas-scroll').querySelectorAll('.drag-over-top,.drag-over-bottom').forEach(b => {
+      b.classList.remove('drag-over-top','drag-over-bottom');
+    });
+  };
+
+  function getCanvasAfterElement(container, y) {
+    const blocks = [...container.querySelectorAll('.p-comp-block[data-comp]:not([data-comp="header"])')]
+      .filter(el => el !== _canvasDragEl);
+    return blocks.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
       const offset = y - box.top - box.height / 2;
-      if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
-      } else {
-        return closest;
-      }
+      return (offset < 0 && offset > closest.offset) ? { offset, element: child } : closest;
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
-  window.updatePreviewOrder = function() {
-    const active = Array.from(document.getElementById('active-comps').children).map(c => c.dataset.comp);
-    const win = document.getElementById('builder-preview-window');
-    win.style.display = 'flex';
-    win.style.flexDirection = 'column';
-    
-    // Header always first
-    const header = win.querySelector('.p-header');
-    if (header) header.style.order = 0;
-    
-    const comps = ['banner', 'stats', 'categories', 'featured', 'reviews'];
-    comps.forEach(c => {
-      const el = document.getElementById('p-comp-' + c);
-      if(el) {
-        const index = active.indexOf(c);
-        if(index > -1) {
-          el.style.display = c === 'stats' ? 'flex' : 'block';
-          el.style.order = index + 1;
-        } else {
-          el.style.display = 'none';
-        }
-      }
-    });
+  // Remove a comp from canvas when user drags it back outside (double click)
+  window.removeCanvasComp = function(comp) {
+    _canvasOrder = _canvasOrder.filter(c => c !== comp);
+    initBuilderPreview();
+    showToast(`Removed ${comp}`);
   };
 
+  // ── Templates ─────────────────────────────────────────
   const basicTpls = [
-    { name: "Default Shop", layout: { theme: 'modern', order: ['banner', 'stats', 'categories', 'featured', 'reviews'] } },
-    { name: "Portfolio Style", layout: { theme: 'glass', order: ['banner', 'featured', 'categories'] } },
-    { name: "Review Heavy", layout: { theme: 'noir', order: ['reviews', 'banner', 'stats', 'featured'] } }
+    { name: "Default Shop",    layout: { theme: 'modern', order: ['banner', 'stats', 'categories', 'featured'] } },
+    { name: "Portfolio Style", layout: { theme: 'glass',  order: ['banner', 'featured', 'categories'] } },
+    { name: "Review Heavy",    layout: { theme: 'noir',   order: ['reviews', 'banner', 'stats', 'featured'] } }
   ];
 
   window.applyTemplate = function(type, index) {
-    const tpl = type === 'basic' ? basicTpls[index] : window._commTpls[index];
+    const tpl = type === 'basic' ? basicTpls[index] : (window._commTpls || [])[index];
     if (!tpl) return;
-    const layout = tpl.layout;
-    document.getElementById('builder-theme').value = layout.theme || 'modern';
-    updateBuilderTheme();
-    
-    const allLabels = {
-      banner: '🖼️ Shop Banner', stats: '📊 Stats Bar', categories: '📁 Categories',
-      featured: '⭐ Featured Grid', reviews: '💬 Recent Reviews'
-    };
-    
-    const activeZone = document.getElementById('active-comps');
-    const availZone = document.getElementById('avail-comps');
-    activeZone.innerHTML = '';
-    availZone.innerHTML = '';
-    
-    const order = layout.order || [];
-    order.forEach(c => {
-      if(allLabels[c]) {
-        activeZone.innerHTML += `<div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" data-comp="${c}">${allLabels[c]}</div>`;
-        delete allLabels[c];
-      }
-    });
-    Object.keys(allLabels).forEach(c => {
-      availZone.innerHTML += `<div class="draggable-comp" draggable="true" ondragstart="dragStartComp(event)" ondragend="dragEndComp(event)" data-comp="${c}">${allLabels[c]}</div>`;
-    });
-    
-    updatePreviewOrder();
-    showToast('Applied ' + tpl.name);
+    _canvasOrder = [...(tpl.layout.order || [])];
+    _canvasTheme = tpl.layout.theme || 'modern';
+    document.getElementById('builder-theme').value = _canvasTheme;
+    initBuilderPreview();
+    showToast('Applied "' + tpl.name + '"');
   };
 
   window.loadCommunityTemplates = async function() {
@@ -2174,83 +2315,102 @@
       const snap = await getDocs(q);
       const ct = document.getElementById('comm-tpls');
       if (snap.empty) {
-        ct.innerHTML = '<span style="font-size:0.75rem; color:#aaa;">No community templates yet.</span>';
+        ct.innerHTML = '<span style="font-size:0.75rem;color:#aaa;">No community templates yet.</span>';
       } else {
         window._commTpls = snap.docs.map(d => d.data());
-        ct.innerHTML = window._commTpls.map((t, i) => 
+        ct.innerHTML = window._commTpls.map((t, i) =>
           `<button class="tpl-btn" onclick="applyTemplate('community', ${i})">${t.name}</button>`
         ).join('');
       }
     } catch (e) {
-      document.getElementById('comm-tpls').innerHTML = '<span style="font-size:0.75rem; color:#aaa;">Failed to load</span>';
+      document.getElementById('comm-tpls').innerHTML = '<span style="font-size:0.75rem;color:#aaa;">Failed to load.</span>';
     }
   };
 
+  // ── Theme ─────────────────────────────────────────────
   window.updateBuilderTheme = function() {
-    const theme = document.getElementById('builder-theme').value;
-    const win = document.getElementById('builder-preview-window');
-    
-    win.style.background = theme === 'noir' ? '#121212' : '#fafaf9';
-    win.style.color = theme === 'noir' ? '#fff' : '#1a1a1a';
-    
-    if (theme === 'glass') {
-      win.style.background = 'rgba(255,255,255,0.7)';
-      win.style.backdropFilter = 'blur(10px)';
-      const items = win.querySelectorAll('.p-item, .draggable-comp');
-      items.forEach(i => i.style.background = 'rgba(255,255,255,0.8)');
-    } else {
-      win.style.backdropFilter = 'none';
-      const items = win.querySelectorAll('.p-item, .draggable-comp');
-      items.forEach(i => i.style.background = '#fff');
-    }
-    showToast(`Applied ${theme} theme preview`);
+    _canvasTheme = document.getElementById('builder-theme').value;
+    applyThemeToCanvas();
+    showToast(`Theme: ${_canvasTheme}`);
   };
 
+  function applyThemeToCanvas() {
+    const win = document.getElementById('builder-preview-window');
+    const scroll = document.getElementById('canvas-scroll');
+    if (!win || !scroll) return;
+    if (_canvasTheme === 'noir') {
+      scroll.style.background = '#121212';
+      win.style.background    = '#121212';
+      scroll.querySelectorAll('.p-section-title,.p-name').forEach(el => el.style.color = '#fff');
+      scroll.querySelectorAll('.p-stats,.p-cats,.p-grid,.p-review-block,.p-header,.p-comp-block').forEach(el => {
+        el.style.background = '#1e1e1e';
+        el.style.borderColor = '#333';
+      });
+    } else if (_canvasTheme === 'glass') {
+      scroll.style.background = 'rgba(255,255,255,0.6)';
+      win.style.background    = 'rgba(255,255,255,0.6)';
+      win.style.backdropFilter = 'blur(20px)';
+      scroll.querySelectorAll('.p-section-title,.p-name').forEach(el => el.style.color = '#1a1a1a');
+    } else {
+      scroll.style.background = '#fafaf9';
+      win.style.background    = '#fafaf9';
+      win.style.backdropFilter = 'none';
+      scroll.querySelectorAll('.p-section-title,.p-name').forEach(el => el.style.color = '#1a1a1a');
+      scroll.querySelectorAll('.p-stats,.p-cats,.p-grid,.p-review-block,.p-header,.p-comp-block').forEach(el => {
+        el.style.background = '';
+        el.style.borderColor = '';
+      });
+    }
+  }
+
+  // ── Publish Layout ─────────────────────────────────────
   window.saveNookLayout = async function() {
-    const btn = document.querySelector('.btn-save');
+    const btn = document.getElementById('publish-layout-btn');
     if (!btn) return;
     const og = btn.innerHTML;
     btn.innerHTML = 'Publishing...';
     btn.disabled = true;
 
     try {
-      const activeComps = Array.from(document.getElementById('active-comps').children).map(c => c.dataset.comp);
-      const layout = {
-        order: activeComps,
-        theme: document.getElementById('builder-theme').value
-      };
+      const layout = { order: _canvasOrder, theme: _canvasTheme };
 
-      await updateDoc(doc(db, 'users', window._uid), { layout });
-      
-      const wantToPublish = confirm("Layout saved! Would you like to publish this to Community Templates for others to use?");
+      // Use setDoc with merge so it works even if the shop doc doesn't exist yet
+      await setDoc(doc(db, 'users', window._uid), { layout, updatedAt: serverTimestamp() }, { merge: true });
+      window._savedLayout = layout;
+
+      const wantToPublish = confirm('Layout saved!\n\nWould you like to publish this design as a Community Template so other sellers can use it?');
       if (wantToPublish) {
-        const tplName = prompt("Enter a name for your template:", "My Cool Shop");
-        if (tplName) {
-           await addDoc(collection(db, 'communityTemplates'), {
-             name: tplName,
-             layout: layout,
-             sellerId: window._uid,
-             createdAt: serverTimestamp()
-           });
-           showToast('Published to Community Templates!');
-           loadCommunityTemplates();
+        const tplName = prompt('Enter a name for your template:', 'My Shop Layout');
+        if (tplName && tplName.trim()) {
+          await addDoc(collection(db, 'communityTemplates'), {
+            name:      tplName.trim(),
+            layout,
+            sellerId:  window._uid,
+            createdAt: serverTimestamp()
+          });
+          showToast('Published to Community Templates! 🎉');
+          loadCommunityTemplates();
+        } else {
+          showToast('🚀 Layout published to your live shop!');
         }
       } else {
-        showToast('🚀 Your Nook layout has been published to live shop!');
+        showToast('🚀 Layout published to your live shop!');
       }
     } catch (e) {
-      console.error(e);
-      showToast('Error saving layout.');
+      console.error('Publish error:', e);
+      showToast('❌ Error publishing layout: ' + e.message);
     } finally {
       btn.innerHTML = og;
       btn.disabled = false;
     }
   };
 
+  // Init on load
   setTimeout(() => {
-    if(window.loadCommunityTemplates) loadCommunityTemplates();
-    if(window.updatePreviewOrder) updatePreviewOrder();
-  }, 1000);
+    window._shopData = window._shopData || {};
+    if (window.initBuilderPreview) initBuilderPreview();
+    if (window.loadCommunityTemplates) loadCommunityTemplates();
+  }, 1200);
 
 </script>
 </body>
